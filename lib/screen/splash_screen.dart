@@ -1,4 +1,7 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:pico/api/google_signin_api.dart';
 
 class SplashScreen extends StatelessWidget {
   const SplashScreen({super.key});
@@ -80,6 +83,7 @@ class SplashScreen extends StatelessWidget {
   }
 
   Future googleLogin() async {
-    // GoogleSignIn()
+    final user = await GoogleSigninApi.login();
+    log(user.toString(), name: 'USER_INFO');
   }
 }

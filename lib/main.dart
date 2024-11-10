@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pico/screen/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  await dotenv.load(fileName: 'assets/config/.env');
   runApp(const MyApp());
 }
 
