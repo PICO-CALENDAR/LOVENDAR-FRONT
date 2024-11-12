@@ -45,6 +45,11 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<!-- 추가된 내용 -->
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>https</string>
+	</array>
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
@@ -58,5 +63,6 @@
 	</array>
 	<key>GIDClientID</key>
 	<string>$(GID_CLIENT_ID)</string>
+
 </dict>
 </plist>

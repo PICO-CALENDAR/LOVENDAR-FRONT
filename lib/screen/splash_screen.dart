@@ -1,18 +1,34 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:pico/api/google_signin_api.dart';
+import 'package:pico/screen/register/register_screen.dart';
 
-class SplashScreen extends StatelessWidget {
+class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
+
+  @override
+  State<SplashScreen> createState() => _SplashScreenState();
+}
+
+class _SplashScreenState extends State<SplashScreen> {
+  Future<void> googleLogin() async {
+    final user = await GoogleSigninApi.login();
+    if (user != null && mounted) {
+      Navigator.of(context).push(
+        MaterialPageRoute(
+          builder: (context) => RegisterScreen(user),
+        ),
+      );
+    } else {
+      log('Google login failed or widget is not mounted');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width;
-    final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      backgroundColor: Colors.white,
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -38,20 +54,17 @@ class SplashScreen extends StatelessWidget {
                 ),
               ],
             ),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 foregroundColor: Colors.black,
                 backgroundColor: Colors.white,
                 shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(8), // 원하는 둥근 정도로 설정
+                  borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {
-                googleLogin();
-              },
+              onPressed: googleLogin, // Call the method directly
               child: const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 9.0, vertical: 8.0),
+                padding: EdgeInsets.symmetric(horizontal: 9.0, vertical: 10),
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -80,10 +93,5 @@ class SplashScreen extends StatelessWidget {
         ),
       ),
     );
-  }
-
-  Future googleLogin() async {
-    final user = await GoogleSigninApi.login();
-    log(user.toString(), name: 'USER_INFO');
   }
 }

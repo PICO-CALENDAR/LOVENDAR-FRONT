@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:pico/screen/splash_screen.dart';
+
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:pico/components/common/bottom_nav.dart';
+import 'package:pico/theme/theme_light.dart';
 
 void main() async {
   await dotenv.load(fileName: 'assets/config/.env');
@@ -14,13 +16,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        fontFamily: 'Pretendard',
-      ),
-      home: const SplashScreen(),
+      title: 'PICO',
+      theme: AppTheme.lightTheme,
+      home: const BottomNav(),
     );
   }
 }
