@@ -1,6 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:pico/components/common/action_button.dart';
+import 'package:pico/components/common/input_field.dart';
 import 'package:pico/theme/theme_light.dart';
 
 class RegisterScreen extends StatefulWidget {
@@ -111,23 +113,10 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Name TextFormField
-                        const Padding(
-                          padding:
-                              EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                          child: Text(
-                            '별명',
-                            style: TextStyle(
-                              fontSize: 14,
-                              color: Colors.black,
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                        ),
-                        TextFormField(
+                        InputField(
+                          title: "별명",
+                          hint: "피코",
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            hintText: '피코',
-                          ),
                           validator: (value) {
                             if (value == null || value.isEmpty) {
                               return '별명을 입력해주세요';
@@ -235,21 +224,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
                         _isMarketingAgreementChecked = value!;
                       });
                     },
-                    label: "(선택) 마케팅 활용 동의 및 광고 수신에 동의합니다",
+                    label: "(선택) 마케팅 활용 동의 및 광고 수신 동의에 동의합니다",
                   ),
                   const SizedBox(height: 10),
-                  SizedBox(
-                    width: double.infinity,
-                    child: ElevatedButton(
-                      style: ElevatedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 8),
-                        foregroundColor:
-                            Theme.of(context).colorScheme.onSecondary,
-                        backgroundColor: Theme.of(context).colorScheme.primary,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
+                  ActionButton(
+                      buttonName: "가입하기",
                       onPressed: () {
                         if (_formKey.currentState!.validate() &&
                             _isServiceAgreementChecked) {
@@ -269,14 +248,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                             ),
                           );
                         }
-                      },
-                      child: const Text(
-                        '가입하기',
-                        style: TextStyle(
-                            fontSize: 20, fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
+                      }),
                 ],
               ),
             ),

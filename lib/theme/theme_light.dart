@@ -7,8 +7,15 @@ class AppTheme {
   static const Color accentColor = Color(0xFFA3AB7D);
   static const Color backgroundColor = Color(0xFFF4EDE6);
   static const Color scaffoldBackgroundColor = Color(0xFFFAF8F5);
+  static const Color scaffoldBackgroundColorDark = Color(0xFFF7F3EE);
+
   static const Color textColor = Color(0xFF333333);
   static const Color greyColor = Color(0xFFF2F2F2);
+
+  static const Color blueColor = Color(0xFF5DA7D8); // 조금 더 톤 다운된 블루
+  static const Color redColor = Color(0xFFE76F61); // 조금 더 부드럽고 어두운 레드
+  // static const Color lightBlueColor = Color(0xFF87CEEB);
+  // static const Color listRedColor = Color(0xFFFA8072);
 
   static ThemeData get lightTheme {
     return ThemeData(

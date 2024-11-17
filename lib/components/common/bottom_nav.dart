@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:pico/components/common/add_event_screen.dart';
+import 'package:pico/screen/calendar/calendar_screen.dart';
 import 'package:pico/screen/home/home_screen.dart';
 import 'package:pico/screen/mypage/mypage_screen.dart';
 import 'package:pico/theme/theme_light.dart';
@@ -14,12 +16,7 @@ class _BottomNavState extends State<BottomNav> {
   int currentIndex = 0;
   List screens = const [
     HomeScreen(),
-    Scaffold(
-      body: Text("캘린더"),
-    ),
-    Scaffold(
-      body: Text("홈"),
-    ),
+    CalendarScreen(),
     Scaffold(
       body: Text("추억함"),
     ),
@@ -32,9 +29,13 @@ class _BottomNavState extends State<BottomNav> {
       floatingActionButton: FloatingActionButton(
         elevation: 1,
         onPressed: () {
-          setState(() {
-            currentIndex = 3;
-          });
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              fullscreenDialog: true,
+              builder: (context) => const AddEventScreen(),
+            ),
+          );
         },
         backgroundColor: AppTheme.primaryColor,
         child: const Icon(
@@ -58,8 +59,8 @@ class _BottomNavState extends State<BottomNav> {
             ), // FloatingActionButton 공간
             Expanded(
                 child: _buildBottomNavItem(
-                    Icons.shopping_cart_outlined, "추억함", 3)),
-            Expanded(child: _buildBottomNavItem(Icons.person, "마이", 4)),
+                    Icons.shopping_cart_outlined, "추억함", 2)),
+            Expanded(child: _buildBottomNavItem(Icons.person, "마이", 3)),
           ],
         ),
       ),
