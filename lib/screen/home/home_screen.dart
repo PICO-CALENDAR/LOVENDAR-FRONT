@@ -2,45 +2,11 @@ import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/classes/custom_arranger.dart';
+import 'package:pico/classes/custom_calendar.dart';
+import 'package:pico/classes/pico_arranger.dart';
+import 'package:pico/screen/calendar/calendar_screen.dart';
 import 'package:pico/theme/theme_light.dart';
 import 'dart:async';
-
-class CustomEvent {
-  DateTime startTime;
-  DateTime endTime;
-  String title;
-  String repeat; // 반복 유형: daily, weekly, monthly
-  String category;
-
-  CustomEvent({
-    required this.startTime,
-    required this.endTime,
-    required this.title,
-    required this.repeat,
-    required this.category,
-  });
-
-  // 특정 날짜에 이벤트가 있는지 확인하는 메서드
-  bool isEventOnDate(DateTime date) {
-    if (repeat == 'daily') {
-      // 매일 반복: 날짜만 확인
-      return startTime.day == date.day &&
-          startTime.month == date.month &&
-          startTime.year == date.year;
-    } else if (repeat == 'weekly') {
-      // 매주 반복: 요일과 날짜가 일치하는지 확인
-      return startTime.weekday == date.weekday &&
-          startTime.year == date.year &&
-          startTime.month == date.month;
-    } else if (repeat == 'monthly') {
-      // 매월 반복: 날짜가 일치하는지 확인
-      return startTime.day == date.day &&
-          startTime.month == date.month &&
-          startTime.year == date.year;
-    }
-    return false;
-  }
-}
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -54,8 +20,8 @@ class _HomeScreenState extends State<HomeScreen> {
   late DateTime selectedDate;
   // late Timer _timer;
   late DateTime currentTime;
-  // late List<CalendarEventData> _events;
-  List<CustomEvent> events = [];
+  late List<CalendarEventData<EventDetail>> _events;
+  // List<CustomEvent> events = [];
 
   List<DateTime> getCurrentWeekDates() {
     final startOfWeek = now.subtract(Duration(days: now.weekday - 1));
@@ -73,103 +39,160 @@ class _HomeScreenState extends State<HomeScreen> {
     //     currentTime = DateTime.now();
     //   });
     // });
-    events = [
-      CustomEvent(
-        category: "me",
-        startTime: DateTime(2024, 11, 17, 10, 0),
-        endTime: DateTime(2024, 11, 17, 11, 0),
-        title: '매일 회의',
-        repeat: 'daily', // 매일 반복
-      ),
-      CustomEvent(
-        category: "me",
-        startTime: DateTime(2024, 11, 17, 10, 0),
-        endTime: DateTime(2024, 11, 17, 11, 0),
-        title: '매일 회의',
-        repeat: 'daily', // 매일 반복
-      ),
-      CustomEvent(
-        category: "partner",
-        startTime: DateTime(2024, 11, 17, 14, 0),
-        endTime: DateTime(2024, 11, 17, 15, 0),
-        title: '주간 미팅',
-        repeat: 'weekly', // 매주 반복
-      ),
-      CustomEvent(
-        category: "us",
-        startTime: DateTime(2024, 11, 17, 16, 0),
-        endTime: DateTime(2024, 11, 17, 17, 0),
-        title: '매월 회의',
-        repeat: 'monthly', // 매월 반복
-      ),
-    ];
-
-    // _events = [
-    //   CalendarEventData(
-    //     date: now,
-    //     title: "test meeting",
-    //     color: Colors.amber,
-    //     description: "me",
-    //     startTime: DateTime(now.year, now.month, now.day, 10, 30),
-    //     endTime: DateTime(now.year, now.month, now.day, 12, 30),
+    // events = [
+    //   CustomEvent(
+    //     category: "me",
+    //     startTime: DateTime(2024, 11, 17, 10, 0),
+    //     endTime: DateTime(2024, 11, 17, 11, 0),
+    //     title: '회의',
+    //     repeat: 'daily', // 매일 반복
     //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     title: "mee",
-    //     color: Colors.amber,
-    //     description: "me",
-    //     startTime: DateTime(now.year, now.month, now.day, 10, 00),
-    //     endTime: DateTime(now.year, now.month, now.day, 12, 30),
+    //   CustomEvent(
+    //     category: "me",
+    //     startTime: DateTime(2024, 11, 17, 13, 0),
+    //     endTime: DateTime(2024, 11, 17, 14, 0),
+    //     title: '테스트',
+    //     repeat: 'daily', // 매일 반복
     //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     title: "ㅇㅇ",
-    //     color: Colors.amber,
-    //     description: "me",
-    //     startTime: DateTime(now.year, now.month, now.day, 10, 00),
-    //     endTime: DateTime(now.year, now.month, now.day, 12, 30),
+    //   CustomEvent(
+    //     category: "me",
+    //     startTime: DateTime(2024, 11, 17, 14, 0),
+    //     endTime: DateTime(2024, 11, 17, 16, 0),
+    //     title: '약속',
+    //     repeat: 'daily', // 매일 반복
     //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     startTime: DateTime(now.year, now.month, now.day, 14),
-    //     endTime: DateTime(now.year, now.month, now.day, 17),
-    //     title: "meeting",
-    //     description: "partner",
-    //     color: Colors.green,
-    //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     startTime: DateTime(now.year, now.month, now.day, 8),
-    //     endTime: DateTime(now.year, now.month, now.day, 10),
-    //     title: "tournament",
-    //     description: "partner",
-    //     color: Colors.green,
-    //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     startTime: DateTime(now.year, now.month, now.day, 14),
-    //     endTime: DateTime(now.year, now.month, now.day, 16),
-    //     title: "asdfasdfadfa",
-    //     description: "partner",
-    //     color: Colors.green,
-    //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     startTime: DateTime(now.year, now.month, now.day, 14),
-    //     endTime: DateTime(now.year, now.month, now.day, 16),
-    //     title: "dd",
-    //     description: "partner",
-    //     color: Colors.green,
-    //   ),
-    //   CalendarEventData(
-    //     date: now,
-    //     startTime: DateTime(now.year, now.month, now.day, 14),
-    //     endTime: DateTime(now.year, now.month, now.day, 16),
-    //     title: "us",
-    //     description: "us",
-    //     color: Colors.blue,
+    //   CustomEvent(
+    //     category: "partner",
+    //     startTime: DateTime(2024, 11, 17, 10, 0),
+    //     endTime: DateTime(2024, 11, 17, 17, 0),
+    //     title: '상대방',
+    //     repeat: 'daily', // 매월 반복
     //   ),
     // ];
+
+    _events = [
+      CalendarEventData(
+          date: now,
+          title: "테스트",
+          description: "나의 일정",
+          color: Colors.amber,
+          startTime: DateTime(now.year, now.month, now.day, 2, 0),
+          endTime: DateTime(now.year, now.month, now.day, 3, 0),
+          event: EventDetail(category: EventCategory.mine)),
+      // CalendarEventData(
+      //     date: now,
+      //     title: "테스트",
+      //     description: "너의 일정",
+      //     color: Colors.green,
+      //     startTime: DateTime(now.year, now.month, now.day, 2, 0),
+      //     endTime: DateTime(now.year, now.month, now.day, 3, 0),
+      //     event: EventDetail(category: EventCategory.yours)),
+      CalendarEventData(
+          date: now,
+          title: "테스트",
+          description: "나의 일정",
+          color: Colors.amber,
+          startTime: DateTime(now.year, now.month, now.day, 10, 0),
+          endTime: DateTime(now.year, now.month, now.day, 11, 0),
+          event: EventDetail(category: EventCategory.mine)),
+
+      CalendarEventData(
+        date: now,
+        title: "회의",
+        description: "나의 일정",
+        color: Colors.amber,
+        startTime: DateTime(now.year, now.month, now.day, 13, 00),
+        endTime: DateTime(now.year, now.month, now.day, 14, 00),
+        event: EventDetail(category: EventCategory.mine),
+      ),
+      CalendarEventData(
+        date: now,
+        title: "약속",
+        description: "나의 일정",
+        color: Colors.amber,
+        startTime: DateTime(now.year, now.month, now.day, 14, 00),
+        endTime: DateTime(now.year, now.month, now.day, 16, 00),
+        event: EventDetail(category: EventCategory.mine),
+      ),
+      CalendarEventData(
+        date: now,
+        title: "약속22",
+        description: "나의 일정",
+        color: Colors.amber,
+        startTime: DateTime(now.year, now.month, now.day, 10, 00),
+        endTime: DateTime(now.year, now.month, now.day, 16, 00),
+        event: EventDetail(category: EventCategory.mine),
+      ),
+      CalendarEventData(
+        date: now,
+        description: "너의 일정",
+        startTime: DateTime(now.year, now.month, now.day, 10),
+        endTime: DateTime(now.year, now.month, now.day, 17),
+        title: "meeting",
+        color: Colors.green,
+        event: EventDetail(category: EventCategory.yours),
+      ),
+
+      CalendarEventData(
+        date: now,
+        title: "약속22",
+        description: "나의 일정",
+        color: Colors.amber,
+        startTime: DateTime(now.year, now.month, now.day, 6, 00),
+        endTime: DateTime(now.year, now.month, now.day, 7, 00),
+        event: EventDetail(category: EventCategory.mine),
+      ),
+      CalendarEventData(
+        date: now,
+        title: "약속22",
+        description: "나의 일정",
+        color: Colors.amber,
+        startTime: DateTime(now.year, now.month, now.day, 6, 00),
+        endTime: DateTime(now.year, now.month, now.day, 7, 00),
+        event: EventDetail(category: EventCategory.mine),
+      ),
+      // CalendarEventData(
+      //   date: now,
+      //   description: "너의 일정",
+      //   startTime: DateTime(now.year, now.month, now.day, 6),
+      //   endTime: DateTime(now.year, now.month, now.day, 7),
+      //   title: "meeting",
+      //   color: Colors.green,
+      //   event: EventDetail(category: EventCategory.yours),
+      // ),
+      CalendarEventData(
+        date: now,
+        startTime: DateTime(now.year, now.month, now.day, 6),
+        endTime: DateTime(now.year, now.month, now.day, 7),
+        title: "meeting",
+        description: "우리의 일정",
+        color: Colors.grey,
+        event: EventDetail(category: EventCategory.ours),
+      ),
+
+      CalendarEventData(
+        title: "All Day Event",
+        description: "This is an all-day event.",
+        date: DateTime(2024, 11, 20), // 이벤트 날짜
+        event: EventDetail(category: EventCategory.mine), // 23:59 종료
+      ),
+      CalendarEventData(
+        title: "All Day Event",
+        description: "This is an all-day event.",
+        date: DateTime(2024, 11, 20), // 이벤트 날짜
+        event: EventDetail(category: EventCategory.mine), // 23:59 종료
+      ),
+
+      CalendarEventData(
+        date: now,
+        startTime: DateTime(now.year, now.month, now.day, 2),
+        endTime: DateTime(now.year, now.month, now.day, 4),
+        title: "meeting",
+        description: "너의 일정",
+        color: Colors.green,
+        event: EventDetail(category: EventCategory.yours),
+      ),
+    ];
   }
 
   @override
@@ -241,43 +264,46 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
           const SizedBox(height: 10),
           Expanded(
-            child: DayView<CustomEvent>(
+            child: DayView<EventDetail>(
               onEventTap: (events, date) {},
-              controller: EventController(
-                eventFilter: (date, allEvents) {
-                  // 주어진 날짜에 맞는 반복 이벤트 필터링
-                  final filteredEvents = events.where((customEvent) {
-                    if (customEvent.repeat == 'daily') {
-                      return true; // 매일 반복되는 이벤트는 모든 날짜에 포함
-                    } else if (customEvent.repeat == 'weekly') {
-                      return customEvent.startTime.weekday ==
-                          date.weekday; // 주 단위 반복
-                    } else if (customEvent.repeat == 'monthly') {
-                      return customEvent.startTime.day == date.day; // 월 단위 반복
-                    }
-                    return false;
-                  }).toList();
+              controller: EventController()..addAll(_events),
+              // controller: EventController(
+              //   eventFilter: (date, allEvents) {
+              //     // 주어진 날짜에 맞는 반복 이벤트 필터링
+              //     final filteredEvents = events.where((customEvent) {
+              //       if (customEvent.repeat == 'daily') {
+              //         return true; // 매일 반복되는 이벤트는 모든 날짜에 포함
+              //       } else if (customEvent.repeat == 'weekly') {
+              //         return customEvent.startTime.weekday ==
+              //             date.weekday; // 주 단위 반복
+              //       } else if (customEvent.repeat == 'monthly') {
+              //         return customEvent.startTime.day == date.day; // 월 단위 반복
+              //       }
+              //       return false;
+              //     }).toList();
 
-                  // CalendarEventData로 변환하여 반환
-                  return filteredEvents.map((e) {
-                    return CalendarEventData<CustomEvent>(
-                      date: date,
-                      event: e,
-                      startTime: e.startTime,
-                      endTime: e.endTime,
-                      title: e.title,
-                      description: e.category,
-                    );
-                  }).toList();
-                },
-              ),
+              //     // CalendarEventData로 변환하여 반환
+              //     return filteredEvents.map((e) {
+              //       return CalendarEventData<CustomEvent>(
+              //         date: date,
+              //         event: e,
+              //         startTime: e.startTime,
+              //         endTime: e.endTime,
+              //         title: e.title,
+              //         description: e.category,
+              //       );
+              //     }).toList();
+              //   },
+              // ),
               // controller: EventController()..addAll(_events),
               backgroundColor: AppTheme.scaffoldBackgroundColor,
               timeLineWidth: 60,
               heightPerMinute: 1,
               showVerticalLine: false,
               dayTitleBuilder: DayHeader.hidden,
-              eventArranger: const CustomArranger(),
+
+              // eventArranger: const CustomArranger(),
+              eventArranger: PicoArranger(),
               timeLineBuilder: (date) {
                 return Text(
                   DateFormat("a h시").format(date),

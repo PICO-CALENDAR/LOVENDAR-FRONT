@@ -1,55 +1,30 @@
 import 'package:calendar_view/calendar_view.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:pico/classes/custom_calendar.dart';
 import 'dart:math' as math;
 
-class CustomArranger<T extends Object?> extends EventArranger<T> {
-  /// This class will provide method that will arrange
-  /// all the events side by side.
-  const CustomArranger({
-    this.maxWidth,
-    this.includeEdges = false,
-  });
-
-  /// Decides whether events that are overlapping on edge
-  /// (ex, event1 has the same end-time as the start-time of event 2)
-  /// should be offset or not.
-  ///
-  /// If includeEdges is true, it will offset the events else it will not.
-  ///
-  final bool includeEdges;
-
-  /// If enough space is available, the event slot will
-  /// use the specified max width.
-  /// Otherwise, it will reduce to fit all events in the cell.
-  /// If max width is not specified, slots will expand to fill the cell.
-  final double? maxWidth;
-
-  /// {@macro event_arranger_arrange_method_doc}
-  ///
-  /// Make sure that all the events that are passed in [events], must be in
-  /// ascending order of start time.
-
+class PicoArranger extends EventArranger<EventDetail> {
   @override
-  List<OrganizedCalendarEventData<T>> arrange({
-    required List<CalendarEventData<T>> events,
-    required double height,
-    required double width,
-    required double heightPerMinute,
-    required int startHour,
-  }) {
+  List<OrganizedCalendarEventData<EventDetail>> arrange(
+      {required List<CalendarEventData<EventDetail>> events,
+      required double height,
+      required double width,
+      required double heightPerMinute,
+      required int startHour}) {
     final totalWidth = width;
 
-    List<_SideEventConfigs<T>> categorizedColumnedEvents(
-        List<CalendarEventData<T>> events) {
-      final merged = MergeEventArranger<T>(includeEdges: includeEdges).arrange(
+    List<_SideEventConfigs<EventDetail>> categorizedColumnedEvents(
+        List<CalendarEventData<EventDetail>> events) {
+      final merged = const MergeEventArranger<EventDetail>().arrange(
         events: events,
         height: height,
         width: width,
         heightPerMinute: heightPerMinute,
         startHour: startHour,
       );
-      // print("length: ${merged.length}");
 
-      final arranged = <_SideEventConfigs<T>>[];
+      final arranged = <_SideEventConfigs<EventDetail>>[];
 
       for (final event in merged) {
         if (event.events.isEmpty) {
@@ -100,20 +75,14 @@ class CustomArranger<T extends Object?> extends EventArranger<T> {
       return arranged;
     }
 
-    List<OrganizedCalendarEventData<T>> arrangeEvents(
-        List<_SideEventConfigs<T>> events, double width, double offset) {
-      final arranged = <OrganizedCalendarEventData<T>>[];
-
-      final usEvents = events
-          .expand((e) => e.event)
-          .where((e) => e.description == "us")
-          .toList();
-      final usEventCount = usEvents.length;
-      final usSlotWidth = usEventCount > 0 ? totalWidth / usEventCount : 0;
+    List<OrganizedCalendarEventData<EventDetail>> arrangeEvents(
+        List<_SideEventConfigs<EventDetail>> events,
+        double width,
+        double offset) {
+      final arranged = <OrganizedCalendarEventData<EventDetail>>[];
 
       for (final event in events) {
-        final slotWidth =
-            math.min(width / event.columns, maxWidth ?? double.maxFinite);
+        final slotWidth = math.min(width / event.columns, double.maxFinite);
 
         if (event.event.isNotEmpty) {
           // TODO(parth): Arrange events and add it in arranged.
@@ -135,20 +104,9 @@ class CustomArranger<T extends Object?> extends EventArranger<T> {
             final top = (startTime.getTotalMinutes - (startHour * 60)) *
                 heightPerMinute;
 
-            // print(
-            //     "${e.title} totalWidth:$totalWidth slotWidth:$slotWidth offset:$offset");
-
-            return OrganizedCalendarEventData<T>(
-              left: e.description == "me"
-                  ? offset / 2
-                  : e.description == "partner"
-                      ? offset / 2 + totalWidth / 2
-                      : (usEvents.indexOf(e) * usSlotWidth).toDouble(),
-              right: e.description == "me"
-                  ? totalWidth - (offset + slotWidth) / 2
-                  : e.description == "partner"
-                      ? totalWidth / 2 - (offset + slotWidth) / 2
-                      : totalWidth - (offset + slotWidth) / 2,
+            return OrganizedCalendarEventData<EventDetail>(
+              left: offset,
+              right: totalWidth - (offset + slotWidth),
               top: top,
               bottom: bottom,
               startDuration: startTime,
@@ -170,18 +128,75 @@ class CustomArranger<T extends Object?> extends EventArranger<T> {
       return arranged;
     }
 
-    // By default the offset will be 0.
+    // 시간 중복이 되는 것끼리 chunking
+    final merged = const MergeEventArranger<EventDetail>().arrange(
+      events: events,
+      height: height,
+      width: width,
+      heightPerMinute: heightPerMinute,
+      startHour: startHour,
+    );
 
-    final columned = categorizedColumnedEvents(events);
-    final arranged = arrangeEvents(columned, totalWidth, 0);
+    final arranged = <OrganizedCalendarEventData<EventDetail>>[];
+
+    for (var rowEvent in merged) {
+      final rowEventData = rowEvent.events;
+      if (rowEventData.isEmpty) {
+        continue;
+      }
+
+      // 이벤트 리스트에서 카테고리 추출
+      final categories = rowEventData.map((e) => e.event?.category).toSet();
+
+      for (var category in categories) {
+        final List<OrganizedCalendarEventData<EventDetail>> arrangedByCat;
+        final eventListInCategory =
+            rowEventData.where((e) => e.event?.category == category).toList();
+        final columnedByCat = categorizedColumnedEvents(eventListInCategory);
+
+        if (category == EventCategory.mine) {
+          if (categories.contains(EventCategory.ours)) {
+            arrangedByCat = arrangeEvents(columnedByCat, totalWidth / 3, 0);
+          } else {
+            arrangedByCat = arrangeEvents(columnedByCat, totalWidth / 2, 0);
+          }
+        } else if (category == EventCategory.yours) {
+          if (categories.contains(EventCategory.ours)) {
+            arrangedByCat = arrangeEvents(
+                columnedByCat, totalWidth / 3, totalWidth * 2 / 3);
+          } else {
+            arrangedByCat =
+                arrangeEvents(columnedByCat, totalWidth / 2, totalWidth / 2);
+          }
+        } else {
+          // 우리
+          if (categories.length == 3) {
+            arrangedByCat =
+                arrangeEvents(columnedByCat, totalWidth / 3, totalWidth / 3);
+          } else {
+            if (categories.contains(EventCategory.mine)) {
+              arrangedByCat = arrangeEvents(
+                  columnedByCat, totalWidth * 2 / 3, totalWidth / 3);
+            } else if (categories.contains(EventCategory.yours)) {
+              arrangedByCat =
+                  arrangeEvents(columnedByCat, totalWidth * 2 / 3, 0);
+            } else {
+              arrangedByCat = arrangeEvents(columnedByCat, totalWidth, 0);
+            }
+          }
+        }
+
+        arranged.addAll(arrangedByCat);
+      }
+    }
 
     return arranged;
   }
 
-  List<CalendarEventData<T>> _extractSingleColumnEvents(
-      List<CalendarEventData<T>> events, int end) {
+  List<CalendarEventData<EventDetail>> _extractSingleColumnEvents(
+      List<CalendarEventData<EventDetail>> events, int end) {
     // Find the longest event from the list.
-    final longestEvent = events.fold<CalendarEventData<T>>(
+    final longestEvent = events.fold<CalendarEventData<EventDetail>>(
       events.first,
       (e1, e2) => e1.duration > e2.duration ? e1 : e2,
     );
@@ -203,7 +218,7 @@ class CustomArranger<T extends Object?> extends EventArranger<T> {
     // less than end.
     while (endMinutes < end && searchEvents.isNotEmpty) {
       // Maps the event with it's duration.
-      final mappings = <int, CalendarEventData<T>>{};
+      final mappings = <int, CalendarEventData<EventDetail>>{};
 
       // Create a new list from searchEvents.
       for (final event in [...searchEvents]) {
@@ -214,7 +229,7 @@ class CustomArranger<T extends Object?> extends EventArranger<T> {
         // This does not handle the case where there is a event before the
         // longest event which is not intersecting.
         //
-        if (start < endMinutes || (includeEdges && start == endMinutes)) {
+        if (start < endMinutes || start == endMinutes) {
           // Remove search event from list so, we do not iterate through it
           // again.
           searchEvents.remove(event);
