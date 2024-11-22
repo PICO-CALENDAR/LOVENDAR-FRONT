@@ -30,6 +30,79 @@ class CalendarConst {
   //   ),
   // ];
 
+  // static final List<PicoEvent> events = [
+  //   PicoEvent(
+  //     title: "Morning Run",
+  //     startTime: DateTime(2024, 11, 22, 6, 0),
+  //     endTime: DateTime(2024, 11, 22, 7, 30),
+  //     category: EventCategory.mine,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Team Meeting",
+  //     startTime: DateTime(2024, 11, 22, 10, 0),
+  //     endTime: DateTime(2024, 11, 22, 11, 0),
+  //     category: EventCategory.ours,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Lunch with Client",
+  //     startTime: DateTime(2024, 11, 22, 12, 0),
+  //     endTime: DateTime(2024, 11, 22, 13, 30),
+  //     category: EventCategory.yours,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Design Review",
+  //     startTime: DateTime(2024, 11, 22, 14, 30),
+  //     endTime: DateTime(2024, 11, 22, 15, 30),
+  //     category: EventCategory.ours,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Yoga Session",
+  //     startTime: DateTime(2024, 11, 22, 19, 30),
+  //     endTime: DateTime(2024, 11, 22, 20, 30),
+  //     category: EventCategory.mine,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Dinner Date",
+  //     startTime: DateTime(2024, 11, 22, 21, 0),
+  //     endTime: DateTime(2024, 11, 22, 22, 30),
+  //     category: EventCategory.yours,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Late Night Project",
+  //     startTime: DateTime(2024, 11, 22, 23, 0),
+  //     endTime: DateTime(2024, 11, 23, 1, 0),
+  //     category: EventCategory.mine,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Conference Call",
+  //     startTime: DateTime(2024, 11, 22, 8, 0),
+  //     endTime: DateTime(2024, 11, 22, 8, 45),
+  //     category: EventCategory.ours,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Workshop",
+  //     startTime: DateTime(2024, 11, 22, 15, 45),
+  //     endTime: DateTime(2024, 11, 22, 17, 0),
+  //     category: EventCategory.mine,
+  //     isAllDay: false,
+  //   ),
+  //   PicoEvent(
+  //     title: "Evening Walk",
+  //     startTime: DateTime(2024, 11, 22, 18, 30),
+  //     endTime: DateTime(2024, 11, 22, 19, 15),
+  //     category: EventCategory.yours,
+  //     isAllDay: false,
+  //   ),
+  // ];
+
   static final List<PicoEvent> events = [
     PicoEvent(
       title: "Event 1",
@@ -168,6 +241,13 @@ class CalendarConst {
       title: "Event 20",
       startTime: DateTime(2024, 11, 22, 16, 15),
       endTime: DateTime(2024, 11, 22, 18, 8),
+      category: EventCategory.ours,
+      isAllDay: false,
+    ),
+    PicoEvent(
+      title: "우리",
+      startTime: DateTime(2024, 11, 22, 00, 15),
+      endTime: DateTime(2024, 11, 22, 5, 8),
       category: EventCategory.ours,
       isAllDay: false,
     ),

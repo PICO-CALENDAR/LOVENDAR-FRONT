@@ -1,36 +1,32 @@
 import 'package:pico/classes/custom_calendar.dart';
 import 'package:pico/contants/temp.dart';
 
-// 시간대가 겹치는 이벤트 찾기
+// 시간대가 겹치는 이벤트 그룹화
 List<List<PicoEvent>> groupOverlappingEvents(List<PicoEvent> events) {
-  // isAllDay가 true인 이벤트를 제외
+  // 하루 종일 이벤트 제외
   final filteredEvents = events.where((event) => !event.isAllDay).toList();
 
-  // 입력 리스트가 비어 있으면 빈 리스트 반환
+  // 이벤트 리스트가 비어있으면 빈 리스트 반환
   if (filteredEvents.isEmpty) return [];
 
-  // 이벤트를 시작 시간 기준으로 정렬
+  // 시작 시간 기준으로 정렬
   filteredEvents.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-  // 결과 리스트
   final List<List<PicoEvent>> groupedEvents = [];
-
-  // 첫 번째 이벤트 그룹을 초기화
   List<PicoEvent> currentGroup = [filteredEvents.first];
 
   for (int i = 1; i < filteredEvents.length; i++) {
     final currentEvent = filteredEvents[i];
     final lastEventInGroup = currentGroup.last;
 
-    // 겹치는지 확인
-    if (currentEvent.startTime.isBefore(lastEventInGroup.endTime) ||
-        currentEvent.startTime.isAtSameMomentAs(lastEventInGroup.endTime)) {
-      // 겹치는 경우 그룹에 추가
-      currentGroup.add(currentEvent);
-    } else {
-      // 겹치지 않으면 현재 그룹을 결과에 추가하고 새로운 그룹 시작
+    // 현재 이벤트가 그룹의 마지막 이벤트와 겹치더라도, 시간이 포함되지 않으면 새로운 그룹 시작
+    if (!currentEvent.startTime.isBefore(lastEventInGroup.endTime) &&
+        !currentEvent.startTime.isAtSameMomentAs(lastEventInGroup.endTime)) {
       groupedEvents.add(currentGroup);
       currentGroup = [currentEvent];
+    } else {
+      // 현재 이벤트를 그룹에 추가
+      currentGroup.add(currentEvent);
     }
   }
 
@@ -40,61 +36,206 @@ List<List<PicoEvent>> groupOverlappingEvents(List<PicoEvent> events) {
   return groupedEvents;
 }
 
-class OrganizedEvent {
-  final double left;
-  final double top;
-  final double? right;
-  final double? bottom; // 하루 분에서 빼서 구해야할듯..? 아니면 height으로?
-  final double? width;
-  final double? height;
-  final PicoEvent eventData;
-
-  OrganizedEvent({
-    required this.left,
-    required this.top,
-    this.right,
-    this.bottom,
-    this.width,
-    this.height,
-    required this.eventData,
-  });
-}
-
-// 1. 주어진 events 중 가장 빠른 startTime과 가장 늦은 endTime 반환 ("우리"의 이벤트 병합에 사용)
+// 이벤트 병합하여 시간 범위 반환
 MergedEvent mergeEventsAndGetTime(List<PicoEvent> events) {
   if (events.isEmpty) {
     throw ArgumentError('Event list cannot be empty');
   }
 
-  DateTime minStart = events.first.startTime;
-  DateTime maxEnd = events.first.endTime;
-
-  for (var event in events) {
-    if (event.startTime.isBefore(minStart)) {
-      minStart = event.startTime;
-    }
-    if (event.endTime.isAfter(maxEnd)) {
-      maxEnd = event.endTime;
-    }
-  }
+  final minStart =
+      events.map((e) => e.startTime).reduce((a, b) => a.isBefore(b) ? a : b);
+  final maxEnd =
+      events.map((e) => e.endTime).reduce((a, b) => a.isAfter(b) ? a : b);
 
   return MergedEvent(
-    startTime: minStart,
-    endTime: maxEnd,
-    mergedEvents: events,
-  );
+      startTime: minStart, endTime: maxEnd, mergedEvents: events);
 }
 
-// 2. 주어진 시작 시간-종료시간과 겹치는 이벤트 리스트 반환
+// 특정 시간 범위와 겹치는 이벤트 반환
 List<PicoEvent> findOverlappingEventsByTime(
     List<PicoEvent> events, DateTime startTime, DateTime endTime) {
   return events.where((event) {
-    // 이벤트가 주어진 시간과 겹치는지 확인
     return event.startTime.isBefore(endTime) &&
         event.endTime.isAfter(startTime);
   }).toList();
 }
 
+List<List<PicoEvent>> calculateEventColumns(List<PicoEvent> events) {
+  if (events.isEmpty) return [];
+
+  // 겹치는 이벤트 그룹 가져오기
+  List<List<PicoEvent>> overlappingGroups = groupOverlappingEvents(events);
+
+  Map<PicoEvent, int> eventColumns = {};
+  Map<int, List<PicoEvent>> columnToEvents = {}; // 각 열에 해당하는 이벤트 리스트
+  int maxColumnUsed = 0; // 총 열의 최대값 추적
+
+  for (var group in overlappingGroups) {
+    if (group.isEmpty) continue;
+
+    // 그룹의 모든 이벤트를 열에 할당
+    maxColumnUsed = assignColumnsForGroup(
+        group, eventColumns, columnToEvents, maxColumnUsed);
+  }
+
+  // 결과 반환: 열 번호별로 정렬된 리스트 생성
+  List<List<PicoEvent>> result = [];
+  for (int i = 0; i <= maxColumnUsed; i++) {
+    result.add(columnToEvents[i] ?? []);
+  }
+  return result;
+}
+
+// 그룹의 이벤트를 열에 할당하고 최대 열 번호 반환
+int assignColumnsForGroup(
+    List<PicoEvent> group,
+    Map<PicoEvent, int> eventColumns,
+    Map<int, List<PicoEvent>> columnToEvents,
+    int maxColumnUsed) {
+  // 이벤트를 시작 시간 기준으로 정렬
+  group.sort((a, b) => a.startTime.compareTo(b.startTime));
+
+  for (var event in group) {
+    // 겹치는 열을 계산
+    var overlappingColumns = group
+        .where((e) =>
+            e != event &&
+            e.startTime.isBefore(event.endTime) &&
+            e.endTime.isAfter(event.startTime))
+        .map((e) => eventColumns[e]);
+
+    // 사용 가능한 최소 열 번호 찾기
+    int column = 0;
+    while (overlappingColumns.contains(column)) {
+      column++;
+    }
+
+    // 열 배정
+    eventColumns[event] = column;
+
+    // 열별 이벤트 리스트 갱신
+    if (!columnToEvents.containsKey(column)) {
+      columnToEvents[column] = [];
+    }
+    columnToEvents[column]!.add(event);
+
+    // 최대 열 번호 갱신
+    maxColumnUsed = maxColumnUsed > column ? maxColumnUsed : column;
+  }
+
+  return maxColumnUsed;
+}
+
+// OrganizedEvent 생성 헬퍼 함수
+List<OrganizedEvent> createOrganizedEvents(
+  List<PicoEvent> events,
+  double slotWidth,
+  double leftStart,
+) {
+  final columns = calculateEventColumns(events);
+  final columnsCount = columns.length; // 열의 수
+  final width = slotWidth / (columnsCount == 0 ? 1 : columnsCount);
+
+  final List<OrganizedEvent> organizedEvent = [];
+
+  for (int i = 0; i < columns.length; i++) {
+    // i는 이벤트가 속한 열이 된다.
+    for (var event in columns[i]) {
+      // 한 열에 속한 이벤트
+      organizedEvent.add(
+        OrganizedEvent(
+          left: leftStart + i * width, // 한 열에 속한 이벤트는 같은 시작 위치를 가진다.
+          top: event.durationFromMidnight.inMinutes.toDouble(),
+          width: width,
+          height: event.duration.inMinutes.toDouble(),
+          eventData: event,
+        ),
+      );
+    }
+  }
+
+  return organizedEvent;
+}
+
+// 모든 이벤트를 OrganizedEvent로 변환
+List<OrganizedEvent> getOrganizedEvents(
+    List<PicoEvent> overlappingEvents, double viewWidth) {
+  final double totalWidth = viewWidth;
+  final List<OrganizedEvent> organizedEvents = [];
+
+  final myEvents = overlappingEvents
+      .where((event) => event.category == EventCategory.mine)
+      .toList();
+  final yourEvents = overlappingEvents
+      .where((event) => event.category == EventCategory.yours)
+      .toList();
+  final ourEvents = overlappingEvents
+      .where((event) => event.category == EventCategory.ours)
+      .toList();
+
+  if (ourEvents.isNotEmpty) {
+    // "우리" 이벤트 병합
+    final mergedOurEvent = mergeEventsAndGetTime(ourEvents);
+    final otherEvents = [...myEvents, ...yourEvents];
+
+    // 병합된 "우리" 이벤트와 겹치는 나와 상대 이벤트 확인
+    final overlappedEvents = findOverlappingEventsByTime(
+      otherEvents,
+      mergedOurEvent.startTime,
+      mergedOurEvent.endTime,
+    );
+    final overlappedState = checkEventCategories(overlappedEvents);
+
+    switch (overlappedState) {
+      case OverlappedState.none:
+        organizedEvents.addAll(createOrganizedEvents(ourEvents, totalWidth, 0));
+        organizedEvents
+            .addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
+        organizedEvents.addAll(
+            createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+        break;
+
+      case OverlappedState.mineOnly:
+        organizedEvents.addAll(createOrganizedEvents(
+            ourEvents, totalWidth * 2 / 3, totalWidth / 3));
+        organizedEvents
+            .addAll(createOrganizedEvents(myEvents, totalWidth / 3, 0));
+        organizedEvents.addAll(
+            createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+        break;
+
+      case OverlappedState.yoursOnly:
+        organizedEvents.addAll(createOrganizedEvents(
+            ourEvents, totalWidth * 2 / 3, totalWidth / 3));
+        organizedEvents
+            .addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
+        organizedEvents.addAll(createOrganizedEvents(
+            yourEvents, totalWidth / 3, totalWidth * 2 / 3));
+        break;
+
+      case OverlappedState.both:
+        organizedEvents.addAll(
+            createOrganizedEvents(ourEvents, totalWidth / 3, totalWidth / 3));
+        organizedEvents
+            .addAll(createOrganizedEvents(myEvents, totalWidth / 3, 0));
+        organizedEvents.addAll(createOrganizedEvents(
+            yourEvents, totalWidth / 3, totalWidth * 2 / 3));
+        break;
+
+      default:
+        break;
+    }
+  } else {
+    // "우리" 이벤트가 없을 때
+    organizedEvents.addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
+    organizedEvents.addAll(
+        createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+  }
+
+  return organizedEvents;
+}
+
+// 병합된 이벤트 클래스
 class MergedEvent {
   final DateTime startTime;
   final DateTime endTime;
@@ -107,276 +248,19 @@ class MergedEvent {
   });
 }
 
-// 각 이벤트의 좌표 구하기
-List<OrganizedEvent> getOrganizedEvents(
-    List<PicoEvent> overlappingEvents, double viewWidth) {
-  final double totalWidth = viewWidth; // TODO: 실제 total width 얻어와서 바꾸기
-  List<OrganizedEvent> organizedEvents = [];
+// OrganizedEvent 클래스
+class OrganizedEvent {
+  final double left;
+  final double top;
+  final double? width;
+  final double? height;
+  final PicoEvent eventData;
 
-  // overlappingEvents에는 All Day (하루종일) 이벤트가 존재하지 않음
-  final myEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.mine)
-      .toList();
-  final yourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.yours)
-      .toList();
-  final ourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.ours)
-      .toList();
-
-  if (ourEvents.isNotEmpty) {
-    // "우리" 이벤트가 있을 때
-    final mergedOurtEvent = mergeEventsAndGetTime(ourEvents);
-    final myEventsAndyourEvents = [...myEvents, ...yourEvents];
-
-    //TODO: 우리끼리 겹치는 건 확인을 못한듯..
-
-    //우리들의 이벤트에서 합친 것과 겹치는 나와 상대의 이벤트 찾기
-    final overlappedEventsByMergedOurtEvent = findOverlappingEventsByTime(
-      myEventsAndyourEvents, // 너와 상대의 이벤트들
-      mergedOurtEvent.startTime,
-      mergedOurtEvent.endTime,
-    );
-    final overlappedState =
-        checkEventCategories(overlappedEventsByMergedOurtEvent);
-
-    switch (overlappedState) {
-      case OverlappedState.none:
-        final ourSlotWidth = totalWidth;
-        // 우리 일정 정렬
-        for (int i = 0; i < ourEvents.length; i++) {
-          final ourEvent = ourEvents[i];
-          final width = ourSlotWidth / ourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: i * width,
-              top: ourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: ourEvent.duration.inMinutes.toDouble(),
-              eventData: ourEvent,
-            ),
-          );
-        }
-        final slotWidth = totalWidth / 2;
-
-        // 나의 이벤트
-        for (int i = 0; i < myEvents.length; i++) {
-          final myEvent = myEvents[i];
-          final width = slotWidth / myEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: i * width,
-              top: myEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: myEvent.duration.inMinutes.toDouble(),
-              eventData: myEvent,
-            ),
-          );
-        }
-
-        for (int i = 0; i < yourEvents.length; i++) {
-          final yourEvent = yourEvents[i];
-          final width = slotWidth / yourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: slotWidth + i * width,
-              top: yourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: yourEvent.duration.inMinutes.toDouble(),
-              eventData: yourEvent,
-            ),
-          );
-        }
-        break;
-
-      // 나만 겹치는 경우
-      case OverlappedState.mineOnly:
-        final ourLeftStart = totalWidth / 3;
-        final ourSlotWidth = totalWidth * 2 / 3;
-
-        // 우리 일정 정렬
-        for (int i = 0; i < ourEvents.length; i++) {
-          final ourEvent = ourEvents[i];
-          final width = ourSlotWidth / ourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: ourLeftStart + i * width,
-              top: ourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: ourEvent.duration.inMinutes.toDouble(),
-              eventData: ourEvent,
-            ),
-          );
-        }
-
-        final mySlotWidth = totalWidth / 3;
-        // 나의 이벤트
-        for (int i = 0; i < myEvents.length; i++) {
-          final myEvent = myEvents[i];
-          final width = mySlotWidth / myEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: i * width,
-              top: myEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: myEvent.duration.inMinutes.toDouble(),
-              eventData: myEvent,
-            ),
-          );
-        }
-
-        final yourSlotWidth = totalWidth / 2;
-
-        for (int i = 0; i < yourEvents.length; i++) {
-          final yourEvent = yourEvents[i];
-          final width = yourSlotWidth / yourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: yourSlotWidth + i * width,
-              top: yourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: yourEvent.duration.inMinutes.toDouble(),
-              eventData: yourEvent,
-            ),
-          );
-        }
-        break;
-
-      // 상대 일정만 겹치는 경우
-      case OverlappedState.yoursOnly:
-        final ourLeftStart = totalWidth * 2 / 3;
-        final ourSlotWidth = totalWidth * 2 / 3;
-
-        // 우리 일정 정렬
-        for (int i = 0; i < ourEvents.length; i++) {
-          final ourEvent = ourEvents[i];
-          final width = ourSlotWidth / ourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: ourLeftStart + i * width,
-              top: ourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: ourEvent.duration.inMinutes.toDouble(),
-              eventData: ourEvent,
-            ),
-          );
-        }
-
-        final mySlotWidth = totalWidth / 2;
-        // 나의 이벤트
-        for (int i = 0; i < myEvents.length; i++) {
-          final myEvent = myEvents[i];
-          final width = mySlotWidth / myEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: i * width,
-              top: myEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: myEvent.duration.inMinutes.toDouble(),
-              eventData: myEvent,
-            ),
-          );
-        }
-
-        final yourSlotWidth = totalWidth / 3;
-
-        for (int i = 0; i < yourEvents.length; i++) {
-          final yourEvent = yourEvents[i];
-          final width = yourSlotWidth / yourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: yourSlotWidth + i * width,
-              top: yourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: yourEvent.duration.inMinutes.toDouble(),
-              eventData: yourEvent,
-            ),
-          );
-        }
-        break;
-      case OverlappedState.both:
-        final slotWidth = totalWidth / 3;
-
-        // 우리 일정 정렬
-        for (int i = 0; i < ourEvents.length; i++) {
-          final ourEvent = ourEvents[i];
-          final width = slotWidth / ourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: slotWidth + i * width,
-              top: ourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: ourEvent.duration.inMinutes.toDouble(),
-              eventData: ourEvent,
-            ),
-          );
-        }
-        // 나의 이벤트
-        for (int i = 0; i < myEvents.length; i++) {
-          final myEvent = myEvents[i];
-          final width = slotWidth / myEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: i * width,
-              top: myEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: myEvent.duration.inMinutes.toDouble(),
-              eventData: myEvent,
-            ),
-          );
-        }
-
-        for (int i = 0; i < yourEvents.length; i++) {
-          final yourEvent = yourEvents[i];
-          final width = slotWidth / yourEvents.length;
-          organizedEvents.add(
-            OrganizedEvent(
-              left: slotWidth * 2 + i * width,
-              top: yourEvent.durationFromMidnight.inMinutes.toDouble(),
-              width: width,
-              height: yourEvent.duration.inMinutes.toDouble(),
-              eventData: yourEvent,
-            ),
-          );
-        }
-
-        break;
-      default:
-        break;
-    }
-  } else {
-    final slotWidth = totalWidth / 2;
-
-    // 나의 이벤트
-    for (int i = 0; i < myEvents.length; i++) {
-      final myEvent = myEvents[i];
-      final width = slotWidth / myEvents.length;
-      organizedEvents.add(
-        OrganizedEvent(
-          left: i * width,
-          top: myEvent.durationFromMidnight.inMinutes.toDouble(),
-          width: width,
-          height: myEvent.duration.inMinutes.toDouble(),
-          eventData: myEvent,
-        ),
-      );
-    }
-
-    for (int i = 0; i < yourEvents.length; i++) {
-      final yourEvent = yourEvents[i];
-      final width = slotWidth / yourEvents.length;
-      organizedEvents.add(
-        OrganizedEvent(
-          left: slotWidth + i * width,
-          top: yourEvent.durationFromMidnight.inMinutes.toDouble(),
-          width: width,
-          height: yourEvent.duration.inMinutes.toDouble(),
-          eventData: yourEvent,
-        ),
-      );
-    }
-
-    // "우리"이벤트가 없을 때
-  }
-  return organizedEvents;
+  OrganizedEvent({
+    required this.left,
+    required this.top,
+    this.width,
+    this.height,
+    required this.eventData,
+  });
 }
