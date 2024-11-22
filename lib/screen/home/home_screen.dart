@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:intl/intl.dart' as intl;
 import 'package:pico/components/day_view/dayview_date_picker.dart';
 import 'package:pico/components/day_view/indicator.dart';
+import 'package:pico/contants/calendar_const.dart';
 import 'package:pico/utils/date_operations.dart';
+import 'package:pico/utils/event_operations.dart';
 import 'package:pico/utils/extenstions.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -20,7 +22,6 @@ class _HomeScreenState extends State<HomeScreen> {
   DateTime selectedDate = DateTime.now();
 
   int getIndex(DateTime tapDate) {
-    print(currentWeekDate);
     return currentWeekDate.indexWhere((date) {
       return date.isSameDate(tapDate);
     });
@@ -84,6 +85,8 @@ class _HomeScreenState extends State<HomeScreen> {
             });
           },
         ),
+
+        // Day View
         Expanded(
           child: PageView.builder(
             itemCount: 7,
@@ -146,6 +149,44 @@ class _DayViewState extends State<DayView> {
         ),
         child: Stack(
           children: [
+            // DayView 전체 크기
+
+            // Container(
+            //   width: MediaQuery.of(context).size.width, // Text 크기
+            //   height: totalHeight,
+            //   decoration: BoxDecoration(
+            //     border: Border.all(),
+            //   ),
+            //   child: Stack(
+            //     children: [
+            //       for (var eventGroup
+            //           in groupOverlappingEvents(CalendarConst.events))
+            //         for (var organizedEvent in getOrganizedEvents(eventGroup))
+            //           Positioned(
+            //             left: 95 + organizedEvent.left,
+            //             top: organizedEvent.top,
+            //             width: organizedEvent.width,
+            //             height: organizedEvent.height,
+            //             child: Container(
+            //               width: organizedEvent.width,
+            //               height: organizedEvent.height,
+            //               decoration: const BoxDecoration(
+            //                 color: Colors.blue,
+            //               ),
+            //             ),
+            //           )
+            //     ],
+            //   ),
+            // ),
+            // 시간 블록 배경
+            CustomPaint(
+              size: Size(
+                  MediaQuery.of(context).size.width,
+                  totalHeight +
+                      5), // hightOffset, textHightOffset <= 미세 조정 offset 더함
+              painter: DayViewPainter(),
+            ),
+
             Container(
               width: MediaQuery.of(context).size.width, // Text 크기
               height: totalHeight,
@@ -154,23 +195,79 @@ class _DayViewState extends State<DayView> {
               ),
               child: Row(
                 children: [
+                  // DayView 시간 텍스트 여백
                   Container(
-                    width: 80,
+                    width: 95, // 시간 선 시작하는 부분 좌표
                     height: double.infinity,
                     decoration: BoxDecoration(
                       border: Border.all(),
                     ),
                   ),
+                  Expanded(
+                    child: LayoutBuilder(builder: (context, constraints) {
+                      final parentWidth = constraints.maxWidth;
+                      final parentHeight = constraints.maxHeight;
+
+                      for (var eventGroup
+                          in groupOverlappingEvents(CalendarConst.events)) {
+                        print("eventGroup: $eventGroup");
+                        for (var organizedEvent
+                            in getOrganizedEvents(eventGroup, parentWidth)) {
+                          print(
+                              "top: ${organizedEvent.top} left: ${organizedEvent.left} width: ${organizedEvent.width} height: ${organizedEvent.height}");
+                        }
+                      }
+
+                      return Stack(
+                        children: [
+                          for (var eventGroup
+                              in groupOverlappingEvents(CalendarConst.events))
+                            for (var organizedEvent
+                                in getOrganizedEvents(eventGroup, parentWidth))
+                              Positioned(
+                                left: organizedEvent.left,
+                                top: organizedEvent.top,
+                                width: organizedEvent.width == double.infinity
+                                    ? constraints.maxWidth
+                                    : organizedEvent.width,
+                                height: organizedEvent.height,
+                                child: Container(
+                                  width: organizedEvent.width,
+                                  height: organizedEvent.height,
+                                  decoration: BoxDecoration(
+                                    color: organizedEvent.eventData.color,
+                                  ),
+                                  child: SingleChildScrollView(
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          organizedEvent.eventData.title,
+                                          maxLines: 1,
+                                          style: const TextStyle(
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                        Text(
+                                          organizedEvent.eventData.category
+                                              .toString(),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                          style: const TextStyle(
+                                            fontSize: 11,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                              ),
+                        ],
+                      );
+                    }),
+                  )
                 ],
               ),
-            ),
-            // 시간 블록 배경
-            CustomPaint(
-              size: Size(
-                  MediaQuery.of(context).size.width,
-                  totalHeight +
-                      5), // hightOffset, textHightOffset <= 미세 조정 offset 더함
-              painter: DayViewPainter(),
             ),
 
             // 현재 시간 Indicator
@@ -250,3 +347,6 @@ class DayViewPainter extends CustomPainter {
     return false;
   }
 }
+
+// 텍스트 패딩 + dayview 패딩 + 20 = 65+10+20 = 95
+// textPadding + horizontalPadding + 20,
