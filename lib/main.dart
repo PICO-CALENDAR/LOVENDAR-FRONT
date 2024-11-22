@@ -1,6 +1,4 @@
 import 'dart:ui';
-
-import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -27,23 +25,20 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return CalendarControllerProvider(
-      controller: EventController(),
-      child: MaterialApp(
-        title: 'PICO',
-        theme: AppTheme.lightTheme,
-        localizationsDelegates: const [
-          GlobalMaterialLocalizations.delegate,
-          GlobalCupertinoLocalizations.delegate,
-          GlobalWidgetsLocalizations.delegate,
-        ],
-        supportedLocales: const [
-          Locale('ko', 'KR'),
-          Locale('en', 'US'),
-        ],
-        home: const BottomNav(),
-        // home: const SplashScreen(),
-      ),
+    return MaterialApp(
+      title: 'PICO',
+      theme: AppTheme.lightTheme,
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+        Locale('en', 'US'),
+      ],
+      home: const BottomNav(),
+      // home: const SplashScreen(),
     );
   }
 }
