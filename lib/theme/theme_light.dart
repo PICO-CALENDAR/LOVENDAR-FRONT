@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pico/classes/custom_calendar.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF9F7965);
@@ -16,6 +17,32 @@ class AppTheme {
   static const Color redColor = Color(0xFFE76F61); // 조금 더 부드럽고 어두운 레드
   // static const Color lightBlueColor = Color(0xFF87CEEB);
   // static const Color listRedColor = Color(0xFFFA8072);
+
+  // static const Color mineColor = Color(0xFFFFCBA4); // Muted Peach
+  // static const Color mineColor = Color(0xFFD2B8A5); // Primary Light
+  static const Color mineColor = Color(0xFFD6C7B4); // Light Taupe
+  static const Color yoursColor = Color(0xFFAFB9A2);
+  // static const Color yoursColor = Color(0xFFB0D4E3); // Powder Blue
+  // static const Color oursColor = Color(0xFFA7B590); // olive
+  static const Color oursColor = Color(0xFFF9E3DE); // blush coral
+  // static const Color oursColor = Color(0xFFFADCD2); // pale coral
+  // static const Color oursColor = Color(0xFFFBEAE6); // peach coral
+
+  static BorderSide get borderSide =>
+      BorderSide(width: 1, color: Colors.grey[300]!);
+
+  static Color getEventCategoryColor(EventCategory category) {
+    switch (category) {
+      case EventCategory.mine:
+        return mineColor;
+      case EventCategory.yours:
+        return yoursColor;
+      case EventCategory.ours:
+        return oursColor;
+      default:
+        throw ArgumentError("Invalid EventCategory: $category");
+    }
+  }
 
   static ThemeData get lightTheme {
     return ThemeData(

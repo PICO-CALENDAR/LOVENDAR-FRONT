@@ -213,6 +213,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "0.19.0"
+  kalender:
+    dependency: "direct main"
+    description:
+      name: kalender
+      sha256: "63f1cdfbef014f5fd6d6f7552b2668034d10f98921601f9b6918af4e2074bc77"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.4.2"
   leak_tracker:
     dependency: transitive
     description:
@@ -325,6 +333,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.1.8"
+  scrollable_positioned_list:
+    dependency: transitive
+    description:
+      name: scrollable_positioned_list
+      sha256: "1b54d5f1329a1e263269abc9e2543d90806131aa14fe7c6062a8054d57249287"
+      url: "https://pub.dev"
+    source: hosted
+    version: "0.3.8"
   shared_preferences:
     dependency: transitive
     description:

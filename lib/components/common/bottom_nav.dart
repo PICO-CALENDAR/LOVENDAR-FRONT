@@ -14,13 +14,14 @@ class BottomNav extends StatefulWidget {
 
 class _BottomNavState extends State<BottomNav> {
   int currentIndex = 0;
-  List screens = const [
-    HomeScreen(),
-    CalendarScreen(),
-    Scaffold(
+  List screens = [
+    const HomeScreen(),
+    // const BarEventMonthlyCalendar(),
+    const CalendarScreen(),
+    const Scaffold(
       body: Text("추억함"),
     ),
-    MypageScreen(),
+    const MypageScreen(),
   ];
 
   @override
