@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:pico/components/common/action_button.dart';
 import 'package:pico/components/common/input_field.dart';
+import 'package:pico/components/common/round_checkbox.dart';
 import 'package:pico/theme/theme_light.dart';
 
 class RegisterScreen extends StatefulWidget {
-  final GoogleSignInAccount user;
-  const RegisterScreen(this.user, {super.key});
+  const RegisterScreen({super.key});
+
+  // final GoogleSignInAccount user;
+  // const RegisterScreen(this.user, {super.key});
 
   @override
   State<RegisterScreen> createState() => _RegisterScreenState();
@@ -45,47 +48,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
           ),
         );
       },
-    );
-  }
-
-  Widget _buildRoundCheckbox({
-    required bool value,
-    required ValueChanged<bool?> onChanged,
-    required String label,
-  }) {
-    final selectedColor = Theme.of(context).primaryColor;
-    final unselectedColor = Colors.grey.withOpacity(0.5);
-
-    return ListTile(
-      minLeadingWidth: 0,
-      visualDensity: const VisualDensity(vertical: -4),
-      leading: GestureDetector(
-        onTap: () => onChanged(!value),
-        child: Container(
-          decoration: BoxDecoration(
-            shape: BoxShape.circle,
-            border: Border.all(
-              color: value ? selectedColor : unselectedColor,
-              width: 2.0,
-            ),
-            color: value ? selectedColor : Colors.transparent,
-          ),
-          width: 20,
-          height: 20,
-          child: value
-              ? const Icon(Icons.check, size: 16.0, color: Colors.white)
-              : null,
-        ),
-      ),
-      title: Text(
-        label,
-        style: TextStyle(
-          fontSize: 12,
-          letterSpacing: 0,
-          color: Theme.of(context).textTheme.bodyLarge!.color,
-        ),
-      ),
-      onTap: () => onChanged(!value),
     );
   }
 
@@ -208,20 +170,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
                 children: [
                   // Terms and Marketing Agreement Round Checkboxes
-                  _buildRoundCheckbox(
+                  RoundCheckboxTile(
                     value: _isServiceAgreementChecked,
                     onChanged: (value) {
                       setState(() {
-                        _isServiceAgreementChecked = value!;
+                        _isServiceAgreementChecked = value;
                       });
                     },
                     label: "서비스 이용 및 개인정보 수집 약관에 동의합니다",
                   ),
-                  _buildRoundCheckbox(
+
+                  RoundCheckboxTile(
                     value: _isMarketingAgreementChecked,
                     onChanged: (value) {
                       setState(() {
-                        _isMarketingAgreementChecked = value!;
+                        _isMarketingAgreementChecked = value;
                       });
                     },
                     label: "(선택) 마케팅 활용 동의 및 광고 수신 동의에 동의합니다",

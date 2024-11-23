@@ -28,6 +28,11 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PICO',
       theme: AppTheme.lightTheme,
+      initialRoute: "/",
+      routes: {
+        '/': (context) => const BottomNav(),
+        '/register': (context) => const SplashScreen(),
+      },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
@@ -37,8 +42,6 @@ class MyApp extends StatelessWidget {
         Locale('ko', 'KR'),
         Locale('en', 'US'),
       ],
-      home: const BottomNav(),
-      // home: const SplashScreen(),
     );
   }
 }

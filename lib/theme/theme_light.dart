@@ -44,6 +44,19 @@ class AppTheme {
     }
   }
 
+  static Color getEventCategoryDarkerColor(EventCategory category) {
+    switch (category) {
+      case EventCategory.mine:
+        return const Color.fromARGB(255, 110, 94, 73);
+      case EventCategory.yours:
+        return const Color.fromARGB(255, 86, 96, 73);
+      case EventCategory.ours:
+        return const Color.fromARGB(255, 176, 131, 119);
+      default:
+        throw ArgumentError("Invalid EventCategory: $category");
+    }
+  }
+
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,

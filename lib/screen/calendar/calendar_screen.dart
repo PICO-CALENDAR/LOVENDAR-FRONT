@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:kalender/kalender.dart';
 import 'package:pico/classes/custom_calendar.dart';
+import 'package:pico/components/common/round_checkbox.dart';
 import 'package:pico/contants/calendar_const.dart';
 import 'package:pico/theme/theme_light.dart';
 import 'package:pico/utils/extenstions.dart';
@@ -46,6 +47,12 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   final koreanWeekday = ["월", "화", "수", "목", "금", "토", "일"];
 
+  Map<EventCategory, bool> categoryCheckState = {
+    EventCategory.mine: false,
+    EventCategory.yours: false,
+    EventCategory.ours: false,
+  };
+
   @override
   Widget build(BuildContext context) {
     // 캘린더 스타일
@@ -81,6 +88,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               },
             ),
             controller: _calendarController,
+            eventHandlers: const CalendarEventHandlers(),
             eventsController: eventsController,
             viewConfiguration: MonthConfiguration(
               firstDayOfWeek: 1,
@@ -167,47 +175,113 @@ class _CalendarScreenState extends State<CalendarScreen> {
   Padding _calendarHeaderBuilder(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(
-        horizontal: 22,
-        vertical: 7,
+        horizontal: 20,
+        vertical: 5,
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
         children: [
-          // 월 선택 버튼
-          GestureDetector(
-            onTap: () {
-              _monthYearPicker(
-                context,
-                _calendarController.visibleMonth ?? DateTime.now(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              // 월 선택 버튼
+              GestureDetector(
+                onTap: () {
+                  _monthYearPicker(
+                    context,
+                    _calendarController.visibleMonth ?? DateTime.now(),
+                  );
+                },
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Text(
+                      "${_calendarController.visibleMonth?.year ?? DateTime.now().year}년 ${_calendarController.visibleMonth?.month ?? DateTime.now().month}월",
+                      style: const TextStyle(
+                          fontSize: 23, fontWeight: FontWeight.bold),
+                    ),
+                    const SizedBox(width: 4),
+                    const Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 26,
+                      color: AppTheme.textColor,
+                    )
+                  ],
+                ),
+              ),
+              TextButton(
+                onPressed: () {
+                  _calendarController.animateToDate(DateTime.now());
+                },
+                child: const Text(
+                  '오늘',
+                  style: TextStyle(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(
+            height: 5,
+          ),
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const seperatedGap = 5.0;
+              final checkboxbtnWidth =
+                  (constraints.maxWidth - seperatedGap * 2) / 3;
+              return Row(
+                children: [
+                  CheckBoxChip(
+                    label: "내 일정",
+                    width: checkboxbtnWidth,
+                    isChecked: categoryCheckState[EventCategory.mine]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.mine),
+                    accentColor: AppTheme.getEventCategoryDarkerColor(
+                      EventCategory.mine,
+                    ),
+                    onPressed: () => setState(() {
+                      categoryCheckState[EventCategory.mine] =
+                          !categoryCheckState[EventCategory.mine]!;
+                    }),
+                  ),
+                  const SizedBox(
+                    width: seperatedGap,
+                  ),
+                  CheckBoxChip(
+                    label: "상대 일정",
+                    width: checkboxbtnWidth,
+                    isChecked: categoryCheckState[EventCategory.yours]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.yours),
+                    accentColor: AppTheme.getEventCategoryDarkerColor(
+                      EventCategory.yours,
+                    ),
+                    onPressed: () => setState(() {
+                      categoryCheckState[EventCategory.yours] =
+                          !categoryCheckState[EventCategory.yours]!;
+                    }),
+                  ),
+                  const SizedBox(
+                    width: seperatedGap,
+                  ),
+                  CheckBoxChip(
+                    label: "우리 일정",
+                    width: checkboxbtnWidth,
+                    isChecked: categoryCheckState[EventCategory.ours]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.ours),
+                    accentColor: AppTheme.getEventCategoryDarkerColor(
+                      EventCategory.ours,
+                    ),
+                    onPressed: () => setState(() {
+                      categoryCheckState[EventCategory.ours] =
+                          !categoryCheckState[EventCategory.ours]!;
+                    }),
+                  ),
+                ],
               );
             },
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Text(
-                  "${_calendarController.visibleMonth?.year ?? DateTime.now().year}년 ${_calendarController.visibleMonth?.month ?? DateTime.now().month}월",
-                  style: const TextStyle(
-                      fontSize: 23, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(width: 4),
-                const Icon(
-                  Icons.keyboard_arrow_down_rounded,
-                  size: 26,
-                  color: AppTheme.textColor,
-                )
-              ],
-            ),
           ),
-          TextButton(
-            onPressed: () {
-              _calendarController.animateToDate(DateTime.now());
-            },
-            child: const Text(
-              '오늘',
-              style: TextStyle(
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+          const SizedBox(
+            height: 10,
           ),
         ],
       ),
@@ -278,6 +352,90 @@ class _CalendarScreenState extends State<CalendarScreen> {
           ),
         );
       },
+    );
+  }
+}
+
+class CheckBoxChip extends StatelessWidget {
+  const CheckBoxChip({
+    super.key,
+    required this.width,
+    this.height = 38.0,
+    required this.label,
+    required this.isChecked,
+    required this.color,
+    required this.onPressed,
+    this.accentColor = Colors.grey,
+    this.selectedColor = AppTheme.scaffoldBackgroundColor,
+    this.unselectedColor = Colors.grey,
+  });
+
+  final double width;
+  final double height;
+  final String label;
+  final bool isChecked;
+  final Color color;
+  final Color selectedColor;
+  final Color unselectedColor;
+  final Color accentColor;
+  final void Function() onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return SizedBox(
+      height: height,
+      width: width,
+      child: ElevatedButton(
+        style: ElevatedButton.styleFrom(
+          surfaceTintColor: color,
+          elevation: 1,
+          shadowColor: Colors.transparent,
+          overlayColor: accentColor,
+          // shadowColor: Colors.grey[50],
+          padding: const EdgeInsets.symmetric(
+            vertical: 3,
+            horizontal: 12,
+          ),
+          backgroundColor: color,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(8), // 둥근 모서리 반경
+          ),
+        ),
+        onPressed: onPressed,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            AnimatedContainer(
+              duration: const Duration(milliseconds: 200),
+              padding: const EdgeInsets.all(0.5),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(
+                  color: accentColor,
+                  width: 1.5,
+                ),
+                color: isChecked ? accentColor : Colors.transparent,
+              ),
+              child: Icon(
+                Icons.check_rounded,
+                size: 16,
+                color: isChecked ? selectedColor : Colors.transparent,
+              ),
+            ),
+            const SizedBox(
+              width: 7,
+            ),
+            Text(
+              label,
+              style: const TextStyle(
+                color: AppTheme.textColor,
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
