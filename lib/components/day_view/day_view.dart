@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/widgets.dart';
 import 'package:pico/components/day_view/day_view_painter.dart';
@@ -78,11 +79,11 @@ class _DayViewState extends State<DayView> {
                     child: LayoutBuilder(builder: (context, constraints) {
                       final parentWidth = constraints.maxWidth;
 
-                      print(CalendarConst.events.where((e) {
-                        print(e.startTime.day);
-                        print(widget.date.day);
-                        return e.startTime.isSameDate(widget.date);
-                      }));
+                      // print(CalendarConst.events.where((e) {
+                      //   print(e.startTime.day);
+                      //   print(widget.date.day);
+                      //   return e.startTime.isSameDate(widget.date);
+                      // }));
 
                       return Stack(
                         children: [
@@ -94,51 +95,9 @@ class _DayViewState extends State<DayView> {
                                   .toList()))
                             for (var organizedEvent
                                 in getOrganizedEvents(eventGroup, parentWidth))
-                              Positioned(
-                                left: organizedEvent.left,
-                                top: organizedEvent.top,
-                                width: organizedEvent.width == double.infinity
-                                    ? constraints.maxWidth
-                                    : organizedEvent.width,
-                                height: organizedEvent.height,
-                                child: GestureDetector(
-                                  onTap: () {
-                                    print(organizedEvent.eventData.title);
-                                    print(organizedEvent.eventData.startTime);
-                                    print(organizedEvent.eventData.endTime);
-                                  },
-                                  child: Container(
-                                    width: organizedEvent.width,
-                                    height: organizedEvent.height,
-                                    decoration: BoxDecoration(
-                                      color: organizedEvent.eventData.color,
-                                    ),
-                                    child: SingleChildScrollView(
-                                      child: Column(
-                                        children: [
-                                          Text(
-                                            organizedEvent.eventData.title,
-                                            maxLines: 1,
-                                            style: const TextStyle(
-                                              fontSize: 12,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
-                                          Text(
-                                            organizedEvent.eventData.category
-                                                .toString(),
-                                            maxLines: 1,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: const TextStyle(
-                                              fontSize: 11,
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                              ),
+                              EventBox(
+                                organizedEvent: organizedEvent,
+                              )
                         ],
                       );
                     }),
@@ -155,6 +114,66 @@ class _DayViewState extends State<DayView> {
               child: const Indicator(),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+class EventBox extends StatelessWidget {
+  final OrganizedEvent organizedEvent;
+  const EventBox({super.key, required this.organizedEvent});
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      left: organizedEvent.left,
+      top: organizedEvent.top,
+      width: organizedEvent.width,
+      height: organizedEvent.height,
+      child: GestureDetector(
+        onTap: () {
+          print(organizedEvent.eventData.title);
+          print(organizedEvent.eventData.startTime);
+          print(organizedEvent.eventData.endTime);
+        },
+        child: Container(
+          padding: EdgeInsets.symmetric(
+            vertical: max(organizedEvent.height * 0.06, 7),
+            horizontal: max(organizedEvent.width * 0.07, 6),
+          ),
+          width: organizedEvent.width,
+          height: organizedEvent.height,
+          decoration: BoxDecoration(
+            color: organizedEvent.eventData.color,
+            borderRadius: const BorderRadius.all(
+              Radius.circular(10),
+            ),
+          ),
+          child: SingleChildScrollView(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  organizedEvent.eventData.title,
+                  maxLines: 1,
+                  style: const TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  organizedEvent.eventData.category.toString(),
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: 11,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );

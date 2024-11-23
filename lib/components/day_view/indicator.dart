@@ -8,71 +8,27 @@ class Indicator extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 2,
-      decoration: const BoxDecoration(
-        color: Colors.red,
-        // border: Border.all(),
+      height: 1.5,
+      decoration: BoxDecoration(
+        color: Theme.of(context).primaryColorDark,
       ),
       child: Stack(
         clipBehavior: Clip.none,
         children: [
           Positioned(
-            left: -3.5,
-            top: -3.5,
+            left: -3.75,
+            top: -3.75,
             child: Container(
               width: 9,
               height: 9,
-              decoration: const BoxDecoration(
-                color: Colors.blue,
+              decoration: BoxDecoration(
+                color: Theme.of(context).primaryColorDark,
                 shape: BoxShape.circle,
               ),
             ),
           ),
         ],
       ),
-    );
-    // return Row(
-    //   crossAxisAlignment: CrossAxisAlignment.start,
-    //   children: [
-    //     const SizedBox(width: 80),
-    //     Container(
-    //       width: 8,
-    //       height: 8,
-    //       decoration: const BoxDecoration(
-    //         color: Colors.red,
-    //         shape: BoxShape.circle,
-    //       ),
-    //     ),
-    //     Expanded(
-    //       child: Container(
-    //         height: 2,
-    //         decoration: const BoxDecoration(
-    //           color: Colors.red,
-    //           // border: Border.all(),
-    //         ),
-    //       ),
-    //     ),
-    //   ],
-    // );
-
-    return Row(
-      children: [
-        const SizedBox(width: 80),
-        Container(
-          width: 8,
-          height: 8,
-          decoration: const BoxDecoration(
-            color: Colors.red,
-            shape: BoxShape.circle,
-          ),
-        ),
-        Expanded(
-          child: Container(
-            height: 1,
-            color: Colors.red,
-          ),
-        ),
-      ],
     );
   }
 }

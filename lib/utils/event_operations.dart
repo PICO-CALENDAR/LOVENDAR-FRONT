@@ -1,8 +1,7 @@
 import 'package:pico/classes/custom_calendar.dart';
-import 'package:pico/contants/temp.dart';
 
 // 시간대가 겹치는 이벤트 그룹화
-List<List<PicoEvent>> groupOverlappingEvents(List<PicoEvent> events) {
+List<List<EventData>> groupOverlappingEvents(List<EventData> events) {
   // 하루 종일 이벤트 제외
   final filteredEvents = events.where((event) => !event.isAllDay).toList();
 
@@ -12,8 +11,8 @@ List<List<PicoEvent>> groupOverlappingEvents(List<PicoEvent> events) {
   // 시작 시간 기준으로 정렬
   filteredEvents.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-  final List<List<PicoEvent>> groupedEvents = [];
-  List<PicoEvent> currentGroup = [filteredEvents.first];
+  final List<List<EventData>> groupedEvents = [];
+  List<EventData> currentGroup = [filteredEvents.first];
 
   for (int i = 1; i < filteredEvents.length; i++) {
     final currentEvent = filteredEvents[i];
@@ -37,7 +36,7 @@ List<List<PicoEvent>> groupOverlappingEvents(List<PicoEvent> events) {
 }
 
 // 이벤트 병합하여 시간 범위 반환
-MergedEvent mergeEventsAndGetTime(List<PicoEvent> events) {
+MergedEvent mergeEventsAndGetTime(List<EventData> events) {
   if (events.isEmpty) {
     throw ArgumentError('Event list cannot be empty');
   }
@@ -52,22 +51,22 @@ MergedEvent mergeEventsAndGetTime(List<PicoEvent> events) {
 }
 
 // 특정 시간 범위와 겹치는 이벤트 반환
-List<PicoEvent> findOverlappingEventsByTime(
-    List<PicoEvent> events, DateTime startTime, DateTime endTime) {
+List<EventData> findOverlappingEventsByTime(
+    List<EventData> events, DateTime startTime, DateTime endTime) {
   return events.where((event) {
     return event.startTime.isBefore(endTime) &&
         event.endTime.isAfter(startTime);
   }).toList();
 }
 
-List<List<PicoEvent>> calculateEventColumns(List<PicoEvent> events) {
+List<List<EventData>> calculateEventColumns(List<EventData> events) {
   if (events.isEmpty) return [];
 
   // 겹치는 이벤트 그룹 가져오기
-  List<List<PicoEvent>> overlappingGroups = groupOverlappingEvents(events);
+  List<List<EventData>> overlappingGroups = groupOverlappingEvents(events);
 
-  Map<PicoEvent, int> eventColumns = {};
-  Map<int, List<PicoEvent>> columnToEvents = {}; // 각 열에 해당하는 이벤트 리스트
+  Map<EventData, int> eventColumns = {};
+  Map<int, List<EventData>> columnToEvents = {}; // 각 열에 해당하는 이벤트 리스트
   int maxColumnUsed = 0; // 총 열의 최대값 추적
 
   for (var group in overlappingGroups) {
@@ -79,7 +78,7 @@ List<List<PicoEvent>> calculateEventColumns(List<PicoEvent> events) {
   }
 
   // 결과 반환: 열 번호별로 정렬된 리스트 생성
-  List<List<PicoEvent>> result = [];
+  List<List<EventData>> result = [];
   for (int i = 0; i <= maxColumnUsed; i++) {
     result.add(columnToEvents[i] ?? []);
   }
@@ -88,9 +87,9 @@ List<List<PicoEvent>> calculateEventColumns(List<PicoEvent> events) {
 
 // 그룹의 이벤트를 열에 할당하고 최대 열 번호 반환
 int assignColumnsForGroup(
-    List<PicoEvent> group,
-    Map<PicoEvent, int> eventColumns,
-    Map<int, List<PicoEvent>> columnToEvents,
+    List<EventData> group,
+    Map<EventData, int> eventColumns,
+    Map<int, List<EventData>> columnToEvents,
     int maxColumnUsed) {
   // 이벤트를 시작 시간 기준으로 정렬
   group.sort((a, b) => a.startTime.compareTo(b.startTime));
@@ -128,13 +127,12 @@ int assignColumnsForGroup(
 
 // OrganizedEvent 생성 헬퍼 함수
 List<OrganizedEvent> createOrganizedEvents(
-  List<PicoEvent> events,
+  List<EventData> events,
   double slotWidth,
   double leftStart,
 ) {
   final columns = calculateEventColumns(events);
-  final columnsCount = columns.length; // 열의 수
-  final width = slotWidth / (columnsCount == 0 ? 1 : columnsCount);
+  final width = slotWidth / columns.length;
 
   final List<OrganizedEvent> organizedEvent = [];
 
@@ -159,7 +157,7 @@ List<OrganizedEvent> createOrganizedEvents(
 
 // 모든 이벤트를 OrganizedEvent로 변환
 List<OrganizedEvent> getOrganizedEvents(
-    List<PicoEvent> overlappingEvents, double viewWidth) {
+    List<EventData> overlappingEvents, double viewWidth) {
   final double totalWidth = viewWidth;
   final List<OrganizedEvent> organizedEvents = [];
 
@@ -239,7 +237,7 @@ List<OrganizedEvent> getOrganizedEvents(
 class MergedEvent {
   final DateTime startTime;
   final DateTime endTime;
-  final List<PicoEvent> mergedEvents;
+  final List<EventData> mergedEvents;
 
   MergedEvent({
     required this.startTime,
@@ -252,15 +250,15 @@ class MergedEvent {
 class OrganizedEvent {
   final double left;
   final double top;
-  final double? width;
-  final double? height;
-  final PicoEvent eventData;
+  final double width;
+  final double height;
+  final EventData eventData;
 
   OrganizedEvent({
     required this.left,
     required this.top,
-    this.width,
-    this.height,
+    required this.width,
+    required this.height,
     required this.eventData,
   });
 }

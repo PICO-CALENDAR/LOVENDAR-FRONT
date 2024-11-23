@@ -1,19 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:kalender/kalender.dart';
+import 'package:pico/classes/custom_calendar.dart';
+import 'package:pico/contants/calendar_const.dart';
 import 'package:pico/theme/theme_light.dart';
 import 'package:pico/utils/extenstions.dart';
 import 'package:pico/utils/colors.dart';
-
-class Event {
-  String title;
-  Color color;
-
-  Event({
-    required this.title,
-    required this.color,
-  });
-}
 
 class CalendarScreen extends StatefulWidget {
   const CalendarScreen({super.key});
@@ -23,115 +16,31 @@ class CalendarScreen extends StatefulWidget {
 }
 
 class _CalendarScreenState extends State<CalendarScreen> {
-  final eventsController = CalendarEventsController<Event>();
-  late CalendarController<Event> _calendarController;
-
+  final eventsController = CalendarEventsController<EventData>();
+  late CalendarController<EventData> _calendarController;
   // Widget _tileBuilder(event, tileConfiguration) => const Widget();
   // Widget _multiDayTileBuilder(event, tileConfiguration) => const Widget();
   // Widget _scheduleTileBuilder(event, date) => const Widget();
 
   @override
   void initState() {
-    eventsController.addEvent(
-      CalendarEvent<Event>(
-        dateTimeRange: DateTimeRange(
-          start: DateTime.now(),
-          end: DateTime.now(),
-        ), // The DateTimeRange of the event.
-        modifiable:
-            true, // Change this to false if you do not want the user to modify the event.
-        eventData: Event(
-          // The custom object that you want to link to the event.
-          title: 'Event 1',
-          color: Colors.blue,
-        ),
-      ),
-    );
-    eventsController.addEvent(
-      CalendarEvent<Event>(
-        dateTimeRange: DateTimeRange(
-            start: DateTime.now(),
-            end: DateTime(
-              2024,
-              11,
-              24,
-            )), // The DateTimeRange of the event.
-        modifiable:
-            true, // Change this to false if you do not want the user to modify the event.
-        eventData: Event(
-          // The custom object that you want to link to the event.
-          title: 'Event 1',
-          color: Colors.blue,
-        ),
-      ),
-    );
-    eventsController.addEvent(
-      CalendarEvent<Event>(
-        dateTimeRange: DateTimeRange(
-          start: DateTime(
-            2024,
-            11,
-            20,
-          ),
-          end: DateTime(
-            2024,
-            12,
-            23,
-          ),
-        ), // The DateTimeRange of the event.
-        modifiable:
-            true, // Change this to false if you do not want the user to modify the event.
-        eventData: Event(
-          // The custom object that you want to link to the event.
-          title: 'ㅁㄴㅇㄹ',
-          color: Colors.blue,
-        ),
-      ),
-    );
-    eventsController.addEvent(
-      CalendarEvent<Event>(
-        dateTimeRange: DateTimeRange(
-          start: DateTime(
-            2024,
-            11,
-            24,
-          ),
-          end: DateTime(
-            2024,
-            12,
-            24,
-          ),
-        ), // The DateTimeRange of the event.
-        modifiable:
-            true, // Change this to false if you do not want the user to modify the event.
-        eventData: Event(
-          // The custom object that you want to link to the event.
-          title: 'Event 1',
-          color: Colors.blue,
-        ),
-      ),
-    );
-    eventsController.addEvent(
-      CalendarEvent<Event>(
-        dateTimeRange: DateTimeRange(
-            start: DateTime.now(),
-            end: DateTime(
-              2024,
-              11,
-              24,
-            )), // The DateTimeRange of the event.
-        modifiable:
-            true, // Change this to false if you do not want the user to modify the event.
-        eventData: Event(
-          // The custom object that you want to link to the event.
-          title: 'Event 1',
-          color: Colors.blue,
-        ),
-      ),
-    );
+    final eventsObj = [
+      for (var event in CalendarConst.calEvent)
+        CalendarEvent<EventData>(
+          dateTimeRange: DateTimeRange(
+            start: event.startTime,
+            end: event.endTime,
+          ), // The DateTimeRange of the event.
+          modifiable:
+              true, // Change this to false if you do not want the user to modify the event.
+          eventData: event,
+        )
+    ];
+
+    eventsController.addEvents(eventsObj);
 
     // _currentDate = DateTime.now();
-    _calendarController = CalendarController<Event>();
+    _calendarController = CalendarController<EventData>();
     super.initState();
   }
 
@@ -139,173 +48,173 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   @override
   Widget build(BuildContext context) {
+    // 캘린더 스타일
+    var calendarStyle = CalendarStyle(
+      monthGridStyle: MonthGridStyle(
+        color: Colors.grey[200],
+        thickness: 1.2,
+      ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      calendarHeaderBackgroundStyle: CalendarHeaderBackgroundStyle(
+        headerBackgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        // headerSurfaceTintColor:
+        //     Theme.of(context).scaffoldBackgroundColor,
+        headerElevation: 0,
+      ),
+    );
+
     return Column(
       children: [
         Expanded(
-          child: CalendarView<Event>.month(
-            style: CalendarStyle(
-              monthGridStyle: MonthGridStyle(
-                color: Colors.grey[200],
-                thickness: 1.2,
-              ),
-              backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-              calendarHeaderBackgroundStyle: CalendarHeaderBackgroundStyle(
-                headerBackgroundColor:
-                    Theme.of(context).scaffoldBackgroundColor,
-                // headerSurfaceTintColor:
-                //     Theme.of(context).scaffoldBackgroundColor,
-                headerElevation: 0,
-              ),
-            ),
+          child: CalendarView<EventData>.month(
+            style: calendarStyle,
             components: CalendarComponents(
-              calendarHeaderBuilder: (visibleDateTimeRange) {
-                return Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                    vertical: 7,
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      // 월 선택 버튼
-                      GestureDetector(
-                        onTap: () {
-                          monthYearPicker(
-                            context,
-                            _calendarController.visibleMonth ?? DateTime.now(),
-                          );
-                        },
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              "${_calendarController.visibleMonth?.year ?? DateTime.now().year}년 ${_calendarController.visibleMonth?.month ?? DateTime.now().month}월",
-                              style: const TextStyle(
-                                  fontSize: 23, fontWeight: FontWeight.bold),
-                            ),
-                            const SizedBox(width: 4),
-                            const Icon(
-                              Icons.keyboard_arrow_down_rounded,
-                              size: 26,
-                              color: AppTheme.textColor,
-                            )
-                          ],
-                        ),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          _calendarController.animateToDate(DateTime.now());
-                        },
-                        child: const Text(
-                          '오늘',
-                          style: TextStyle(
-                            fontWeight: FontWeight.w600,
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              },
-              monthHeaderBuilder: (date) {
-                return SizedBox(
-                  height: 35,
-                  child: Text(
-                    koreanWeekday[date.weekday - 1],
-                    style: TextStyle(
-                      color: date.weekday == 6
-                          ? AppTheme.blueColor
-                          : date.weekday == 7
-                              ? AppTheme.redColor
-                              : AppTheme.textColor,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 15,
-                    ),
-                  ),
-                );
-              },
+              // 캘린더 헤더 빌더 (월 picker와 오늘 버튼)
+              calendarHeaderBuilder: (visibleDateTimeRange) =>
+                  _calendarHeaderBuilder(context),
+              // 요일 헤더 빌더
+              monthHeaderBuilder: (date) => _monthHeaderBuilder(date),
+              // 날짜 숫자 빌더
               monthCellHeaderBuilder: (date, onTapped) {
                 final isToday = date.isSameDate(DateTime.now());
-
-                return Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: Container(
-                    width: 22,
-                    height: 22,
-                    alignment: Alignment.center,
-                    decoration: BoxDecoration(
-                      color: isToday
-                          ? Theme.of(context).primaryColor
-                          : Colors.transparent,
-                      borderRadius: const BorderRadius.all(
-                        Radius.circular(50),
-                      ),
-                    ),
-                    child: Text(
-                      date.day.toString(),
-                      style: TextStyle(
-                        fontSize: 12,
-                        fontWeight: FontWeight.w600,
-                        color: getDayColor(date, isToday),
-                      ),
-                    ),
-                  ),
-                );
+                return _monthCellHeaderBuilder(isToday, context, date);
               },
             ),
             controller: _calendarController,
             eventsController: eventsController,
-
             viewConfiguration: MonthConfiguration(
-              name: 'Month',
               firstDayOfWeek: 1,
               multiDayTileHeight: 20,
               createMultiDayEvents: true,
             ),
-
-            // multiDayEventTileBuilder: (event,
-            //     configuration,
-            //     rescheduleDateRange,
-            //     horizontalStep,
-            //     horizontalStepDuration,
-            //     verticalStepDuration,
-            //     verticalStep) {
-            //   return Container(
-            //     decoration: BoxDecoration(
-            //       borderRadius: const BorderRadius.all(Radius.circular(6)),
-            //       color: event.eventData!.color,
-            //     ),
-            //   );
-            // },
-
-            multiDayTileBuilder: (event, configuration) {
-              return Padding(
-                padding: const EdgeInsets.all(1),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: const BorderRadius.all(Radius.circular(6)),
-                    color: event.eventData!.color,
-                  ),
-                  child: Center(
-                    child: Text(
-                      event.eventData!.title,
-                      style: const TextStyle(
-                        fontSize: 11,
-                        color: Colors.white,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            },
+            multiDayTileBuilder: (event, configuration) =>
+                _multiDayTileBuilder(event),
           ),
         ),
       ],
     );
   }
 
-  Future<dynamic> monthYearPicker(BuildContext context, DateTime date) {
+  Padding _multiDayTileBuilder(CalendarEvent<EventData> event) {
+    return Padding(
+      padding: const EdgeInsets.all(1),
+      child: Container(
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          borderRadius: const BorderRadius.all(Radius.circular(3.5)),
+          color: event.eventData!.color,
+        ),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: Text(
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            event.eventData!.title,
+            style: const TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _monthCellHeaderBuilder(
+      bool isToday, BuildContext context, DateTime date) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Container(
+        width: 22,
+        height: 22,
+        alignment: Alignment.center,
+        decoration: BoxDecoration(
+          color: isToday ? Theme.of(context).primaryColor : Colors.transparent,
+          borderRadius: const BorderRadius.all(
+            Radius.circular(50),
+          ),
+        ),
+        child: Text(
+          date.day.toString(),
+          style: TextStyle(
+            fontSize: 12,
+            fontWeight: FontWeight.w600,
+            color: getDayColor(date, isToday),
+          ),
+        ),
+      ),
+    );
+  }
+
+  SizedBox _monthHeaderBuilder(DateTime date) {
+    return SizedBox(
+      height: 35,
+      child: Text(
+        koreanWeekday[date.weekday - 1],
+        style: TextStyle(
+          color: date.weekday == 6
+              ? AppTheme.blueColor
+              : date.weekday == 7
+                  ? AppTheme.redColor
+                  : AppTheme.textColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  Padding _calendarHeaderBuilder(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: 22,
+        vertical: 7,
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          // 월 선택 버튼
+          GestureDetector(
+            onTap: () {
+              _monthYearPicker(
+                context,
+                _calendarController.visibleMonth ?? DateTime.now(),
+              );
+            },
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(
+                  "${_calendarController.visibleMonth?.year ?? DateTime.now().year}년 ${_calendarController.visibleMonth?.month ?? DateTime.now().month}월",
+                  style: const TextStyle(
+                      fontSize: 23, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(width: 4),
+                const Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 26,
+                  color: AppTheme.textColor,
+                )
+              ],
+            ),
+          ),
+          TextButton(
+            onPressed: () {
+              _calendarController.animateToDate(DateTime.now());
+            },
+            child: const Text(
+              '오늘',
+              style: TextStyle(
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<dynamic> _monthYearPicker(BuildContext context, DateTime date) {
     DateTime? selectedMonth;
     return showModalBottomSheet(
       context: context,

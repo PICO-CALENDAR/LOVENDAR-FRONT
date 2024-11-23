@@ -6,8 +6,8 @@ class DayViewPainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     // 위치 미세 조정
     const double horizontalPadding = 10;
-    const double hightOffset = 0; // 사용 안함
-    const double textHeightOffset = 0; // 사용 안함
+    // const double hightOffset = 0; // 사용 안함
+    // const double textHeightOffset = 0; // 사용 안함
 
     const hourHeight = 60.0; // 1시간 = 60픽셀
     const hourCount = 24;
@@ -30,7 +30,7 @@ class DayViewPainter extends CustomPainter {
     // 시간 블록과 레이블 그리기
     for (int i = 0; i <= hourCount; i++) {
       final DateTime time = startOfDay.add(Duration(hours: i));
-      final y = i * hourHeight + hightOffset + textHeightOffset;
+      final y = i * hourHeight;
 
       // 시간 텍스트
       final timeText = timeFormat.format(time); // '오전 01시', '오후 12시'
@@ -51,9 +51,8 @@ class DayViewPainter extends CustomPainter {
 
       // 시간 블록 선
       canvas.drawLine(
-        Offset(textPadding + horizontalPadding + 20,
-            y + hightOffset), // 선을 텍스트 뒤쪽에서 시작
-        Offset(size.width - horizontalPadding, y + hightOffset),
+        Offset(textPadding + horizontalPadding + 20, y), // 선을 텍스트 뒤쪽에서 시작
+        Offset(size.width - horizontalPadding, y),
         gridPaint,
       );
     }

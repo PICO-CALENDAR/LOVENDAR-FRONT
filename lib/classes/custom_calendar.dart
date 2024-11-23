@@ -7,17 +7,7 @@ enum EventCategory {
   ours,
 }
 
-class EventDetail {
-  EventCategory category;
-  String? repeat;
-
-  EventDetail({
-    required this.category,
-    this.repeat,
-  });
-}
-
-class PicoEvent {
+class EventData {
   final String title; // 일정 제목
   final DateTime startTime; // 일정 시작 시간
   final DateTime endTime; // 일정 끝나는 시간
@@ -33,7 +23,7 @@ class PicoEvent {
 
   Duration get duration => endTime.difference(startTime);
 
-  PicoEvent({
+  EventData({
     required this.title,
     required this.startTime,
     required this.endTime,
@@ -45,7 +35,7 @@ class PicoEvent {
   /// 간단한 toString 메서드로 객체 정보를 문자열로 변환
   @override
   String toString() {
-    return 'PicoEvent(title: $title, startTime: $startTime, endTime: $endTime, '
+    return 'EventData(title: $title, startTime: $startTime, endTime: $endTime, '
         'category: $category, isAllDay: $isAllDay, meetingPeople: $meetingPeople)';
   }
 }
@@ -59,7 +49,7 @@ enum OverlappedState {
   both, // "mine"과 "yours" 둘 다 있음
 }
 
-OverlappedState checkEventCategories(List<PicoEvent> events) {
+OverlappedState checkEventCategories(List<EventData> events) {
   bool hasMine = false;
   bool hasYours = false;
 
@@ -80,7 +70,7 @@ OverlappedState checkEventCategories(List<PicoEvent> events) {
 // class OrganizedEvent {}
 
 // /// 일정 타입을 Enum으로 정의
-// enum PicoEventCategory {
+// enum EventDataCategory {
 //   MINE, // 나의 일정
 //   YOURS, // 상대방 일정
 //   OURS, // 공유 일정
