@@ -19,7 +19,7 @@ class MypageScreen extends StatelessWidget {
           child: Text(
             "마이페이지",
             style: TextStyle(
-              fontSize: 28,
+              fontSize: 23,
               fontWeight: FontWeight.bold,
             ),
           ),
@@ -70,17 +70,20 @@ class MypageScreen extends StatelessWidget {
         //     style: TextStyle(color: Colors.white),
         //   ),
         // ),
-        // const SizedBox(height: 24),
+        // const SizedBox(height: 23),
         // Customer Center Section
         const SectionTitle(title: '고객센터'),
         ListTile(
           onTap: () => Urls.onGoOnSite(Urls.noticeUrl),
           title: const Text(
             '공지사항',
+            style: TextStyle(
+              fontSize: 15,
+            ),
           ),
           trailing: const Icon(
             Icons.arrow_outward_rounded,
-            size: 21,
+            size: 19,
           ),
         ),
 
@@ -88,32 +91,50 @@ class MypageScreen extends StatelessWidget {
           onTap: () => Urls.onGoOnSite(Urls.contactUrl),
           title: const Text(
             '의견 보내기',
+            style: TextStyle(
+              fontSize: 15,
+            ),
           ),
           trailing: const Icon(
             Icons.chevron_right,
-            size: 25,
+            size: 23,
           ),
         ),
         ListTile(
           onTap: () => Urls.onGoOnSite(Urls.faqUrl),
           title: const Text(
             '자주 묻는 질문',
+            style: TextStyle(
+              fontSize: 15,
+            ),
           ),
           trailing: const Icon(
             Icons.arrow_outward_rounded,
-            size: 21,
+            size: 19,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 23),
         // Settings Section
         const SectionTitle(title: '설정'),
         const ListTile(
-          title: Text('앱 버전 v1.1.1'),
+          title: Text(
+            '앱 버전 v1.1.1',
+            style: TextStyle(
+              fontSize: 15,
+            ),
+          ),
           trailing: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
               Text('최신상태', style: TextStyle(color: Colors.green)),
-              Icon(Icons.check_circle, color: Colors.green),
+              SizedBox(
+                width: 8,
+              ),
+              Icon(
+                Icons.check_circle_rounded,
+                color: Colors.green,
+                size: 19,
+              ),
             ],
           ),
         ),
@@ -126,13 +147,18 @@ class MypageScreen extends StatelessWidget {
               ),
             );
           },
-          title: const Text('알림 설정'),
+          title: const Text(
+            '알림 설정',
+            style: TextStyle(
+              fontSize: 15,
+            ),
+          ),
           trailing: const Icon(
             Icons.chevron_right,
-            size: 25,
+            size: 23,
           ),
         ),
-        const SizedBox(height: 24),
+        const SizedBox(height: 23),
         // Account Section
         const SectionTitle(title: '계정'),
         ListTile(
@@ -144,10 +170,15 @@ class MypageScreen extends StatelessWidget {
               ),
             );
           },
-          title: const Text('약관 및 정책'),
+          title: const Text(
+            '약관 및 정책',
+            style: TextStyle(
+              fontSize: 15,
+            ),
+          ),
           trailing: const Icon(
             Icons.chevron_right,
-            size: 25,
+            size: 23,
           ),
         ),
         const ListTile(
@@ -175,11 +206,11 @@ class SectionTitle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 3),
+      padding: const EdgeInsets.symmetric(vertical: 2),
       child: Text(
         title,
         style: const TextStyle(
-          fontSize: 20,
+          fontSize: 19,
           fontWeight: FontWeight.bold,
         ),
       ),
