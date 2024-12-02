@@ -132,19 +132,34 @@ List<OrganizedEvent> createOrganizedEvents(
   double leftStart,
 ) {
   final columns = calculateEventColumns(events);
-  final width = slotWidth / columns.length;
+  final columnCount = columns.length;
+  final baseWidth = slotWidth / columnCount;
 
   final List<OrganizedEvent> organizedEvent = [];
 
-  for (int i = 0; i < columns.length; i++) {
-    // i는 이벤트가 속한 열이 된다.
+  for (int i = 0; i < columnCount; i++) {
     for (var event in columns[i]) {
-      // 한 열에 속한 이벤트
+      // 기본 너비는 현재 열에 해당하는 너비
+      double eventWidth = baseWidth;
+
+      // 오른쪽 열과 겹치지 않는 경우를 확인하여 너비를 확장
+      for (int j = i + 1; j < columnCount; j++) {
+        // 오른쪽 열에 이벤트가 없거나 현재 이벤트와 겹치지 않으면 너비 확장
+        bool hasOverlap = columns[j].any((e) =>
+            e.startTime.isBefore(event.endTime) &&
+            e.endTime.isAfter(event.startTime));
+        if (hasOverlap) break;
+
+        // 겹치지 않으면 너비 확장
+        eventWidth += baseWidth;
+      }
+
+      // OrganizedEvent 생성
       organizedEvent.add(
         OrganizedEvent(
-          left: leftStart + i * width, // 한 열에 속한 이벤트는 같은 시작 위치를 가진다.
+          left: leftStart + i * baseWidth, // 시작 위치는 열 번호에 따라 계산
           top: event.durationFromMidnight.inMinutes.toDouble(),
-          width: width,
+          width: eventWidth, // 계산된 너비 사용
           height: event.duration.inMinutes.toDouble(),
           eventData: event,
         ),

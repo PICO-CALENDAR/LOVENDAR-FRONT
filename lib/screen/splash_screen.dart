@@ -11,20 +11,22 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  Future<void> googleLogin() async {
+  void googleLogin() {
     GoogleSigninApi.login();
-    final user = GoogleSigninApi.login();
-    if (mounted) {
-      print(user);
-      Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (context) => const RegisterScreen(),
-        ),
-      );
-    } else {
-      log('Google login failed or widget is not mounted');
-    }
   }
+  // Future<void> googleLogin() async {
+  //   final user = await GoogleSigninApi.login();
+  //   if (mounted) {
+  //     print(user!.authHeaders);
+  //     Navigator.of(context).push(
+  //       MaterialPageRoute(
+  //         builder: (context) => const RegisterScreen(),
+  //       ),
+  //     );
+  //   } else {
+  //     log('Google login failed or widget is not mounted');
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {

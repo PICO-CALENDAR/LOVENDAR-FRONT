@@ -20,5 +20,31 @@ class GoogleSigninApi {
   //   return null;
   // }
 
-  static Set<Future<GoogleSignInAccount?>> login() => {_googleSignIn.signIn()};
+  static void login() async {
+    try {
+      final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
+
+      if (googleUser == null) {
+        // User cancelled the sign-in
+        print("Sign-in cancelled by the user.");
+        return;
+      }
+
+      final GoogleSignInAuthentication googleAuth =
+          await googleUser.authentication;
+
+      print(googleAuth.idToken);
+
+      return;
+    } catch (error) {
+      print(error);
+    }
+    return;
+  }
+
+  // static Future<GoogleSignInAccount?> login() {
+  //   return _googleSignIn.signIn();
+  // };
+
+  // static Set<Future<GoogleSignInAccount?>> login() => {_googleSignIn.signIn()};
 }

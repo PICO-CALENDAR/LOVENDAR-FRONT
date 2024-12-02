@@ -184,13 +184,19 @@ class MypageScreen extends StatelessWidget {
         const ListTile(
           title: Text(
             '로그아웃',
-            style: TextStyle(color: Colors.grey),
+            style: TextStyle(
+              color: Colors.grey,
+              fontSize: 15,
+            ),
           ),
         ),
         ListTile(
           title: Text(
             '탈퇴하기',
-            style: TextStyle(color: Colors.red[200]),
+            style: TextStyle(
+              color: Colors.red[200],
+              fontSize: 15,
+            ),
           ),
         ),
       ],

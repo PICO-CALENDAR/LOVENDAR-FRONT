@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PICO',
       theme: AppTheme.lightTheme,
-      initialRoute: "/",
+      initialRoute: "/register",
       routes: {
         '/': (context) => const BottomNav(),
         '/register': (context) => const SplashScreen(),

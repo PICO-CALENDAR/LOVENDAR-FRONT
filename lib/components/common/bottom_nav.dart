@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:pico/components/common/add_event_screen.dart';
 import 'package:pico/screen/calendar/calendar_screen.dart';
 import 'package:pico/screen/home/home_screen.dart';
+import 'package:pico/screen/memories/memories_screen.dart';
 import 'package:pico/screen/mypage/mypage_screen.dart';
 import 'package:pico/theme/theme_light.dart';
 
@@ -17,10 +18,8 @@ class _BottomNavState extends State<BottomNav> {
   List screens = [
     const HomeScreen(),
     // const BarEventMonthlyCalendar(),
-    const CalendarScreen(),
-    const Scaffold(
-      body: Text("추억함"),
-    ),
+    CalendarScreen(),
+    const MemoriesScreen(),
     const MypageScreen(),
   ];
 
