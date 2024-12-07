@@ -2,10 +2,11 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/components/common/bottom_nav.dart';
-import 'package:pico/screen/splash_screen.dart';
-import 'package:pico/theme/theme_light.dart';
+import 'package:pico/common/components/bottom_nav.dart';
+import 'package:pico/common/theme/theme_light.dart';
+import 'package:pico/user/view/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,7 +18,11 @@ void main() async {
   await dotenv.load(fileName: 'assets/config/.env');
 
   // 앱 시작
-  runApp(const MyApp());
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -28,10 +33,10 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'PICO',
       theme: AppTheme.lightTheme,
-      initialRoute: "/register",
+      initialRoute: "/login",
       routes: {
         '/': (context) => const BottomNav(),
-        '/register': (context) => const SplashScreen(),
+        '/login': (context) => const LoginScreen(),
       },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
