@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/contants/urls.dart';
-import 'package:pico/mypage/view/notifications_setting.dart';
-import 'package:pico/mypage/view/terms_and_policy.dart';
+import 'package:pico/user/model/user_model.dart';
+import 'package:pico/user/provider/user_provider.dart';
+import 'package:pico/user/view/mypage/notifications_setting.dart';
+import 'package:pico/user/view/mypage/terms_and_policy.dart';
 
-class MypageScreen extends StatelessWidget {
+class MypageScreen extends ConsumerWidget {
   const MypageScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userProvider) as UserModel;
     return ListView(
       padding: const EdgeInsets.symmetric(
         horizontal: 25,
@@ -25,37 +29,41 @@ class MypageScreen extends StatelessWidget {
           ),
         ),
         // User Info Section
-        Container(
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.grey[200],
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Row(
-            children: [
-              CircleAvatar(
-                radius: 30,
-                backgroundImage: AssetImage(
-                    'assets/avatar.png'), // Replace with actual image path
+        Row(
+          children: [
+            Profile(
+              profileImage: userInfo.profileImage,
+              nickName: userInfo.nickName,
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200],
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    CircleAvatar(
+                      radius: 30,
+                      backgroundImage: NetworkImage(
+                        userInfo.profileImage,
+                      ), // Replace with actual image path
+                    ),
+                    const SizedBox(height: 10),
+                    Text(
+                      userInfo.nickName,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ],
+                ),
               ),
-              SizedBox(width: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    '김피코',
-                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 4),
-                  Text(
-                    'username@gmail.com',
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                ],
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
+
         const SizedBox(height: 16),
         // Event Banner
         // Container(
@@ -181,7 +189,10 @@ class MypageScreen extends StatelessWidget {
             size: 23,
           ),
         ),
-        const ListTile(
+        ListTile(
+          onTap: () {
+            ref.read(userProvider.notifier).logOut();
+          },
           title: Text(
             '로그아웃',
             style: TextStyle(
@@ -200,6 +211,45 @@ class MypageScreen extends StatelessWidget {
           ),
         ),
       ],
+    );
+  }
+}
+
+class Profile extends ConsumerWidget {
+  final String profileImage;
+  final String nickName;
+
+  const Profile({
+    super.key,
+    required this.profileImage,
+    required this.nickName,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: Colors.grey[200],
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Column(
+          children: [
+            CircleAvatar(
+              radius: 30,
+              backgroundImage: NetworkImage(
+                profileImage,
+              ), // Replace with actual image path
+            ),
+            const SizedBox(height: 10),
+            Text(
+              nickName,
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

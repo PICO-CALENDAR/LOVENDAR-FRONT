@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/classes/custom_calendar.dart';
-import 'package:pico/common/classes/event_controller.dart';
+import 'package:pico/common/model/custom_calendar.dart';
+import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
@@ -33,9 +33,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late EventController _eventController;
 
   Map<EventCategory, bool> categoryCheckState = {
-    EventCategory.mine: false,
-    EventCategory.yours: false,
-    EventCategory.ours: false,
+    EventCategory.mine: true,
+    EventCategory.yours: true,
+    EventCategory.ours: true,
   };
 
   /// Sets the minimum and maximum dates for current view.

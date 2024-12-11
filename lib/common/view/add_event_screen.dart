@@ -183,7 +183,7 @@ class _AddEventScreenState extends State<AddEventScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
               child: ActionButton(
                 buttonName: "일정 추가",
-                onPressed: () {},
+                onPressed: () async {},
               ),
             ),
           ],

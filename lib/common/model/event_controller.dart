@@ -1,4 +1,4 @@
-import 'package:pico/common/classes/custom_calendar.dart';
+import 'package:pico/common/model/custom_calendar.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class EventController {

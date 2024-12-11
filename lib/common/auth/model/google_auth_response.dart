@@ -3,14 +3,14 @@ import 'package:json_annotation/json_annotation.dart';
 part 'google_auth_response.g.dart';
 
 @JsonSerializable()
-class GoogleAuthResponse {
+class AuthResponse {
   final int id;
   final String name;
   final String accessToken;
   final String refreshToken;
   final bool isRegistered;
 
-  GoogleAuthResponse({
+  AuthResponse({
     required this.id,
     required this.name,
     required this.accessToken,
@@ -18,6 +18,6 @@ class GoogleAuthResponse {
     required this.isRegistered,
   });
 
-  factory GoogleAuthResponse.fromJson(Map<String, dynamic> json) =>
-      _$GoogleAuthResponseFromJson(json);
+  factory AuthResponse.fromJson(Map<String, dynamic> json) =>
+      _$AuthResponseFromJson(json);
 }

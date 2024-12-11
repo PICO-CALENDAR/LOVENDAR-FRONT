@@ -50,6 +50,7 @@ dependencies:
   retrofit: ^4.4.0
   logger: ^2.4.0  # for logging purpose
   dio: ^5.7.0
+  go_router: ^14.6.2
 
 dev_dependencies:
   flutter_test:

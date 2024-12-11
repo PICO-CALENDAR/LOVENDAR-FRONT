@@ -4,9 +4,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/components/bottom_nav.dart';
+
+import 'package:pico/common/provider/go_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/user/view/login_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,19 +25,21 @@ void main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
       title: 'PICO',
       theme: AppTheme.lightTheme,
-      initialRoute: "/login",
-      routes: {
-        '/': (context) => const BottomNav(),
-        '/login': (context) => const LoginScreen(),
-      },
+      routerConfig: router,
+      // routes: {
+      //   '/': (context) => const BottomNav(),
+      //   '/login': (context) => const LoginScreen(),
+      //   '/register': (context) => const RegisterScreen(),
+      // },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

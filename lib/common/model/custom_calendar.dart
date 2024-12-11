@@ -15,6 +15,7 @@ class EventData {
   final bool isAllDay; // 일정 하루종일 여부
   final String? meetingPeople; // 만나는 사람 리스트
   final Color color;
+
   Duration get durationFromMidnight {
     DateTime midnight =
         DateTime(startTime.year, startTime.month, startTime.day);
@@ -65,13 +66,3 @@ OverlappedState checkEventCategories(List<EventData> events) {
   if (hasYours) return OverlappedState.yoursOnly;
   return OverlappedState.none;
 }
-
-
-// class OrganizedEvent {}
-
-// /// 일정 타입을 Enum으로 정의
-// enum EventDataCategory {
-//   MINE, // 나의 일정
-//   YOURS, // 상대방 일정
-//   OURS, // 공유 일정
-// }

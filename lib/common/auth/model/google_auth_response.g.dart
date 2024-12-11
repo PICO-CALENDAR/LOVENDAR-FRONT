@@ -6,8 +6,7 @@ part of 'google_auth_response.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-GoogleAuthResponse _$GoogleAuthResponseFromJson(Map<String, dynamic> json) =>
-    GoogleAuthResponse(
+AuthResponse _$AuthResponseFromJson(Map<String, dynamic> json) => AuthResponse(
       id: (json['id'] as num).toInt(),
       name: json['name'] as String,
       accessToken: json['accessToken'] as String,
@@ -15,7 +14,7 @@ GoogleAuthResponse _$GoogleAuthResponseFromJson(Map<String, dynamic> json) =>
       isRegistered: json['isRegistered'] as bool,
     );
 
-Map<String, dynamic> _$GoogleAuthResponseToJson(GoogleAuthResponse instance) =>
+Map<String, dynamic> _$AuthResponseToJson(AuthResponse instance) =>
     <String, dynamic>{
       'id': instance.id,
       'name': instance.name,

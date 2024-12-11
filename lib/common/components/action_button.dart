@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 
-class ActionButton extends StatelessWidget {
+class ActionButton extends StatefulWidget {
   final String buttonName;
-  final void Function() onPressed;
+  final Future<void> Function() onPressed;
   const ActionButton(
       {super.key, required this.buttonName, required this.onPressed});
 
+  @override
+  State<ActionButton> createState() => _ActionButtonState();
+}
+
+class _ActionButtonState extends State<ActionButton> {
+  bool isLoading = false;
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -19,11 +25,22 @@ class ActionButton extends StatelessWidget {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        onPressed: onPressed,
-        child: Text(
-          buttonName,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+        onPressed: () async {
+          setState(() {
+            isLoading = true;
+          });
+          await widget.onPressed();
+          setState(() {
+            isLoading = false;
+          });
+        },
+        child: isLoading
+            ? CircularProgressIndicator()
+            : Text(
+                widget.buttonName,
+                style:
+                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
       ),
     );
   }

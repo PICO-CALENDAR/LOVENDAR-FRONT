@@ -3,15 +3,13 @@ import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:pico/common/contants/keys.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
-part 'secure_storage_provider.g.dart';
+part 'secure_storage.g.dart';
 
-// FlutterSecureStorage
 @Riverpod(keepAlive: true)
 FlutterSecureStorage storage(Ref ref) {
   return const FlutterSecureStorage();
 }
 
-// 토큰 저장 등 로직을 포함한 커스텀 FlutterSecureStorage -> SecureStorage
 @Riverpod(keepAlive: true)
 SecureStorage secureStorage(Ref ref) {
   final FlutterSecureStorage storage = ref.read(storageProvider);
@@ -20,9 +18,24 @@ SecureStorage secureStorage(Ref ref) {
 
 class SecureStorage {
   final FlutterSecureStorage storage;
+
   SecureStorage({
     required this.storage,
   });
+
+  // 모두 삭제
+  Future<void> delete() async {
+    try {
+      await Future.wait(
+        [
+          storage.delete(key: Keys.refreshToken),
+          storage.delete(key: Keys.accessToken),
+        ],
+      );
+    } catch (e) {
+      print("[ERR] 토큰 삭제 실패: $e");
+    }
+  }
 
   //  리프레시 토큰 저장
   Future<void> saveRefreshToken(String refreshToken) async {
@@ -46,7 +59,7 @@ class SecureStorage {
     }
   }
 
-  // 엑세스 토큰 저장
+  // 에세스 토큰 저장
   Future<void> saveAccessToken(String accessToken) async {
     try {
       print('[SECURE_STORAGE] saveAccessToken: $accessToken');
@@ -56,7 +69,7 @@ class SecureStorage {
     }
   }
 
-  // 엑세스 토큰 불러오기
+  // 에세스 토큰 불러오기
   Future<String?> readAccessToken() async {
     try {
       final accessToken = await storage.read(key: Keys.accessToken);

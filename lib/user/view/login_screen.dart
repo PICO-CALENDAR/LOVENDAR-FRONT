@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pico/common/auth/provider/auth_provider.dart';
 
 class LoginScreen extends ConsumerWidget {
   const LoginScreen({super.key});
+
+  static String get routeName => 'login';
 
   @override
   Widget build(
@@ -45,7 +48,9 @@ class LoginScreen extends ConsumerWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              onPressed: () {}, // Call the method directly
+              onPressed: () {
+                ref.read(authProvider.notifier).googleLogin(context);
+              }, // Call the method directly
               child: const Padding(
                 padding: EdgeInsets.symmetric(horizontal: 9.0, vertical: 10),
                 child: Row(

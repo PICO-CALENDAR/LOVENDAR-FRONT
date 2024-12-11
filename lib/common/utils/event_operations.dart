@@ -1,4 +1,4 @@
-import 'package:pico/common/classes/custom_calendar.dart';
+import 'package:pico/common/model/custom_calendar.dart';
 
 // 시간대가 겹치는 이벤트 그룹화
 List<List<EventData>> groupOverlappingEvents(List<EventData> events) {

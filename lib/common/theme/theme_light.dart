@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pico/common/classes/custom_calendar.dart';
+import 'package:pico/common/model/custom_calendar.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF9F7965);

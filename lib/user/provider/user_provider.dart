@@ -1,0 +1,64 @@
+import 'package:dio/dio.dart';
+import 'package:pico/common/auth/provider/secure_storage.dart';
+import 'package:pico/user/model/user_model.dart';
+import 'package:pico/user/repository/user_repository.dart';
+import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+part 'user_provider.g.dart';
+
+@Riverpod(keepAlive: true)
+class User extends _$User {
+  late final UserRepository repository;
+  late final SecureStorage storage;
+
+  @override
+  UserModelBase? build() {
+    repository = ref.read(userRepositoryProvider);
+    storage = ref.read(secureStorageProvider);
+    // 초기 상태 설정 및 정보 가져오기
+    getUserInfo();
+
+    return UserModelLoading();
+  }
+
+  void logOut() {
+    storage.storage.deleteAll();
+    state = null;
+  }
+
+  void getUserInfo() async {
+    final refreshToken = await storage.readRefreshToken();
+    final accessToken = await storage.readAccessToken();
+
+    if (refreshToken == null || accessToken == null) {
+      state = null;
+      return;
+    }
+
+    try {
+      final resp = await repository.getUserInfo();
+      state = resp;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // Server responded with an error
+        final statusCode = e.response?.statusCode;
+        final errorMessage = e.response?.data?['message'] ?? 'Unknown error';
+
+        // state = UserModelError(message: 'Error $statusCode: $errorMessage');
+        state = null;
+        storage.storage.deleteAll();
+      } else {
+        state = null;
+        storage.storage.deleteAll();
+        // No response received (network error, timeout, etc.)
+        // state = UserModelError(
+        //     message: 'Network error: ${e.message ?? 'Unknown error'}');
+      }
+    } catch (e) {
+      state = null;
+      storage.storage.deleteAll();
+      // Handle other exceptions
+      // state = UserModelError(message: 'Unexpected error: $e');
+    }
+  }
+}
