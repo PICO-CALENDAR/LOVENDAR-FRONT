@@ -1,4 +1,7 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/contants/urls.dart';
 import 'package:pico/user/model/user_model.dart';
@@ -31,33 +34,23 @@ class MypageScreen extends ConsumerWidget {
         // User Info Section
         Row(
           children: [
-            Profile(
-              profileImage: userInfo.profileImage,
-              nickName: userInfo.nickName,
+            Expanded(
+              child: GestureDetector(
+                // onTap: () => context.go("/mypage"),
+                child: Profile(
+                  profileImage: userInfo.profileImage,
+                  nickName: userInfo.nickName,
+                ),
+              ),
             ),
             const SizedBox(width: 10),
             Expanded(
-              child: Container(
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: Colors.grey[200],
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 30,
-                      backgroundImage: NetworkImage(
-                        userInfo.profileImage,
-                      ), // Replace with actual image path
-                    ),
-                    const SizedBox(height: 10),
-                    Text(
-                      userInfo.nickName,
-                      style:
-                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ],
+              child: GestureDetector(
+                onTap: () =>
+                    userInfo.partnerId == null ? context.push("/invite") : null,
+                child: Profile(
+                  profileImage: userInfo.partnerProfileImage,
+                  nickName: userInfo.partnerNickname,
                 ),
               ),
             ),
@@ -216,36 +209,62 @@ class MypageScreen extends ConsumerWidget {
 }
 
 class Profile extends ConsumerWidget {
-  final String profileImage;
-  final String nickName;
+  final String? profileImage;
+  final String? nickName;
 
   const Profile({
     super.key,
-    required this.profileImage,
-    required this.nickName,
+    this.profileImage,
+    this.nickName,
   });
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.grey[200],
-          borderRadius: BorderRadius.circular(12),
-        ),
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: profileImage != null
+          ? BoxDecoration(
+              color: Colors.grey[200],
+              borderRadius: BorderRadius.circular(12),
+            )
+          : BoxDecoration(
+              border: Border.all(
+                color: Colors.grey[300]!,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+      child: Center(
         child: Column(
           children: [
             CircleAvatar(
               radius: 30,
-              backgroundImage: NetworkImage(
-                profileImage,
-              ), // Replace with actual image path
+              backgroundImage: profileImage != null
+                  ? NetworkImage(
+                      profileImage!,
+                    )
+                  : AssetImage(
+                      "images/profile_placeholder.png",
+                    ), // Replace with actual image path
             ),
             const SizedBox(height: 10),
-            Text(
-              nickName,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            SizedBox(
+              height: 27,
+              child: nickName != null
+                  ? Text(
+                      nickName!,
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    )
+                  : Text(
+                      "커플 연결을\n 진행해주세요",
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontSize: 11.5,
+                        height: 1.2,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.grey,
+                      ),
+                    ),
             ),
           ],
         ),

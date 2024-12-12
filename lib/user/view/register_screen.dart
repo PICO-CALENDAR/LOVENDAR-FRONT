@@ -11,6 +11,7 @@ import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/user/model/register_body.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/repository/user_repository.dart';
+import 'package:go_router/go_router.dart';
 
 class RegisterScreen extends ConsumerStatefulWidget {
   const RegisterScreen({super.key});
@@ -362,6 +363,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                 );
 
                                 try {
+                                  // 회원가입
                                   final response = await ref
                                       .read(userRepositoryProvider)
                                       .postRegister(
@@ -369,10 +371,14 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                         body: body,
                                       );
 
-                                  if (mounted) {
-                                    ref
-                                        .read(authProvider.notifier)
-                                        .register(context, response);
+                                  // 회원가입한 걸로 auth 저장 (token 저장 로직 포함)
+                                  ref
+                                      .read(authProvider.notifier)
+                                      .register(response);
+
+                                  // 로그인 후 홈으로 이동
+                                  if (context.mounted) {
+                                    context.go("/");
                                   }
                                   // 성공 시 처리
                                 } on DioException catch (e) {

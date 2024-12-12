@@ -33,11 +33,11 @@ class AppTheme {
 
   static Color getEventCategoryColor(EventCategory category) {
     switch (category) {
-      case EventCategory.mine:
+      case EventCategory.MINE:
         return mineColor;
-      case EventCategory.yours:
+      case EventCategory.YOURS:
         return yoursColor;
-      case EventCategory.ours:
+      case EventCategory.OURS:
         return oursColor;
       default:
         throw ArgumentError("Invalid EventCategory: $category");
@@ -46,11 +46,11 @@ class AppTheme {
 
   static Color getEventCategoryDarkerColor(EventCategory category) {
     switch (category) {
-      case EventCategory.mine:
+      case EventCategory.MINE:
         return const Color.fromARGB(255, 110, 94, 73);
-      case EventCategory.yours:
+      case EventCategory.YOURS:
         return const Color.fromARGB(255, 86, 96, 73);
-      case EventCategory.ours:
+      case EventCategory.OURS:
         return const Color.fromARGB(255, 176, 131, 119);
       default:
         throw ArgumentError("Invalid EventCategory: $category");

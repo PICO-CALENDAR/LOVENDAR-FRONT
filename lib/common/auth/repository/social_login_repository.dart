@@ -25,7 +25,7 @@ class SocialLoginRepository implements SocialRepositoryImpl {
       if (googleUser == null) {
         // User cancelled the sign-in
         print("Sign-in cancelled by the user.");
-        return null;
+        throw Exception("Sign-in cancelled by the user.");
       }
 
       final GoogleSignInAuthentication googleAuth =
@@ -34,7 +34,7 @@ class SocialLoginRepository implements SocialRepositoryImpl {
       return googleAuth.idToken; // idToken 반환
     } catch (error) {
       print("Error during Google Sign-In: $error");
-      return null;
+      throw Exception("Error during Google Sign-In: $error");
     }
   }
 }

@@ -49,6 +49,7 @@ final routerProvider = Provider<GoRouter>((ref) {
   String? redirectLogic(BuildContext context, GoRouterState goState) {
     final isLoginPage = goState.uri.toString() == '/login';
     final isSplashPage = goState.uri.toString() == '/splash';
+    final isRegisterPage = goState.uri.toString() == '/register';
 
     print("user: $user");
     // return null;
@@ -57,7 +58,18 @@ final routerProvider = Provider<GoRouter>((ref) {
     // 다시 로그인
     if (user == null) {
       // 이미 로그인 페이지면 이동 없음. 아닌 모든 경우는 로그인 페이지로 이동
-      return isLoginPage ? null : "/login";
+      // if (isLoginPage) {
+      //   ref.read(userProvider.notifier).getUserInfo();
+      //   return null;
+      // } else {
+      //   return isRegisterPage ? null : "/login";
+      // }
+
+      return isLoginPage
+          ? null
+          : isRegisterPage
+              ? null
+              : "/login";
     }
     // 로그인이 성공적으로 된 상태
     if (user is UserModel) {

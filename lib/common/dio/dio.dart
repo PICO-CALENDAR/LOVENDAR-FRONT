@@ -60,17 +60,17 @@ class CustomInterceptor extends Interceptor {
       });
     }
 
-    if (options.headers['refreshToken'] == 'true') {
-      // 헤더 삭제
-      options.headers.remove('refreshToken');
+    // if (options.headers['refreshToken'] == 'true') {
+    //   // 헤더 삭제
+    //   options.headers.remove('refreshToken');
 
-      final token = await secureStorage.readRefreshToken();
+    //   final token = await secureStorage.readRefreshToken();
 
-      // 실제 토큰으로 대체
-      options.headers.addAll({
-        'authorization': 'Bearer $token',
-      });
-    }
+    //   // 실제 토큰으로 대체
+    //   options.headers.addAll({
+    //     'authorization': 'Bearer $token',
+    //   });
+    // }
 
     return super.onRequest(options, handler);
   }
@@ -90,7 +90,7 @@ class CustomInterceptor extends Interceptor {
     // 401에러가 났을때 (status code)
     // 토큰을 재발급 받는 시도를하고 토큰이 재발급되면
     // 다시 새로운 토큰으로 요청을한다.
-    print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri}');
+    print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri}\n');
 
     final refreshToken = await secureStorage.readRefreshToken();
     final accessToken = await secureStorage.readAccessToken();

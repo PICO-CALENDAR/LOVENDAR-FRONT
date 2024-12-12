@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/auth/model/google_auth_response.dart';
 import 'package:pico/common/dio/dio.dart';
+import 'package:pico/user/model/invite_code_model.dart';
 import 'package:pico/user/model/register_body.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:retrofit/retrofit.dart';
@@ -34,6 +35,22 @@ abstract class UserRepository {
   // Future<UserModel> patchUserInfo(
   //   @Body() RegisterBody body,
   // );
+
+  // 초대 코드 생성
+  @GET("/make/invite/code")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<InviteCodeModel> getInviteCode();
+
+  // 초대 코드 생성
+  @POST("/make/couple")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<void> postLinkingCouple(
+    @Body() InviteCodeModel body,
+  );
 
   //  회원가입
   @POST("/register/{id}")

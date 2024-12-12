@@ -3,18 +3,32 @@ import 'package:flutter/material.dart';
 class PrimaryButton extends StatelessWidget {
   final String buttonName;
   final void Function() onPressed;
-  const PrimaryButton(
-      {super.key, required this.buttonName, required this.onPressed});
+  final double? width;
+  final double? fontSize;
+  final Color? fontColor;
+  final Color? backgroundColor;
+
+  const PrimaryButton({
+    super.key,
+    required this.buttonName,
+    required this.onPressed,
+    this.width = double.infinity,
+    this.fontSize = 20,
+    this.fontColor,
+    this.backgroundColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      width: double.infinity,
+      width: width,
       child: ElevatedButton(
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 8),
-          foregroundColor: Theme.of(context).colorScheme.onSecondary,
-          backgroundColor: Theme.of(context).colorScheme.primary,
+          foregroundColor:
+              fontColor ?? Theme.of(context).colorScheme.onSecondary,
+          backgroundColor:
+              backgroundColor ?? Theme.of(context).colorScheme.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(8),
           ),
@@ -22,7 +36,11 @@ class PrimaryButton extends StatelessWidget {
         onPressed: onPressed,
         child: Text(
           buttonName,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: fontSize,
+            fontWeight: FontWeight.bold,
+            color: fontColor,
+          ),
         ),
       ),
     );

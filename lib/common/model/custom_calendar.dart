@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:pico/common/theme/theme_light.dart';
 
 enum EventCategory {
-  mine,
-  yours,
-  ours,
+  MINE,
+  YOURS,
+  OURS,
 }
 
 class EventData {
@@ -55,8 +55,8 @@ OverlappedState checkEventCategories(List<EventData> events) {
   bool hasYours = false;
 
   for (var event in events) {
-    if (event.category == EventCategory.mine) hasMine = true;
-    if (event.category == EventCategory.yours) hasYours = true;
+    if (event.category == EventCategory.MINE) hasMine = true;
+    if (event.category == EventCategory.YOURS) hasYours = true;
 
     // 두 조건이 모두 충족되면 더 이상 확인할 필요 없음
     if (hasMine && hasYours) return OverlappedState.both;

@@ -33,9 +33,9 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late EventController _eventController;
 
   Map<EventCategory, bool> categoryCheckState = {
-    EventCategory.mine: true,
-    EventCategory.yours: true,
-    EventCategory.ours: true,
+    EventCategory.MINE: true,
+    EventCategory.YOURS: true,
+    EventCategory.OURS: true,
   };
 
   /// Sets the minimum and maximum dates for current view.
@@ -97,7 +97,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '하루',
         startTime: DateTime(2024, 11, 1, 12, 0),
         endTime: DateTime(2024, 11, 1, 12, 0),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: true,
         meetingPeople: '파트너',
       ),
@@ -105,7 +105,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '커플 데이트',
         startTime: DateTime(2024, 11, 1, 14, 0),
         endTime: DateTime(2024, 11, 3, 18, 0),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: false,
         meetingPeople: '파트너',
       ),
@@ -113,21 +113,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '회의',
         startTime: DateTime(2024, 11, 2, 10, 0),
         endTime: DateTime(2024, 11, 4, 11, 30),
-        category: EventCategory.mine,
+        category: EventCategory.MINE,
         isAllDay: false,
       ),
       EventData(
         title: '운동',
         startTime: DateTime(2024, 11, 1, 6, 30),
         endTime: DateTime(2024, 11, 10, 7, 30),
-        category: EventCategory.mine,
+        category: EventCategory.MINE,
         isAllDay: false,
       ),
       EventData(
         title: '친구 생일 파티',
         startTime: DateTime(2024, 11, 3, 19, 0),
         endTime: DateTime(2024, 11, 3, 22, 0),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: false,
         meetingPeople: '친구들',
       ),
@@ -135,7 +135,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '친구 생일 파티',
         startTime: DateTime(2024, 11, 3, 19, 0),
         endTime: DateTime(2024, 11, 3, 22, 0),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: false,
         meetingPeople: '친구들',
       ),
@@ -143,14 +143,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '출장',
         startTime: DateTime(2024, 11, 4),
         endTime: DateTime(2024, 11, 6),
-        category: EventCategory.mine,
+        category: EventCategory.MINE,
         isAllDay: true,
       ),
       EventData(
         title: '가족 모임',
         startTime: DateTime(2024, 11, 7, 11, 0),
         endTime: DateTime(2024, 11, 7, 15, 0),
-        category: EventCategory.yours,
+        category: EventCategory.YOURS,
         isAllDay: false,
         meetingPeople: '가족',
       ),
@@ -158,7 +158,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '박물관 데이트',
         startTime: DateTime(2024, 11, 8, 13, 0),
         endTime: DateTime(2024, 11, 8, 16, 0),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: false,
         meetingPeople: '파트너',
       ),
@@ -166,21 +166,21 @@ class _CalendarScreenState extends State<CalendarScreen> {
         title: '팀 회식',
         startTime: DateTime(2024, 11, 9, 18, 0),
         endTime: DateTime(2024, 11, 9, 21, 0),
-        category: EventCategory.mine,
+        category: EventCategory.MINE,
         isAllDay: false,
       ),
       EventData(
         title: '서점 방문',
         startTime: DateTime(2024, 11, 10, 14, 0),
         endTime: DateTime(2024, 11, 10, 15, 0),
-        category: EventCategory.yours,
+        category: EventCategory.YOURS,
         isAllDay: false,
       ),
       EventData(
         title: '휴식',
         startTime: DateTime(2024, 11, 11),
         endTime: DateTime(2024, 11, 11),
-        category: EventCategory.ours,
+        category: EventCategory.OURS,
         isAllDay: true,
       ),
     ];
@@ -349,14 +349,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "내 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.mine]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.mine),
+                    isChecked: categoryCheckState[EventCategory.MINE]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.MINE),
                     accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.mine,
+                      EventCategory.MINE,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.mine] =
-                          !categoryCheckState[EventCategory.mine]!;
+                      categoryCheckState[EventCategory.MINE] =
+                          !categoryCheckState[EventCategory.MINE]!;
                     }),
                   ),
                   const SizedBox(
@@ -365,14 +365,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "상대 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.yours]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.yours),
+                    isChecked: categoryCheckState[EventCategory.YOURS]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.YOURS),
                     accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.yours,
+                      EventCategory.YOURS,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.yours] =
-                          !categoryCheckState[EventCategory.yours]!;
+                      categoryCheckState[EventCategory.YOURS] =
+                          !categoryCheckState[EventCategory.YOURS]!;
                     }),
                   ),
                   const SizedBox(
@@ -381,14 +381,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "우리 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.ours]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.ours),
+                    isChecked: categoryCheckState[EventCategory.OURS]!,
+                    color: AppTheme.getEventCategoryColor(EventCategory.OURS),
                     accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.ours,
+                      EventCategory.OURS,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.ours] =
-                          !categoryCheckState[EventCategory.ours]!;
+                      categoryCheckState[EventCategory.OURS] =
+                          !categoryCheckState[EventCategory.OURS]!;
                     }),
                   ),
                 ],
@@ -820,7 +820,7 @@ class CheckBoxChip extends StatelessWidget {
           // shadowColor: Colors.grey[50],
           padding: const EdgeInsets.symmetric(
             vertical: 3,
-            horizontal: 12,
+            horizontal: 8,
           ),
           backgroundColor: color,
           shape: RoundedRectangleBorder(

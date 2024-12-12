@@ -19,16 +19,53 @@ ScheduleRepository scheduleRepository(Ref ref) {
 abstract class ScheduleRepository {
   factory ScheduleRepository(Dio dio, {String? baseUrl}) = _ScheduleRepository;
 
-  // 일정 추가
-  @GET("/add")
+  // 일정 조회 (해당 주)
+  @GET("/get/today/schedules")
   @Headers({
     'accessToken': 'true',
   })
-  Future<UserModel> getUserInfo();
+  Future<UserModel> getSchedulesByToday();
 
-  @POST("/register/{id}")
-  Future<AuthResponse> postRegister({
-    @Path() required String id,
+  // 일정 조회 (해당 연도)
+  @GET("/get/year/schedules")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> getSchedulesByYear();
+
+  // 일정 세부 조회
+  @GET("/get/detail/{scheduleId}")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> getScheduleDetail(
+    @Path() String scheduleId,
+  );
+
+  // 일정 추가
+  @POST("/add")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> postAddSchedule();
+
+  // 일정 수정
+  @POST("/update")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> postUpdateSchedule();
+
+  // 일정 삭제
+  @POST("/delete/{scheduleId}")
+  Future<AuthResponse> postDeleteSchedule({
+    @Path() required String scheduleId,
+  });
+
+  // 반복 일정 삭제
+  @POST("/delete/repeat/{scheduleId}")
+  Future<AuthResponse> postDeleteRepeatSchedule({
+    @Path() required String scheduleId,
     @Body() required RegisterBody body,
   });
 }

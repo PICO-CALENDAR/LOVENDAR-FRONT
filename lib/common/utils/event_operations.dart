@@ -177,13 +177,13 @@ List<OrganizedEvent> getOrganizedEvents(
   final List<OrganizedEvent> organizedEvents = [];
 
   final myEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.mine)
+      .where((event) => event.category == EventCategory.MINE)
       .toList();
   final yourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.yours)
+      .where((event) => event.category == EventCategory.YOURS)
       .toList();
   final ourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.ours)
+      .where((event) => event.category == EventCategory.OURS)
       .toList();
 
   if (ourEvents.isNotEmpty) {
