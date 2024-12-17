@@ -22,13 +22,13 @@ class _ScheduleRepository implements ScheduleRepository {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<UserModel> getSchedulesByToday() async {
+  Future<SchedulesResponse> getSchedulesByToday(String todayDate) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'todayDate': todayDate};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _options = _setStreamType<SchedulesResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -45,9 +45,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late SchedulesResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = SchedulesResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -56,13 +56,13 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<UserModel> getSchedulesByYear() async {
+  Future<SchedulesResponse> getSchedulesByYear(String year) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'year': year};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _options = _setStreamType<SchedulesResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -79,9 +79,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late SchedulesResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = SchedulesResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -90,13 +90,13 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<UserModel> getScheduleDetail(String scheduleId) async {
+  Future<ScheduleResponse> getScheduleDetail(String scheduleId) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _options = _setStreamType<ScheduleResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
@@ -113,9 +113,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late ScheduleResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = ScheduleResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -124,13 +124,14 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<UserModel> postAddSchedule() async {
+  Future<ScheduleResponse> postAddSchedule(ScheduleModelBase body) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _data = <String, dynamic>{};
+    _data.addAll(body.toJson());
+    final _options = _setStreamType<ScheduleResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -147,9 +148,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late ScheduleResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = ScheduleResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -158,13 +159,13 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<UserModel> postUpdateSchedule() async {
+  Future<ScheduleResponse> postUpdateSchedule() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _options = _setStreamType<ScheduleResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -181,9 +182,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late ScheduleResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = ScheduleResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -192,12 +193,13 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<AuthResponse> postDeleteSchedule({required String scheduleId}) async {
+  Future<void> postDeleteSchedule({required String scheduleId}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AuthResponse>(Options(
+    final _options = _setStreamType<void>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -213,19 +215,11 @@ class _ScheduleRepository implements ScheduleRepository {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AuthResponse _value;
-    try {
-      _value = AuthResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
+    await _dio.fetch<void>(_options);
   }
 
   @override
-  Future<AuthResponse> postDeleteRepeatSchedule({
+  Future<ScheduleResponse> postDeleteRepeatSchedule({
     required String scheduleId,
     required RegisterBody body,
   }) async {
@@ -234,7 +228,7 @@ class _ScheduleRepository implements ScheduleRepository {
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
-    final _options = _setStreamType<AuthResponse>(Options(
+    final _options = _setStreamType<ScheduleResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -251,9 +245,9 @@ class _ScheduleRepository implements ScheduleRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AuthResponse _value;
+    late ScheduleResponse _value;
     try {
-      _value = AuthResponse.fromJson(_result.data!);
+      _value = ScheduleResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

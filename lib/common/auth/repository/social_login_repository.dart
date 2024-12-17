@@ -18,7 +18,10 @@ class SocialLoginRepository implements SocialRepositoryImpl {
   }
 
   Future<String?> _google() async {
-    final googleSignIn = GoogleSignIn();
+    final googleSignIn = GoogleSignIn(
+      serverClientId:
+          "321782365913-og9m52o0si8lfhm24opd8o2shn1tqhqr.apps.googleusercontent.com",
+    );
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
 
@@ -31,9 +34,12 @@ class SocialLoginRepository implements SocialRepositoryImpl {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
+      // print("googleAuth : ${googleAuth.accessToken}");
+
       return googleAuth.idToken; // idToken 반환
     } catch (error) {
       print("Error during Google Sign-In: $error");
+      print(error.toString());
       throw Exception("Error during Google Sign-In: $error");
     }
   }

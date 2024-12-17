@@ -195,6 +195,12 @@ class MypageScreen extends ConsumerWidget {
           ),
         ),
         ListTile(
+          onTap: () {
+            ref.read(userProvider.notifier).deleteAccount();
+
+            // TODO: 이게 왜 안될까..
+            context.go("/");
+          },
           title: Text(
             '탈퇴하기',
             style: TextStyle(

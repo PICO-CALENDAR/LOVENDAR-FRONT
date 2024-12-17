@@ -58,4 +58,11 @@ abstract class UserRepository {
     @Path() required String id,
     @Body() required RegisterBody body,
   });
+
+  // 회원탈퇴
+  @DELETE("/delete")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<AuthResponse> postDeleteAccount();
 }

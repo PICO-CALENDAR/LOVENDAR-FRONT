@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pico/common/model/custom_calendar.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
@@ -29,13 +30,13 @@ class _CalendarScreenState extends State<CalendarScreen> {
   late DateTime _maxDate;
 
   late PageController _pageController;
-  late List<EventData> events;
-  late EventController _eventController;
+  late List<ScheduleModel> schedule;
+  late ScheduleController _scheduleController;
 
-  Map<EventCategory, bool> categoryCheckState = {
-    EventCategory.MINE: true,
-    EventCategory.YOURS: true,
-    EventCategory.OURS: true,
+  Map<ScheduleType, bool> categoryCheckState = {
+    ScheduleType.MINE: true,
+    ScheduleType.YOURS: true,
+    ScheduleType.OURS: true,
   };
 
   /// Sets the minimum and maximum dates for current view.
@@ -91,101 +92,10 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // Initialize page controller to control page actions.
     _pageController = PageController(initialPage: _currentIndex);
 
-    // initialize events
-    events = [
-      EventData(
-        title: '하루',
-        startTime: DateTime(2024, 11, 1, 12, 0),
-        endTime: DateTime(2024, 11, 1, 12, 0),
-        category: EventCategory.OURS,
-        isAllDay: true,
-        meetingPeople: '파트너',
-      ),
-      EventData(
-        title: '커플 데이트',
-        startTime: DateTime(2024, 11, 1, 14, 0),
-        endTime: DateTime(2024, 11, 3, 18, 0),
-        category: EventCategory.OURS,
-        isAllDay: false,
-        meetingPeople: '파트너',
-      ),
-      EventData(
-        title: '회의',
-        startTime: DateTime(2024, 11, 2, 10, 0),
-        endTime: DateTime(2024, 11, 4, 11, 30),
-        category: EventCategory.MINE,
-        isAllDay: false,
-      ),
-      EventData(
-        title: '운동',
-        startTime: DateTime(2024, 11, 1, 6, 30),
-        endTime: DateTime(2024, 11, 10, 7, 30),
-        category: EventCategory.MINE,
-        isAllDay: false,
-      ),
-      EventData(
-        title: '친구 생일 파티',
-        startTime: DateTime(2024, 11, 3, 19, 0),
-        endTime: DateTime(2024, 11, 3, 22, 0),
-        category: EventCategory.OURS,
-        isAllDay: false,
-        meetingPeople: '친구들',
-      ),
-      EventData(
-        title: '친구 생일 파티',
-        startTime: DateTime(2024, 11, 3, 19, 0),
-        endTime: DateTime(2024, 11, 3, 22, 0),
-        category: EventCategory.OURS,
-        isAllDay: false,
-        meetingPeople: '친구들',
-      ),
-      EventData(
-        title: '출장',
-        startTime: DateTime(2024, 11, 4),
-        endTime: DateTime(2024, 11, 6),
-        category: EventCategory.MINE,
-        isAllDay: true,
-      ),
-      EventData(
-        title: '가족 모임',
-        startTime: DateTime(2024, 11, 7, 11, 0),
-        endTime: DateTime(2024, 11, 7, 15, 0),
-        category: EventCategory.YOURS,
-        isAllDay: false,
-        meetingPeople: '가족',
-      ),
-      EventData(
-        title: '박물관 데이트',
-        startTime: DateTime(2024, 11, 8, 13, 0),
-        endTime: DateTime(2024, 11, 8, 16, 0),
-        category: EventCategory.OURS,
-        isAllDay: false,
-        meetingPeople: '파트너',
-      ),
-      EventData(
-        title: '팀 회식',
-        startTime: DateTime(2024, 11, 9, 18, 0),
-        endTime: DateTime(2024, 11, 9, 21, 0),
-        category: EventCategory.MINE,
-        isAllDay: false,
-      ),
-      EventData(
-        title: '서점 방문',
-        startTime: DateTime(2024, 11, 10, 14, 0),
-        endTime: DateTime(2024, 11, 10, 15, 0),
-        category: EventCategory.YOURS,
-        isAllDay: false,
-      ),
-      EventData(
-        title: '휴식',
-        startTime: DateTime(2024, 11, 11),
-        endTime: DateTime(2024, 11, 11),
-        category: EventCategory.OURS,
-        isAllDay: true,
-      ),
-    ];
+    // // initialize events
+    // events = [];
 
-    _eventController = EventController(events: events);
+    _scheduleController = ScheduleController(schedules: []);
 
     super.initState();
   }
@@ -349,14 +259,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "내 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.MINE]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.MINE),
-                    accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.MINE,
+                    isChecked: categoryCheckState[ScheduleType.MINE]!,
+                    color: AppTheme.getColorByScheduleType(ScheduleType.MINE),
+                    accentColor: AppTheme.getDarkerColorByScheduleType(
+                      ScheduleType.MINE,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.MINE] =
-                          !categoryCheckState[EventCategory.MINE]!;
+                      categoryCheckState[ScheduleType.MINE] =
+                          !categoryCheckState[ScheduleType.MINE]!;
                     }),
                   ),
                   const SizedBox(
@@ -365,14 +275,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "상대 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.YOURS]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.YOURS),
-                    accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.YOURS,
+                    isChecked: categoryCheckState[ScheduleType.YOURS]!,
+                    color: AppTheme.getColorByScheduleType(ScheduleType.YOURS),
+                    accentColor: AppTheme.getDarkerColorByScheduleType(
+                      ScheduleType.YOURS,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.YOURS] =
-                          !categoryCheckState[EventCategory.YOURS]!;
+                      categoryCheckState[ScheduleType.YOURS] =
+                          !categoryCheckState[ScheduleType.YOURS]!;
                     }),
                   ),
                   const SizedBox(
@@ -381,14 +291,14 @@ class _CalendarScreenState extends State<CalendarScreen> {
                   CheckBoxChip(
                     label: "우리 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[EventCategory.OURS]!,
-                    color: AppTheme.getEventCategoryColor(EventCategory.OURS),
-                    accentColor: AppTheme.getEventCategoryDarkerColor(
-                      EventCategory.OURS,
+                    isChecked: categoryCheckState[ScheduleType.OURS]!,
+                    color: AppTheme.getColorByScheduleType(ScheduleType.OURS),
+                    accentColor: AppTheme.getDarkerColorByScheduleType(
+                      ScheduleType.OURS,
                     ),
                     onPressed: () => setState(() {
-                      categoryCheckState[EventCategory.OURS] =
-                          !categoryCheckState[EventCategory.OURS]!;
+                      categoryCheckState[ScheduleType.OURS] =
+                          !categoryCheckState[ScheduleType.OURS]!;
                     }),
                   ),
                 ],
@@ -431,7 +341,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
               return MonthView(
                 selectedMonth: date.month,
                 monthDays: monthDays,
-                eventController: _eventController,
+                scheduleController: _scheduleController,
                 // eventController: eventController,
               );
             },
@@ -448,12 +358,12 @@ class MonthView extends StatelessWidget {
     super.key,
     required this.selectedMonth,
     required this.monthDays,
-    required this.eventController,
+    required this.scheduleController,
   });
 
   final List<DateTime> monthDays;
   final int selectedMonth;
-  final EventController eventController;
+  final ScheduleController scheduleController;
   // final EventController<EventDetail> eventController;
 
   List<List<DateTime>> chunkListByWeek(List<DateTime> list) {
@@ -488,7 +398,7 @@ class MonthView extends StatelessWidget {
                     WeekRow(
                       selectedMonth: selectedMonth,
                       weekDate: week,
-                      eventController: eventController,
+                      scheduleController: scheduleController,
                       slotWidth: slotWidth,
                       dateCellSlotHeight: dateCellSlotHeight,
                       totalWidth: totalWidth,
@@ -511,7 +421,7 @@ class WeekRow extends StatelessWidget {
     super.key,
     required this.selectedMonth,
     required this.weekDate,
-    required this.eventController,
+    required this.scheduleController,
     required this.slotWidth,
     required this.dateCellSlotHeight,
     required this.totalWidth,
@@ -521,7 +431,7 @@ class WeekRow extends StatelessWidget {
 
   final int selectedMonth;
   final List<DateTime> weekDate;
-  final EventController eventController;
+  final ScheduleController scheduleController;
   final double slotWidth;
   final double dateCellSlotHeight;
   final double totalWidth;
@@ -546,9 +456,9 @@ class WeekRow extends StatelessWidget {
         ),
         Row(
           children: [
-            DateEventRow(
+            DateScheduleRow(
               weekDate: weekDate,
-              eventController: eventController,
+              scheduleController: scheduleController,
               width: totalWidth,
               height: eventCellSlotHeight,
               selectedMonth: selectedMonth,
@@ -640,11 +550,11 @@ class DateNumberCell extends StatelessWidget {
 }
 
 // 이벤트 보여지는 cell 부분
-class DateEventRow extends StatelessWidget {
-  const DateEventRow({
+class DateScheduleRow extends StatelessWidget {
+  const DateScheduleRow({
     super.key,
     required this.weekDate,
-    required this.eventController,
+    required this.scheduleController,
     required this.width,
     required this.height,
     required this.selectedMonth,
@@ -653,7 +563,7 @@ class DateEventRow extends StatelessWidget {
   });
 
   final List<DateTime> weekDate;
-  final EventController eventController;
+  final ScheduleController scheduleController;
   final double width;
   final double height;
   final int selectedMonth;
@@ -666,8 +576,8 @@ class DateEventRow extends StatelessWidget {
     const maxColumn = 4;
     final eventHeight = (height - (maxColumn + 2) * gap) * 0.25;
 
-    final orgEvents = eventController.filterAndSortEventsForWeek(
-        eventController.orgEvents, weekDate.first, weekDate.last);
+    final orgSchedules = scheduleController.filterAndSortSchedulesForWeek(
+        scheduleController.orgSchedules, weekDate.first, weekDate.last);
     // for (var event in organizeEvents(events)) {
     //   print("${event.eventData.title} : ${event.column}");
     //   print(event.eventData.startTime.isBefore(weekDate.first));
@@ -710,21 +620,23 @@ class DateEventRow extends StatelessWidget {
                   ),
               ],
             ),
-            for (var event in orgEvents)
-              event.column <= maxColumn
+            for (var schedule in orgSchedules)
+              schedule.column <= maxColumn
                   ? Positioned(
-                      top: (event.column - 1) * eventHeight +
-                          (gap * (event.column - 1)),
-                      left: event.eventData.startTime.isBefore(weekDate.first)
+                      top: (schedule.column - 1) * eventHeight +
+                          (gap * (schedule.column - 1)),
+                      left: schedule.scheduleData.startTime
+                              .isBefore(weekDate.first)
                           ? 2
-                          : (event.eventData.startTime.weekday - 1) *
+                          : (schedule.scheduleData.startTime.weekday - 1) *
                                   slotWidth +
                               2,
-                      right: event.eventData.endTime.isAfter(weekDate.last)
-                          ? 2
-                          : (7 - (event.eventData.endTime.weekday)) *
-                                  slotWidth +
-                              2,
+                      right:
+                          schedule.scheduleData.endTime.isAfter(weekDate.last)
+                              ? 2
+                              : (7 - (schedule.scheduleData.endTime.weekday)) *
+                                      slotWidth +
+                                  2,
                       child: IgnorePointer(
                         ignoring: true,
                         child: Container(
@@ -732,7 +644,7 @@ class DateEventRow extends StatelessWidget {
                             horizontal: 2,
                           ),
                           decoration: BoxDecoration(
-                            color: event.eventData.color,
+                            color: schedule.scheduleData.color,
                             borderRadius: const BorderRadius.all(
                               Radius.circular(5),
                             ),
@@ -745,7 +657,7 @@ class DateEventRow extends StatelessWidget {
                                   child: Text(
                                     maxLines: 1,
                                     overflow: TextOverflow.ellipsis,
-                                    event.eventData.title,
+                                    schedule.scheduleData.title,
                                     style: const TextStyle(
                                       fontSize: 10,
                                       fontWeight: FontWeight.w600,
@@ -753,15 +665,15 @@ class DateEventRow extends StatelessWidget {
                                   ),
                                 ),
                               ),
-                              (event.column == maxColumn &&
-                                      eventController
-                                              .getEventsForDate(
-                                                  event.eventData.startTime)
+                              (schedule.column == maxColumn &&
+                                      scheduleController
+                                              .getSchedulesForDate(schedule
+                                                  .scheduleData.startTime)
                                               .length >
                                           maxColumn)
                                   ? Expanded(
                                       child: Text(
-                                        "+${eventController.getEventsForDate(event.eventData.startTime).length - maxColumn}",
+                                        "+${scheduleController.getSchedulesForDate(schedule.scheduleData.startTime).length - maxColumn}",
                                         style: const TextStyle(
                                           fontSize: 11.5,
                                           fontWeight: FontWeight.w600,

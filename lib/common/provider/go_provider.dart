@@ -5,6 +5,7 @@ import 'package:pico/common/auth/model/auth_model.dart';
 import 'package:pico/common/auth/provider/auth_provider.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
 import 'package:pico/common/layout/default_layout.dart';
+import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/common/view/invite_screen.dart';
 import 'package:pico/common/view/splash_screen.dart';
 import 'package:pico/user/model/user_model.dart';
@@ -33,6 +34,11 @@ final routerProvider = Provider<GoRouter>((ref) {
       path: '/login',
       name: LoginScreen.routeName,
       builder: (_, __) => LoginScreen(),
+    ),
+    GoRoute(
+      path: '/editSchedule',
+      name: EditScheduleScreen.routeName,
+      builder: (_, __) => EditScheduleScreen(),
     ),
     GoRoute(
       path: '/invite',

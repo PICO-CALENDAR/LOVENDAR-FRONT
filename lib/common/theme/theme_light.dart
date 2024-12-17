@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:pico/common/model/custom_calendar.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF9F7965);
@@ -31,31 +32,59 @@ class AppTheme {
   static BorderSide get borderSide =>
       BorderSide(width: 1, color: Colors.grey[300]!);
 
-  static Color getEventCategoryColor(EventCategory category) {
+  static Color getColorByScheduleType(ScheduleType category) {
     switch (category) {
-      case EventCategory.MINE:
+      case ScheduleType.MINE:
         return mineColor;
-      case EventCategory.YOURS:
+      case ScheduleType.YOURS:
         return yoursColor;
-      case EventCategory.OURS:
+      case ScheduleType.OURS:
         return oursColor;
       default:
         throw ArgumentError("Invalid EventCategory: $category");
     }
   }
 
-  static Color getEventCategoryDarkerColor(EventCategory category) {
+  static Color getDarkerColorByScheduleType(ScheduleType category) {
     switch (category) {
-      case EventCategory.MINE:
+      case ScheduleType.MINE:
         return const Color.fromARGB(255, 110, 94, 73);
-      case EventCategory.YOURS:
+      case ScheduleType.YOURS:
         return const Color.fromARGB(255, 86, 96, 73);
-      case EventCategory.OURS:
+      case ScheduleType.OURS:
         return const Color.fromARGB(255, 176, 131, 119);
       default:
         throw ArgumentError("Invalid EventCategory: $category");
     }
   }
+
+  //TODO: deprecated
+  // static Color getEventCategoryColor(EventCategory category) {
+  //   switch (category) {
+  //     case EventCategory.MINE:
+  //       return mineColor;
+  //     case EventCategory.YOURS:
+  //       return yoursColor;
+  //     case EventCategory.OURS:
+  //       return oursColor;
+  //     default:
+  //       throw ArgumentError("Invalid EventCategory: $category");
+  //   }
+  // }
+
+  // //TODO: deprecated
+  // static Color getEventCategoryDarkerColor(EventCategory category) {
+  //   switch (category) {
+  //     case EventCategory.MINE:
+  //       return const Color.fromARGB(255, 110, 94, 73);
+  //     case EventCategory.YOURS:
+  //       return const Color.fromARGB(255, 86, 96, 73);
+  //     case EventCategory.OURS:
+  //       return const Color.fromARGB(255, 176, 131, 119);
+  //     default:
+  //       throw ArgumentError("Invalid EventCategory: $category");
+  //   }
+  // }
 
   static ThemeData get lightTheme {
     return ThemeData(

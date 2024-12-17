@@ -1,72 +1,78 @@
 import 'package:pico/common/model/custom_calendar.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
 
 // 시간대가 겹치는 이벤트 그룹화
-List<List<EventData>> groupOverlappingEvents(List<EventData> events) {
+List<List<ScheduleModel>> groupOverlappingSchedules(
+    List<ScheduleModel> schedules) {
   // 하루 종일 이벤트 제외
-  final filteredEvents = events.where((event) => !event.isAllDay).toList();
+  final filteredSchedules =
+      schedules.where((schedule) => !schedule.isAllDay).toList();
 
   // 이벤트 리스트가 비어있으면 빈 리스트 반환
-  if (filteredEvents.isEmpty) return [];
+  if (filteredSchedules.isEmpty) return [];
 
   // 시작 시간 기준으로 정렬
-  filteredEvents.sort((a, b) => a.startTime.compareTo(b.startTime));
+  filteredSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-  final List<List<EventData>> groupedEvents = [];
-  List<EventData> currentGroup = [filteredEvents.first];
+  final List<List<ScheduleModel>> groupedSchedules = [];
+  List<ScheduleModel> currentGroup = [filteredSchedules.first];
 
-  for (int i = 1; i < filteredEvents.length; i++) {
-    final currentEvent = filteredEvents[i];
-    final lastEventInGroup = currentGroup.last;
+  for (int i = 1; i < filteredSchedules.length; i++) {
+    final currentSchedule = filteredSchedules[i];
+    final lastScheduleInGroup = currentGroup.last;
 
     // 현재 이벤트가 그룹의 마지막 이벤트와 겹치더라도, 시간이 포함되지 않으면 새로운 그룹 시작
-    if (!currentEvent.startTime.isBefore(lastEventInGroup.endTime) &&
-        !currentEvent.startTime.isAtSameMomentAs(lastEventInGroup.endTime)) {
-      groupedEvents.add(currentGroup);
-      currentGroup = [currentEvent];
+    if (!currentSchedule.startTime.isBefore(lastScheduleInGroup.endTime) &&
+        !currentSchedule.startTime
+            .isAtSameMomentAs(lastScheduleInGroup.endTime)) {
+      groupedSchedules.add(currentGroup);
+      currentGroup = [currentSchedule];
     } else {
       // 현재 이벤트를 그룹에 추가
-      currentGroup.add(currentEvent);
+      currentGroup.add(currentSchedule);
     }
   }
 
   // 마지막 그룹 추가
-  groupedEvents.add(currentGroup);
+  groupedSchedules.add(currentGroup);
 
-  return groupedEvents;
+  return groupedSchedules;
 }
 
 // 이벤트 병합하여 시간 범위 반환
-MergedEvent mergeEventsAndGetTime(List<EventData> events) {
-  if (events.isEmpty) {
-    throw ArgumentError('Event list cannot be empty');
+MergedSchedule mergeSchedulesAndGetTime(List<ScheduleModel> schedules) {
+  if (schedules.isEmpty) {
+    throw ArgumentError('Schedule list cannot be empty');
   }
 
   final minStart =
-      events.map((e) => e.startTime).reduce((a, b) => a.isBefore(b) ? a : b);
+      schedules.map((s) => s.startTime).reduce((a, b) => a.isBefore(b) ? a : b);
   final maxEnd =
-      events.map((e) => e.endTime).reduce((a, b) => a.isAfter(b) ? a : b);
+      schedules.map((s) => s.endTime).reduce((a, b) => a.isAfter(b) ? a : b);
 
-  return MergedEvent(
-      startTime: minStart, endTime: maxEnd, mergedEvents: events);
+  return MergedSchedule(
+      startTime: minStart, endTime: maxEnd, mergedSchedules: schedules);
 }
 
 // 특정 시간 범위와 겹치는 이벤트 반환
-List<EventData> findOverlappingEventsByTime(
-    List<EventData> events, DateTime startTime, DateTime endTime) {
-  return events.where((event) {
-    return event.startTime.isBefore(endTime) &&
-        event.endTime.isAfter(startTime);
+List<ScheduleModel> findOverlappingSchedulesByTime(
+    List<ScheduleModel> schedules, DateTime startTime, DateTime endTime) {
+  return schedules.where((schedule) {
+    return schedule.startTime.isBefore(endTime) &&
+        schedule.endTime.isAfter(startTime);
   }).toList();
 }
 
-List<List<EventData>> calculateEventColumns(List<EventData> events) {
-  if (events.isEmpty) return [];
+List<List<ScheduleModel>> calculateScheduleColumns(
+    List<ScheduleModel> schedules) {
+  if (schedules.isEmpty) return [];
 
   // 겹치는 이벤트 그룹 가져오기
-  List<List<EventData>> overlappingGroups = groupOverlappingEvents(events);
+  List<List<ScheduleModel>> overlappingGroups =
+      groupOverlappingSchedules(schedules);
 
-  Map<EventData, int> eventColumns = {};
-  Map<int, List<EventData>> columnToEvents = {}; // 각 열에 해당하는 이벤트 리스트
+  Map<ScheduleModel, int> scheduleColumns = {};
+  Map<int, List<ScheduleModel>> columnToSchedules = {}; // 각 열에 해당하는 이벤트 리스트
   int maxColumnUsed = 0; // 총 열의 최대값 추적
 
   for (var group in overlappingGroups) {
@@ -74,34 +80,34 @@ List<List<EventData>> calculateEventColumns(List<EventData> events) {
 
     // 그룹의 모든 이벤트를 열에 할당
     maxColumnUsed = assignColumnsForGroup(
-        group, eventColumns, columnToEvents, maxColumnUsed);
+        group, scheduleColumns, columnToSchedules, maxColumnUsed);
   }
 
   // 결과 반환: 열 번호별로 정렬된 리스트 생성
-  List<List<EventData>> result = [];
+  List<List<ScheduleModel>> result = [];
   for (int i = 0; i <= maxColumnUsed; i++) {
-    result.add(columnToEvents[i] ?? []);
+    result.add(columnToSchedules[i] ?? []);
   }
   return result;
 }
 
 // 그룹의 이벤트를 열에 할당하고 최대 열 번호 반환
 int assignColumnsForGroup(
-    List<EventData> group,
-    Map<EventData, int> eventColumns,
-    Map<int, List<EventData>> columnToEvents,
+    List<ScheduleModel> group,
+    Map<ScheduleModel, int> scheduleColumns,
+    Map<int, List<ScheduleModel>> columnToSchedules,
     int maxColumnUsed) {
   // 이벤트를 시작 시간 기준으로 정렬
   group.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-  for (var event in group) {
+  for (var schedule in group) {
     // 겹치는 열을 계산
     var overlappingColumns = group
-        .where((e) =>
-            e != event &&
-            e.startTime.isBefore(event.endTime) &&
-            e.endTime.isAfter(event.startTime))
-        .map((e) => eventColumns[e]);
+        .where((s) =>
+            s != schedule &&
+            s.startTime.isBefore(schedule.endTime) &&
+            s.endTime.isAfter(schedule.startTime))
+        .map((s) => scheduleColumns[s]);
 
     // 사용 가능한 최소 열 번호 찾기
     int column = 0;
@@ -110,13 +116,13 @@ int assignColumnsForGroup(
     }
 
     // 열 배정
-    eventColumns[event] = column;
+    scheduleColumns[schedule] = column;
 
     // 열별 이벤트 리스트 갱신
-    if (!columnToEvents.containsKey(column)) {
-      columnToEvents[column] = [];
+    if (!columnToSchedules.containsKey(column)) {
+      columnToSchedules[column] = [];
     }
-    columnToEvents[column]!.add(event);
+    columnToSchedules[column]!.add(schedule);
 
     // 최대 열 번호 갱신
     maxColumnUsed = maxColumnUsed > column ? maxColumnUsed : column;
@@ -125,114 +131,115 @@ int assignColumnsForGroup(
   return maxColumnUsed;
 }
 
-// OrganizedEvent 생성 헬퍼 함수
-List<OrganizedEvent> createOrganizedEvents(
-  List<EventData> events,
+// OrganizedShedule 생성 헬퍼 함수
+List<OrganizedSchedule> createOrganizedSchedules(
+  List<ScheduleModel> schedules,
   double slotWidth,
   double leftStart,
 ) {
-  final columns = calculateEventColumns(events);
+  final columns = calculateScheduleColumns(schedules);
   final columnCount = columns.length;
   final baseWidth = slotWidth / columnCount;
 
-  final List<OrganizedEvent> organizedEvent = [];
+  final List<OrganizedSchedule> organizedSchedule = [];
 
   for (int i = 0; i < columnCount; i++) {
-    for (var event in columns[i]) {
+    for (var schedule in columns[i]) {
       // 기본 너비는 현재 열에 해당하는 너비
-      double eventWidth = baseWidth;
+      double scheduleWidth = baseWidth;
 
       // 오른쪽 열과 겹치지 않는 경우를 확인하여 너비를 확장
       for (int j = i + 1; j < columnCount; j++) {
         // 오른쪽 열에 이벤트가 없거나 현재 이벤트와 겹치지 않으면 너비 확장
         bool hasOverlap = columns[j].any((e) =>
-            e.startTime.isBefore(event.endTime) &&
-            e.endTime.isAfter(event.startTime));
+            e.startTime.isBefore(schedule.endTime) &&
+            e.endTime.isAfter(schedule.startTime));
         if (hasOverlap) break;
 
         // 겹치지 않으면 너비 확장
-        eventWidth += baseWidth;
+        scheduleWidth += baseWidth;
       }
 
-      // OrganizedEvent 생성
-      organizedEvent.add(
-        OrganizedEvent(
+      // OrganizedShedule 생성
+      organizedSchedule.add(
+        OrganizedSchedule(
           left: leftStart + i * baseWidth, // 시작 위치는 열 번호에 따라 계산
-          top: event.durationFromMidnight.inMinutes.toDouble(),
-          width: eventWidth, // 계산된 너비 사용
-          height: event.duration.inMinutes.toDouble(),
-          eventData: event,
+          top: schedule.durationFromMidnight.inMinutes.toDouble(),
+          width: scheduleWidth, // 계산된 너비 사용
+          height: schedule.duration.inMinutes.toDouble(),
+          scheduleData: schedule,
         ),
       );
     }
   }
 
-  return organizedEvent;
+  return organizedSchedule;
 }
 
-// 모든 이벤트를 OrganizedEvent로 변환
-List<OrganizedEvent> getOrganizedEvents(
-    List<EventData> overlappingEvents, double viewWidth) {
+// 모든 이벤트를 OrganizedShedule로 변환
+List<OrganizedSchedule> getOrganizedSchedules(
+    List<ScheduleModel> overlappingSchedules, double viewWidth) {
   final double totalWidth = viewWidth;
-  final List<OrganizedEvent> organizedEvents = [];
+  final List<OrganizedSchedule> organizedSchedules = [];
 
-  final myEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.MINE)
+  final mySchedules = overlappingSchedules
+      .where((schedule) => schedule.category == ScheduleType.MINE)
       .toList();
-  final yourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.YOURS)
+  final yourSchedules = overlappingSchedules
+      .where((schedule) => schedule.category == ScheduleType.YOURS)
       .toList();
-  final ourEvents = overlappingEvents
-      .where((event) => event.category == EventCategory.OURS)
+  final ourSchedules = overlappingSchedules
+      .where((schedule) => schedule.category == ScheduleType.OURS)
       .toList();
 
-  if (ourEvents.isNotEmpty) {
+  if (ourSchedules.isNotEmpty) {
     // "우리" 이벤트 병합
-    final mergedOurEvent = mergeEventsAndGetTime(ourEvents);
-    final otherEvents = [...myEvents, ...yourEvents];
+    final mergedOurSchedule = mergeSchedulesAndGetTime(ourSchedules);
+    final otherSchedules = [...mySchedules, ...yourSchedules];
 
     // 병합된 "우리" 이벤트와 겹치는 나와 상대 이벤트 확인
-    final overlappedEvents = findOverlappingEventsByTime(
-      otherEvents,
-      mergedOurEvent.startTime,
-      mergedOurEvent.endTime,
+    final overlappedSchedules = findOverlappingSchedulesByTime(
+      otherSchedules,
+      mergedOurSchedule.startTime,
+      mergedOurSchedule.endTime,
     );
-    final overlappedState = checkEventCategories(overlappedEvents);
+    final overlappedState = checkScheduleCategories(overlappedSchedules);
 
     switch (overlappedState) {
       case OverlappedState.none:
-        organizedEvents.addAll(createOrganizedEvents(ourEvents, totalWidth, 0));
-        organizedEvents
-            .addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
-        organizedEvents.addAll(
-            createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+        organizedSchedules
+            .addAll(createOrganizedSchedules(ourSchedules, totalWidth, 0));
+        organizedSchedules
+            .addAll(createOrganizedSchedules(mySchedules, totalWidth / 2, 0));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            yourSchedules, totalWidth / 2, totalWidth / 2));
         break;
 
       case OverlappedState.mineOnly:
-        organizedEvents.addAll(createOrganizedEvents(
-            ourEvents, totalWidth * 2 / 3, totalWidth / 3));
-        organizedEvents
-            .addAll(createOrganizedEvents(myEvents, totalWidth / 3, 0));
-        organizedEvents.addAll(
-            createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            ourSchedules, totalWidth * 2 / 3, totalWidth / 3));
+        organizedSchedules
+            .addAll(createOrganizedSchedules(mySchedules, totalWidth / 3, 0));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            yourSchedules, totalWidth / 2, totalWidth / 2));
         break;
 
       case OverlappedState.yoursOnly:
-        organizedEvents.addAll(createOrganizedEvents(
-            ourEvents, totalWidth * 2 / 3, totalWidth / 3));
-        organizedEvents
-            .addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
-        organizedEvents.addAll(createOrganizedEvents(
-            yourEvents, totalWidth / 3, totalWidth * 2 / 3));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            ourSchedules, totalWidth * 2 / 3, totalWidth / 3));
+        organizedSchedules
+            .addAll(createOrganizedSchedules(mySchedules, totalWidth / 2, 0));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            yourSchedules, totalWidth / 3, totalWidth * 2 / 3));
         break;
 
       case OverlappedState.both:
-        organizedEvents.addAll(
-            createOrganizedEvents(ourEvents, totalWidth / 3, totalWidth / 3));
-        organizedEvents
-            .addAll(createOrganizedEvents(myEvents, totalWidth / 3, 0));
-        organizedEvents.addAll(createOrganizedEvents(
-            yourEvents, totalWidth / 3, totalWidth * 2 / 3));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            ourSchedules, totalWidth / 3, totalWidth / 3));
+        organizedSchedules
+            .addAll(createOrganizedSchedules(mySchedules, totalWidth / 3, 0));
+        organizedSchedules.addAll(createOrganizedSchedules(
+            yourSchedules, totalWidth / 3, totalWidth * 2 / 3));
         break;
 
       default:
@@ -240,40 +247,41 @@ List<OrganizedEvent> getOrganizedEvents(
     }
   } else {
     // "우리" 이벤트가 없을 때
-    organizedEvents.addAll(createOrganizedEvents(myEvents, totalWidth / 2, 0));
-    organizedEvents.addAll(
-        createOrganizedEvents(yourEvents, totalWidth / 2, totalWidth / 2));
+    organizedSchedules
+        .addAll(createOrganizedSchedules(mySchedules, totalWidth / 2, 0));
+    organizedSchedules.addAll(createOrganizedSchedules(
+        yourSchedules, totalWidth / 2, totalWidth / 2));
   }
 
-  return organizedEvents;
+  return organizedSchedules;
 }
 
 // 병합된 이벤트 클래스
-class MergedEvent {
+class MergedSchedule {
   final DateTime startTime;
   final DateTime endTime;
-  final List<EventData> mergedEvents;
+  final List<ScheduleModel> mergedSchedules;
 
-  MergedEvent({
+  MergedSchedule({
     required this.startTime,
     required this.endTime,
-    required this.mergedEvents,
+    required this.mergedSchedules,
   });
 }
 
-// OrganizedEvent 클래스
-class OrganizedEvent {
+// OrganizedShedule 클래스
+class OrganizedSchedule {
   final double left;
   final double top;
   final double width;
   final double height;
-  final EventData eventData;
+  final ScheduleModel scheduleData;
 
-  OrganizedEvent({
+  OrganizedSchedule({
     required this.left,
     required this.top,
     required this.width,
     required this.height,
-    required this.eventData,
+    required this.scheduleData,
   });
 }

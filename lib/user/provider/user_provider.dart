@@ -15,6 +15,7 @@ class User extends _$User {
   UserModelBase? build() {
     repository = ref.read(userRepositoryProvider);
     storage = ref.read(secureStorageProvider);
+
     // 초기 상태 설정 및 정보 가져오기
     getUserInfo();
 
@@ -24,6 +25,22 @@ class User extends _$User {
   void logOut() {
     storage.storage.deleteAll();
     state = null;
+  }
+
+  // 회원 탈퇴
+  void deleteAccount() async {
+    try {
+      // 회원 탈퇴
+      await repository.postDeleteAccount();
+      storage.storage.deleteAll();
+      state = null;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
   }
 
   void getUserInfo() async {

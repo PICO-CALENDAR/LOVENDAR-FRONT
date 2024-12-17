@@ -1,22 +1,27 @@
 import 'dart:async';
 import 'dart:math';
-
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:pico/common/contants/layout_const.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/model/schedules_response.dart';
+import 'package:pico/common/schedule/provider/schedules_in_week_provider.dart';
 import 'package:pico/home/components/day_view_painter.dart';
 import 'package:pico/home/components/indicator.dart';
-import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/utils/event_operations.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
-class DayView extends StatefulWidget {
+class DayView extends ConsumerStatefulWidget {
   final DateTime date;
   const DayView({super.key, required this.date});
 
   @override
-  State<DayView> createState() => _DayViewState();
+  ConsumerState<DayView> createState() => _DayViewState();
 }
 
-class _DayViewState extends State<DayView> {
+class _DayViewState extends ConsumerState<DayView> {
   late Timer _timer;
 
   DateTime _currentTime = DateTime.now();
@@ -41,6 +46,7 @@ class _DayViewState extends State<DayView> {
   Widget build(BuildContext context) {
     const hourHeight = 60.0; // 1시간 = 60픽셀
     const totalHeight = 24 * hourHeight; // 24시간의 전체 높이
+    final schedules = ref.watch(schedulesInWeekProvider);
 
     return SingleChildScrollView(
       child: Padding(
@@ -77,7 +83,8 @@ class _DayViewState extends State<DayView> {
                   ),
                   Expanded(
                     child: LayoutBuilder(builder: (context, constraints) {
-                      final parentWidth = constraints.maxWidth;
+                      final parentWidth =
+                          constraints.maxWidth - LayoutConst.dayViewPadding;
 
                       // print(CalendarConst.events.where((e) {
                       //   print(e.startTime.day);
@@ -88,15 +95,15 @@ class _DayViewState extends State<DayView> {
                       return Stack(
                         children: [
                           // TODO" 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
-                          for (var eventGroup in groupOverlappingEvents(
-                              CalendarConst.events
-                                  .where((e) =>
-                                      e.startTime.isSameDate(widget.date))
+                          for (var scheduleGroup in groupOverlappingSchedules(
+                              schedules
+                                  .where((s) =>
+                                      s.startTime.isSameDate(widget.date))
                                   .toList()))
-                            for (var organizedEvent
-                                in getOrganizedEvents(eventGroup, parentWidth))
-                              EventBox(
-                                organizedEvent: organizedEvent,
+                            for (var organizedSchedule in getOrganizedSchedules(
+                                scheduleGroup, parentWidth))
+                              ScheduleBox(
+                                organizedSchedule: organizedSchedule,
                               )
                         ],
                       );
@@ -110,7 +117,7 @@ class _DayViewState extends State<DayView> {
             Positioned(
               top: (_currentTime.hour + _currentTime.minute / 60) * hourHeight,
               left: 70, // 시간 Text 피하고 선부터 시작하기 위해서
-              right: 10,
+              right: 7,
               child: const Indicator(),
             ),
           ],
@@ -120,55 +127,66 @@ class _DayViewState extends State<DayView> {
   }
 }
 
-class EventBox extends StatelessWidget {
-  final OrganizedEvent organizedEvent;
-  const EventBox({super.key, required this.organizedEvent});
+class ScheduleBox extends StatelessWidget {
+  final OrganizedSchedule organizedSchedule;
+  const ScheduleBox({super.key, required this.organizedSchedule});
 
   @override
   Widget build(BuildContext context) {
     return Positioned(
-      left: organizedEvent.left,
-      top: organizedEvent.top,
-      width: organizedEvent.width,
-      height: organizedEvent.height,
+      left: organizedSchedule.left,
+      top: organizedSchedule.top,
+      width: organizedSchedule.width - LayoutConst.scheduleBoxGap,
+      height: organizedSchedule.height,
       child: GestureDetector(
         onTap: () {
-          print(organizedEvent.eventData.title);
-          print(organizedEvent.eventData.startTime);
-          print(organizedEvent.eventData.endTime);
+          print(organizedSchedule.scheduleData.title);
+          print(organizedSchedule.scheduleData.startTime);
+          print(organizedSchedule.scheduleData.endTime);
         },
         child: Container(
           padding: EdgeInsets.symmetric(
-            vertical: max(organizedEvent.height * 0.06, 7),
-            horizontal: max(organizedEvent.width * 0.07, 6),
+            vertical: max(organizedSchedule.height * 0.06, 7),
+            horizontal: max(organizedSchedule.width * 0.05, 5),
           ),
-          width: organizedEvent.width,
-          height: organizedEvent.height,
+          width: organizedSchedule.width,
+          height: organizedSchedule.height,
           decoration: BoxDecoration(
-            color: organizedEvent.eventData.color,
+            color: organizedSchedule.scheduleData.color,
             borderRadius: const BorderRadius.all(
-              Radius.circular(10),
+              Radius.circular(6),
             ),
+            boxShadow: [
+              BoxShadow(
+                  color: Colors.grey.withOpacity(0.1),
+                  spreadRadius: 0,
+                  blurRadius: 10,
+                  offset: Offset.fromDirection(
+                      360, 10) // changes position of shadow
+                  ),
+            ],
           ),
           child: SingleChildScrollView(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  organizedEvent.eventData.title,
+                  organizedSchedule.scheduleData.title,
                   maxLines: 1,
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 11.5,
                     fontWeight: FontWeight.bold,
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
-                  organizedEvent.eventData.category.toString(),
+                  "${DateFormat.jm().format(organizedSchedule.scheduleData.startTime)} · ${organizedSchedule.scheduleData.duration.inHours}h",
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
-                  style: const TextStyle(
-                    fontSize: 11,
+                  style: TextStyle(
+                    fontSize: 10,
+                    fontWeight: FontWeight.w500,
+                    color: Colors.grey[700]!,
                   ),
                 ),
               ],

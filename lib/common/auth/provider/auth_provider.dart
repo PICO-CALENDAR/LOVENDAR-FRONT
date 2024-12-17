@@ -42,6 +42,8 @@ class Auth extends _$Auth {
       final idToken = await SocialLoginRepository()
           .socialLogin(socialType: SocialType.google);
 
+      print("idToken : $idToken");
+
       if (idToken == null) {
         if (context.mounted) {
           return context.go("/login");
@@ -49,6 +51,8 @@ class Auth extends _$Auth {
       }
 
       final GoogleAuthBody authReq = GoogleAuthBody(idToken: idToken!);
+
+      // print("authReq: ${authReq.toJson()}");
 
       final response = await authRepository.postGoogleSignin(authReq);
 

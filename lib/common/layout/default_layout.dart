@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 
 import 'package:pico/common/components/primary_button.dart';
-import 'package:pico/common/view/add_event_screen.dart';
+import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/calendar/view/calendar_screen.dart';
 import 'package:pico/home/view/home/home_screen.dart';
 import 'package:pico/memories/view/memories_screen.dart';
@@ -99,13 +99,14 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
           //   print(userInfo.partnerId);
           //   return _bottomSheetInviteDialog(context: context);
           // }
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              fullscreenDialog: true,
-              builder: (context) => const AddEventScreen(),
-            ),
-          );
+          context.push("/editSchedule");
+          // Navigator.push(
+          //   context,
+          //   MaterialPageRoute(
+          //     fullscreenDialog: true,
+          //     builder: (context) => const EditScheduleScreen(),
+          //   ),
+          // );
         },
         backgroundColor: AppTheme.primaryColor,
         child: const Icon(

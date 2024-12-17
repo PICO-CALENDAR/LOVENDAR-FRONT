@@ -90,7 +90,8 @@ class CustomInterceptor extends Interceptor {
     // 401에러가 났을때 (status code)
     // 토큰을 재발급 받는 시도를하고 토큰이 재발급되면
     // 다시 새로운 토큰으로 요청을한다.
-    print('[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri}\n');
+    print(
+        '[ERR] [${err.requestOptions.method}] ${err.requestOptions.uri} ${err.message}\n');
 
     final refreshToken = await secureStorage.readRefreshToken();
     final accessToken = await secureStorage.readAccessToken();

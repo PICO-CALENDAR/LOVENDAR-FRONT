@@ -1,15 +1,16 @@
 import 'package:pico/common/model/custom_calendar.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
-class EventController {
-  final List<EventData> events;
+class ScheduleController {
+  final List<ScheduleModel> schedules;
 
-  EventController({required this.events});
+  ScheduleController({required this.schedules});
 
-  List<ColumnedEventData> organizeEvents() {
-    List<ColumnedEventData> columnedEvents =
+  List<ColumnedScheduleData> organizeSchedules() {
+    List<ColumnedScheduleData> columnedSchedules =
         []; // 1. 이벤트를 시작 날짜 기준으로 정렬 (같은 시작 날짜면 종료 날짜 기준으로 정렬)
-    events.sort((a, b) {
+    schedules.sort((a, b) {
       if (a.startTime.isSameDate(b.startTime)) {
         return a.endTime.withoutTime.compareTo(b.endTime.withoutTime);
       }
@@ -19,7 +20,7 @@ class EventController {
     // 2. 열(column) 상태를 추적하는 리스트
     List<DateTime> columns = []; // 각 열의 종료 날짜 저장
 
-    for (var event in events) {
+    for (var schedule in schedules) {
       bool foundColumn = false;
 
       // 3. 사용 가능한 열 찾기
@@ -28,12 +29,12 @@ class EventController {
         // print(columns);
         // print(columns[i].withoutTime.isBefore(event.startTime.withoutTime));
         // print(i + 1);
-        if (columns[i].withoutTime.isBefore(event.startTime.withoutTime)) {
+        if (columns[i].withoutTime.isBefore(schedule.startTime.withoutTime)) {
           // 열이 비어 있다면 해당 열에 이벤트 배치
-          columns[i] = event.endTime;
-          final organized = ColumnedEventData(
-              eventData: event, column: i + 1); // 열 번호는 1부터 시작
-          columnedEvents.add(organized);
+          columns[i] = schedule.endTime;
+          final organized = ColumnedScheduleData(
+              scheduleData: schedule, column: i + 1); // 열 번호는 1부터 시작
+          columnedSchedules.add(organized);
           foundColumn = true;
           break;
         }
@@ -41,53 +42,55 @@ class EventController {
 
       // 4. 사용 가능한 열이 없다면 새로운 열 생성
       if (!foundColumn) {
-        columns.add(event.endTime);
-        final organized = ColumnedEventData(
-            eventData: event, column: columns.length); // 새 열 번호는 현재 열 개수
-        columnedEvents.add(organized);
+        columns.add(schedule.endTime);
+        final organized = ColumnedScheduleData(
+            scheduleData: schedule, column: columns.length); // 새 열 번호는 현재 열 개수
+        columnedSchedules.add(organized);
       }
     }
 
-    return columnedEvents;
+    return columnedSchedules;
   }
 
   // 특정 기간에 속하는 일정 이벤트 리스트만
-  List<ColumnedEventData> filterAndSortEventsForWeek(
-      List<ColumnedEventData> events, DateTime weekStart, DateTime weekEnd) {
-    return events
-        .where((event) =>
-            event.eventData.startTime.withoutTime
+  List<ColumnedScheduleData> filterAndSortSchedulesForWeek(
+      List<ColumnedScheduleData> schedules,
+      DateTime weekStart,
+      DateTime weekEnd) {
+    return schedules
+        .where((schedule) =>
+            schedule.scheduleData.startTime.withoutTime
                 .isBefore(weekEnd.withoutTime.add(const Duration(days: 1))) &&
-            event.eventData.endTime.withoutTime.isAfter(
+            schedule.scheduleData.endTime.withoutTime.isAfter(
                 weekStart.withoutTime.subtract(const Duration(days: 1))))
         .toList()
       ..sort((a, b) => a.column.compareTo(b.column));
   }
 
-  List<EventData> getEventsForDate(DateTime date) {
-    final filteredEvents = events.where((event) {
+  List<ScheduleModel> getSchedulesForDate(DateTime date) {
+    final filteredSchedules = schedules.where((schedule) {
       // 이벤트가 해당 날짜 범위 안에 포함되는지 확인
-      return event.startTime.withoutTime
+      return schedule.startTime.withoutTime
               .isBefore(date.withoutTime.add(const Duration(days: 1))) &&
-          event.endTime.withoutTime
+          schedule.endTime.withoutTime
               .isAfter(date.withoutTime.subtract(const Duration(days: 1)));
     }).toList();
 
     // 시작 시간을 기준으로 정렬
-    filteredEvents.sort((a, b) => a.startTime.compareTo(b.startTime));
+    filteredSchedules.sort((a, b) => a.startTime.compareTo(b.startTime));
 
-    return filteredEvents;
+    return filteredSchedules;
   }
 
-  List<ColumnedEventData> get orgEvents => organizeEvents();
+  List<ColumnedScheduleData> get orgSchedules => organizeSchedules();
 }
 
-class ColumnedEventData {
-  EventData eventData;
+class ColumnedScheduleData {
+  ScheduleModel scheduleData;
   final int column;
 
-  ColumnedEventData({
-    required this.eventData,
+  ColumnedScheduleData({
+    required this.scheduleData,
     required this.column,
   });
 }

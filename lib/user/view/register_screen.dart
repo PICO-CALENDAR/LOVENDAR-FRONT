@@ -5,11 +5,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/auth/model/auth_model.dart';
 import 'package:pico/common/auth/provider/auth_provider.dart';
 import 'package:pico/common/components/action_button.dart';
+import 'package:pico/common/components/date_input.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/round_checkbox.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/user/model/register_body.dart';
 import 'package:pico/user/model/user_model.dart';
+import 'package:pico/user/provider/user_provider.dart';
 import 'package:pico/user/repository/user_repository.dart';
 import 'package:go_router/go_router.dart';
 
@@ -36,81 +38,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   void dispose() {
     _nameController.dispose();
     super.dispose();
-  }
-
-  void _showDatePicker({
-    required BuildContext context,
-    required FormFieldState<DateTime> state,
-    required DateTime initialDate,
-    required void Function(DateTime?) setDate,
-  }) {
-    DateTime? dateValue;
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext builder) {
-        return SizedBox(
-          height: 350, // 버튼과 선택기를 위한 충분한 높이
-          child: Column(
-            children: [
-              // 취소 및 확인 버튼이 있는 Row
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    CupertinoButton(
-                      child: const Text(
-                        '취소',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        Navigator.pop(context); // 모달 닫기
-                      },
-                    ),
-                    CupertinoButton(
-                      child: const Text(
-                        '확인',
-                        style: TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: () {
-                        if (dateValue != null) {
-                          state.didChange(dateValue);
-                          setDate(dateValue);
-                        } else {
-                          dateValue = initialDate;
-                          state.didChange(dateValue);
-                          setDate(dateValue);
-                        }
-                        Navigator.pop(context); // 모달 닫기
-                      },
-                    ),
-                  ],
-                ),
-              ),
-              // 연도와 월만 선택할 수 있는 CupertinoDatePicker
-              Flexible(
-                child: CupertinoDatePicker(
-                  initialDateTime: initialDate, // 연도와 월만 선택하고 1일로 고정
-                  mode: CupertinoDatePickerMode.date,
-                  onDateTimeChanged: (DateTime newDate) {
-                    dateValue = newDate;
-                  },
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
   }
 
   Widget genderRadioButton(
@@ -180,7 +107,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
         child: SafeArea(
           child: Form(
             autovalidateMode: _isSubmitted
-                ? AutovalidateMode.onUserInteraction
+                ? AutovalidateMode.always
                 : AutovalidateMode.disabled,
             key: _formKey,
             child: Column(
@@ -208,8 +135,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           const SizedBox(height: 16.0),
 
                           // Birthday Picker with validation
-                          dateInputField(
-                            context: context,
+                          DateInput(
                             title: "생년월일",
                             placeholder: "생년월일을 입력하세요",
                             invalidateMessage: "생년월일을 입력해주세요",
@@ -223,8 +149,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 16.0),
 
-                          dateInputField(
-                            context: context,
+                          DateInput(
                             title: "처음 만나게 날",
                             placeholder: "처음 만나게 된 날을 입력하세요",
                             invalidateMessage: "처음 만나게 날을 입력해주세요",
@@ -376,6 +301,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       .read(authProvider.notifier)
                                       .register(response);
 
+                                  ref.read(userProvider.notifier).getUserInfo();
+
                                   // 로그인 후 홈으로 이동
                                   if (context.mounted) {
                                     context.go("/");
@@ -425,90 +352,6 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
           ),
         ),
       ),
-    );
-  }
-
-  FormField<DateTime> dateInputField({
-    required BuildContext context,
-    required String title,
-    required String placeholder,
-    required String invalidateMessage,
-    required DateTime initialDate,
-    required DateTime? Function() getDate,
-    required void Function(DateTime?) setDate,
-  }) {
-    final date = getDate();
-    return FormField<DateTime>(
-      validator: (value) {
-        if (value == null) {
-          return invalidateMessage;
-        }
-        return null;
-      },
-      builder: (FormFieldState<DateTime> state) {
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Padding(
-              padding: EdgeInsets.symmetric(horizontal: 10, vertical: 6),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.black,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                  if (state.hasError)
-                    Text(
-                      state.errorText!,
-                      style: TextStyle(
-                        color: Theme.of(context).colorScheme.error,
-                        fontSize: 12.0,
-                      ),
-                    ),
-                ],
-              ),
-            ),
-            GestureDetector(
-              onTap: () => _showDatePicker(
-                context: context,
-                state: state,
-                initialDate: initialDate,
-                setDate: setDate,
-              ),
-              child: Container(
-                width: double.infinity,
-                padding:
-                    const EdgeInsets.symmetric(vertical: 13, horizontal: 16),
-                decoration: BoxDecoration(
-                  color: AppTheme.greyColor,
-                  borderRadius: BorderRadius.circular(16.0),
-                  border: Border.all(
-                    // color: date != null
-                    //     ? AppTheme.primaryColor
-                    //     : Colors.transparent,
-                    color: Colors.transparent,
-                    width: 2.0,
-                  ),
-                ),
-                child: Text(
-                  date == null
-                      ? placeholder
-                      : "${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}",
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: date == null ? Colors.grey : AppTheme.textColor,
-                  ),
-                ),
-              ),
-            ),
-          ],
-        );
-      },
     );
   }
 }
