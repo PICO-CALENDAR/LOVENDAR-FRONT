@@ -9,7 +9,7 @@ import 'package:pico/common/contants/layout_const.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/model/schedules_response.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pico/common/schedule/provider/schedules_in_week_provider.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/view/schedule_detail_screen.dart';
 import 'package:pico/home/components/day_view_painter.dart';
@@ -59,7 +59,7 @@ class _DayViewState extends ConsumerState<DayView> {
   Widget build(BuildContext context) {
     const hourHeight = 60.0; // 1시간 = 60픽셀
     const totalHeight = 24 * hourHeight; // 24시간의 전체 높이
-    final schedules = ref.watch(schedulesInWeekProvider);
+    final schedules = ref.watch(schedulesProvider);
 
     return Stack(
       children: [
@@ -227,7 +227,7 @@ class AllDayScheduleBox extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final allDaySchedulesInDateByCat = ref
-        .read(schedulesInWeekProvider.notifier)
+        .read(schedulesProvider.notifier)
         .getAllDaySchedulesByDateAndCat(date: date, category: category);
 
     return Column(

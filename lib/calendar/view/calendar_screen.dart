@@ -1,21 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/model/custom_calendar.dart';
+import 'package:pico/calendar/components/month_view.dart';
+import 'package:pico/common/components/check_box_chip.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
-class CalendarScreen extends StatefulWidget {
+class CalendarScreen extends ConsumerStatefulWidget {
   const CalendarScreen({super.key});
 
   @override
-  State<CalendarScreen> createState() => _CalendarScreenState();
+  ConsumerState<CalendarScreen> createState() => _CalendarScreenState();
 }
 
-class _CalendarScreenState extends State<CalendarScreen> {
+class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   // 오늘 날짜
   // 현재 날짜
   late DateTime _currentDate;
@@ -31,7 +33,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
 
   late PageController _pageController;
   late List<ScheduleModel> schedule;
-  late ScheduleController _scheduleController;
+  // late ScheduleController _scheduleController;
 
   Map<ScheduleType, bool> categoryCheckState = {
     ScheduleType.MINE: true,
@@ -95,7 +97,7 @@ class _CalendarScreenState extends State<CalendarScreen> {
     // // initialize events
     // events = [];
 
-    _scheduleController = ScheduleController(schedules: []);
+    // _scheduleController = ScheduleController(schedules: []);
 
     super.initState();
   }
@@ -334,446 +336,20 @@ class _CalendarScreenState extends State<CalendarScreen> {
             controller: _pageController,
             onPageChanged: _onPageChange,
             itemCount: _totalMonths,
+            allowImplicitScrolling: false,
             itemBuilder: (context, index) {
               final date = DateTime(_minDate.year, _minDate.month + index);
-              final monthDays = date.datesOfMonths();
 
               return MonthView(
                 selectedMonth: date.month,
-                monthDays: monthDays,
-                scheduleController: _scheduleController,
+                monthDays: date.datesOfMonths(),
+                // scheduleController: _scheduleController,
                 // eventController: eventController,
               );
             },
           ),
         ),
       ],
-    );
-  }
-}
-
-// 월간 뷰
-class MonthView extends StatelessWidget {
-  const MonthView({
-    super.key,
-    required this.selectedMonth,
-    required this.monthDays,
-    required this.scheduleController,
-  });
-
-  final List<DateTime> monthDays;
-  final int selectedMonth;
-  final ScheduleController scheduleController;
-  // final EventController<EventDetail> eventController;
-
-  List<List<DateTime>> chunkListByWeek(List<DateTime> list) {
-    // 7은 일주일이 7일임을 의미
-
-    List<List<DateTime>> chunks = [];
-    for (int i = 0; i < list.length; i += 7) {
-      int end = (i + 7 < list.length) ? i + 7 : list.length;
-      chunks.add(list.sublist(i, end));
-    }
-    return chunks;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final weekInMonth = chunkListByWeek(monthDays);
-    return Row(
-      children: [
-        Expanded(
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              final totalWidth = constraints.maxWidth;
-              final totalHeight = constraints.maxHeight;
-              final slotWidth = totalWidth / 7;
-              final dateCellSlotHeight = (totalHeight / 6) * 0.3;
-              final eventCellSlotHeight = (totalHeight / 6) * 0.7;
-              print(eventCellSlotHeight);
-
-              return Column(
-                children: [
-                  for (var week in weekInMonth)
-                    WeekRow(
-                      selectedMonth: selectedMonth,
-                      weekDate: week,
-                      scheduleController: scheduleController,
-                      slotWidth: slotWidth,
-                      dateCellSlotHeight: dateCellSlotHeight,
-                      totalWidth: totalWidth,
-                      eventCellSlotHeight: eventCellSlotHeight,
-                      isLastWeek: week == weekInMonth.last,
-                    )
-                ],
-              );
-            },
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-// 일주일 Row
-class WeekRow extends StatelessWidget {
-  const WeekRow({
-    super.key,
-    required this.selectedMonth,
-    required this.weekDate,
-    required this.scheduleController,
-    required this.slotWidth,
-    required this.dateCellSlotHeight,
-    required this.totalWidth,
-    required this.eventCellSlotHeight,
-    required this.isLastWeek,
-  });
-
-  final int selectedMonth;
-  final List<DateTime> weekDate;
-  final ScheduleController scheduleController;
-  final double slotWidth;
-  final double dateCellSlotHeight;
-  final double totalWidth;
-  final double eventCellSlotHeight;
-  final bool isLastWeek;
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          children: [
-            for (var date in weekDate)
-              DateNumberCell(
-                width: slotWidth,
-                height: dateCellSlotHeight,
-                selectedMonth: selectedMonth,
-                date: date,
-                isLast: date == weekDate.last,
-              ),
-          ],
-        ),
-        Row(
-          children: [
-            DateScheduleRow(
-              weekDate: weekDate,
-              scheduleController: scheduleController,
-              width: totalWidth,
-              height: eventCellSlotHeight,
-              selectedMonth: selectedMonth,
-              slotWidth: slotWidth,
-              isLastWeek: isLastWeek,
-            ),
-          ],
-        )
-      ],
-    );
-  }
-}
-
-// 날짜 숫자 보여지는 cell 부분
-class DateNumberCell extends StatelessWidget {
-  const DateNumberCell({
-    super.key,
-    required this.width,
-    required this.height,
-    required this.selectedMonth,
-    required this.date,
-    required this.isLast,
-  });
-
-  final double width;
-  final double height;
-
-  final int selectedMonth;
-  final DateTime date;
-  final bool isLast;
-
-  Color _getDayColor(DateTime date, bool isInMonth, bool isToday) {
-    String dayOfWeek = DateFormat.E("en-us").format(date); // 요일을 구합니다.
-
-    // 요일에 따라 색상 반환
-    if (isToday) {
-      return Colors.white;
-    } else if (dayOfWeek == "Sat") {
-      return AppTheme.blueColor.withOpacity(isInMonth ? 1 : 0.5); // 토요일은 파란색
-    } else if (dayOfWeek == "Sun") {
-      return AppTheme.redColor.withOpacity(isInMonth ? 1 : 0.5); // 일요일은 빨간색
-    } else {
-      return AppTheme.textColor
-          .withOpacity(isInMonth ? 1 : 0.5); // 평일은 기본 텍스트 색상
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final bool isToday = date.toString() == DateTime.now().toString();
-    final bool isInMonth = date.month == selectedMonth;
-
-    return Container(
-      width: width,
-      height: height,
-      decoration: BoxDecoration(
-        color: isInMonth
-            ? Colors.transparent
-            : AppTheme.scaffoldBackgroundColorDark,
-        border: Border(
-          top: AppTheme.borderSide,
-          left: AppTheme.borderSide,
-          // right:
-          //     (isLast ?? false) ? const AppTheme.borderSide : BorderSide.none,
-        ),
-      ),
-      child: Center(
-        child: Container(
-          alignment: Alignment.center,
-          width: 22,
-          height: 22,
-          decoration: BoxDecoration(
-            borderRadius: const BorderRadius.all(Radius.circular(50)),
-            color:
-                isToday ? Theme.of(context).primaryColor : Colors.transparent,
-          ),
-          child: Text(
-            date.day.toString(),
-            style: TextStyle(
-              fontSize: 11,
-              fontWeight: FontWeight.w600,
-              color: _getDayColor(date, isInMonth, isToday),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// 이벤트 보여지는 cell 부분
-class DateScheduleRow extends StatelessWidget {
-  const DateScheduleRow({
-    super.key,
-    required this.weekDate,
-    required this.scheduleController,
-    required this.width,
-    required this.height,
-    required this.selectedMonth,
-    required this.slotWidth,
-    required this.isLastWeek,
-  });
-
-  final List<DateTime> weekDate;
-  final ScheduleController scheduleController;
-  final double width;
-  final double height;
-  final int selectedMonth;
-  final double slotWidth;
-  final bool isLastWeek;
-
-  @override
-  Widget build(BuildContext context) {
-    const gap = 1;
-    const maxColumn = 4;
-    final eventHeight = (height - (maxColumn + 2) * gap) * 0.25;
-
-    final orgSchedules = scheduleController.filterAndSortSchedulesForWeek(
-        scheduleController.orgSchedules, weekDate.first, weekDate.last);
-    // for (var event in organizeEvents(events)) {
-    //   print("${event.eventData.title} : ${event.column}");
-    //   print(event.eventData.startTime.isBefore(weekDate.first));
-    //   print((event.eventData.startTime.weekday - 1) * slotWidth + 2);
-    //   print(event.eventData.endTime.isAfter(weekDate.last));
-    // }
-
-    return SingleChildScrollView(
-      child: Container(
-        width: width,
-        height: height,
-        decoration: BoxDecoration(
-          border: Border(
-            // left: const AppTheme.borderSide,
-            // right: const AppTheme.borderSide,
-            bottom: isLastWeek ? AppTheme.borderSide : BorderSide.none,
-          ),
-        ),
-        child: Stack(
-          children: [
-            // 경계를 나타내는 부분
-            Row(
-              children: [
-                for (var date in weekDate)
-                  GestureDetector(
-                    onTap: () {
-                      print(date);
-                    },
-                    child: Container(
-                      width: slotWidth,
-                      decoration: BoxDecoration(
-                        border: Border(
-                          left: AppTheme.borderSide,
-                        ),
-                        color: date.month == selectedMonth
-                            ? Colors.transparent
-                            : AppTheme.scaffoldBackgroundColorDark,
-                      ),
-                    ),
-                  ),
-              ],
-            ),
-            for (var schedule in orgSchedules)
-              schedule.column <= maxColumn
-                  ? Positioned(
-                      top: (schedule.column - 1) * eventHeight +
-                          (gap * (schedule.column - 1)),
-                      left: schedule.scheduleData.startTime
-                              .isBefore(weekDate.first)
-                          ? 2
-                          : (schedule.scheduleData.startTime.weekday - 1) *
-                                  slotWidth +
-                              2,
-                      right:
-                          schedule.scheduleData.endTime.isAfter(weekDate.last)
-                              ? 2
-                              : (7 - (schedule.scheduleData.endTime.weekday)) *
-                                      slotWidth +
-                                  2,
-                      child: IgnorePointer(
-                        ignoring: true,
-                        child: Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: schedule.scheduleData.color,
-                            borderRadius: const BorderRadius.all(
-                              Radius.circular(5),
-                            ),
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Expanded(
-                                child: Center(
-                                  child: Text(
-                                    maxLines: 1,
-                                    overflow: TextOverflow.ellipsis,
-                                    schedule.scheduleData.title,
-                                    style: const TextStyle(
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              (schedule.column == maxColumn &&
-                                      scheduleController
-                                              .getSchedulesForDate(schedule
-                                                  .scheduleData.startTime)
-                                              .length >
-                                          maxColumn)
-                                  ? Expanded(
-                                      child: Text(
-                                        "+${scheduleController.getSchedulesForDate(schedule.scheduleData.startTime).length - maxColumn}",
-                                        style: const TextStyle(
-                                          fontSize: 11.5,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    )
-                                  : const SizedBox.shrink(),
-                            ],
-                          ),
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink()
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CheckBoxChip extends StatelessWidget {
-  const CheckBoxChip({
-    super.key,
-    required this.width,
-    this.height = 38.0,
-    required this.label,
-    required this.isChecked,
-    required this.color,
-    required this.onPressed,
-    this.accentColor = Colors.grey,
-    this.selectedColor = AppTheme.scaffoldBackgroundColor,
-    this.unselectedColor = Colors.grey,
-  });
-
-  final double width;
-  final double height;
-  final String label;
-  final bool isChecked;
-  final Color color;
-  final Color selectedColor;
-  final Color unselectedColor;
-  final Color accentColor;
-  final void Function() onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: width,
-      child: ElevatedButton(
-        style: ElevatedButton.styleFrom(
-          surfaceTintColor: color,
-          elevation: 1,
-          shadowColor: Colors.transparent,
-          overlayColor: accentColor,
-          // shadowColor: Colors.grey[50],
-          padding: const EdgeInsets.symmetric(
-            vertical: 3,
-            horizontal: 8,
-          ),
-          backgroundColor: color,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8), // 둥근 모서리 반경
-          ),
-        ),
-        onPressed: onPressed,
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 200),
-              padding: const EdgeInsets.all(0.5),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: accentColor,
-                  width: 1.5,
-                ),
-                color: isChecked ? accentColor : Colors.transparent,
-              ),
-              child: Icon(
-                Icons.check_rounded,
-                size: 16,
-                color: isChecked ? selectedColor : Colors.transparent,
-              ),
-            ),
-            const SizedBox(
-              width: 7,
-            ),
-            Text(
-              label,
-              style: const TextStyle(
-                color: AppTheme.textColor,
-                fontSize: 14,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

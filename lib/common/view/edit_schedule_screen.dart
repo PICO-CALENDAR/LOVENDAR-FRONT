@@ -9,7 +9,7 @@ import 'package:pico/common/components/date_input.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/toast.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/provider/schedules_in_week_provider.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/schedule/repository/schedule_repository.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
@@ -486,8 +486,8 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                         final response = await repository.postAddSchedule(body);
                         if (response.success) {
                           ref
-                              .read(schedulesInWeekProvider.notifier)
-                              .refreshSchedulesInWeek();
+                              .read(schedulesProvider.notifier)
+                              .refreshSchedules();
                           if (mounted) {
                             Toast.showSuccessToast(
                               message: "성공적으로 일정이 추가되었습니다",

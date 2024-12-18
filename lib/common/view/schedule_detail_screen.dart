@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:pico/common/components/primary_button.dart';
 import 'package:pico/common/components/toast.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/provider/schedules_in_week_provider.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 import 'package:pico/common/utils/modals.dart';
@@ -180,8 +180,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                     onPressed: () async {
                                       try {
                                         await ref
-                                            .read(schedulesInWeekProvider
-                                                .notifier)
+                                            .read(schedulesProvider.notifier)
                                             .deleteSchedule(
                                                 schedule.scheduleId);
                                         Toast.showSuccessToast(
