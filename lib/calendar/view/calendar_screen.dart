@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/calendar/components/month_view.dart';
+import 'package:pico/calendar/provider/checked_category_provider.dart';
 import 'package:pico/common/components/check_box_chip.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
@@ -34,12 +35,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   late PageController _pageController;
   late List<ScheduleModel> schedule;
   // late ScheduleController _scheduleController;
-
-  Map<ScheduleType, bool> categoryCheckState = {
-    ScheduleType.MINE: true,
-    ScheduleType.YOURS: true,
-    ScheduleType.OURS: true,
-  };
 
   /// Sets the minimum and maximum dates for current view.
   void _setDateRange() {
@@ -183,6 +178,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final koreanWeekday = ["월", "화", "수", "목", "금", "토", "일"];
+    final categoryCheckedState = ref.watch(checkedCategoryProvider);
 
     return Column(
       children: [
@@ -259,33 +255,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return Row(
                 children: [
                   CheckBoxChip(
-                    label: "내 일정",
-                    width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.MINE]!,
-                    color: AppTheme.getColorByScheduleType(ScheduleType.MINE),
-                    accentColor: AppTheme.getDarkerColorByScheduleType(
-                      ScheduleType.MINE,
-                    ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.MINE] =
-                          !categoryCheckState[ScheduleType.MINE]!;
-                    }),
-                  ),
+                      label: "내 일정",
+                      width: checkboxbtnWidth,
+                      isChecked: categoryCheckedState[ScheduleType.MINE]!,
+                      color: AppTheme.getColorByScheduleType(ScheduleType.MINE),
+                      accentColor: AppTheme.getDarkerColorByScheduleType(
+                        ScheduleType.MINE,
+                      ),
+                      onPressed: () => ref
+                          .read(checkedCategoryProvider.notifier)
+                          .toggleCategory(ScheduleType.MINE)),
                   const SizedBox(
                     width: seperatedGap,
                   ),
                   CheckBoxChip(
                     label: "상대 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.YOURS]!,
+                    isChecked: categoryCheckedState[ScheduleType.YOURS]!,
                     color: AppTheme.getColorByScheduleType(ScheduleType.YOURS),
                     accentColor: AppTheme.getDarkerColorByScheduleType(
                       ScheduleType.YOURS,
                     ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.YOURS] =
-                          !categoryCheckState[ScheduleType.YOURS]!;
-                    }),
+                    onPressed: () => ref
+                        .read(checkedCategoryProvider.notifier)
+                        .toggleCategory(ScheduleType.YOURS),
                   ),
                   const SizedBox(
                     width: seperatedGap,
@@ -293,15 +286,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   CheckBoxChip(
                     label: "우리 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.OURS]!,
+                    isChecked: categoryCheckedState[ScheduleType.OURS]!,
                     color: AppTheme.getColorByScheduleType(ScheduleType.OURS),
                     accentColor: AppTheme.getDarkerColorByScheduleType(
                       ScheduleType.OURS,
                     ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.OURS] =
-                          !categoryCheckState[ScheduleType.OURS]!;
-                    }),
+                    onPressed: () => ref
+                        .read(checkedCategoryProvider.notifier)
+                        .toggleCategory(ScheduleType.OURS),
                   ),
                 ],
               );

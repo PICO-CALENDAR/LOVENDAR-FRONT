@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pico/calendar/provider/checked_category_provider.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/repository/schedule_repository.dart';
@@ -106,10 +107,13 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   }
 
   // 월간뷰에서 스케줄 컬럼화 정리
-  List<ColumnedScheduleData> organizeSchedules() {
+  List<ColumnedScheduleData> organizeSchedules(
+    List<ScheduleModel> schedules,
+  ) {
     List<ColumnedScheduleData> columnedSchedules =
         []; // 1. 이벤트를 시작 날짜 기준으로 정렬 (같은 시작 날짜면 종료 날짜 기준으로 정렬)
-    state.sort((a, b) {
+
+    schedules.sort((a, b) {
       if (a.startTime.isSameDate(b.startTime)) {
         return a.endTime.withoutTime.compareTo(b.endTime.withoutTime);
       }
@@ -119,7 +123,7 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
     // 2. 열(column) 상태를 추적하는 리스트
     List<DateTime> columns = []; // 각 열의 종료 날짜 저장
 
-    for (var schedule in state) {
+    for (var schedule in schedules) {
       bool foundColumn = false;
 
       // 3. 사용 가능한 열 찾기
@@ -167,8 +171,11 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   }
 
   // 특정 날짜에 해당하는 스케줄
-  List<ScheduleModel> getSchedulesForDate(DateTime date) {
-    final filteredSchedules = state.where((schedule) {
+  List<ScheduleModel> getSchedulesForDate({
+    required DateTime date,
+    required List<ScheduleModel> schedules,
+  }) {
+    final filteredSchedules = schedules.where((schedule) {
       // 이벤트가 해당 날짜 범위 안에 포함되는지 확인
       return schedule.startTime.withoutTime
               .isBefore(date.withoutTime.add(const Duration(days: 1))) &&

@@ -20,14 +20,14 @@ import 'package:pico/common/utils/extenstions.dart';
 class DayView extends ConsumerStatefulWidget {
   final DateTime date;
 
-  final bool isAllDayScheduleTapped;
-  final void Function() toggleIsAllDayScheduleTapped;
+  final bool? isAllDayScheduleTapped;
+  final void Function()? toggleIsAllDayScheduleTapped;
 
   const DayView({
     super.key,
     required this.date,
-    required this.isAllDayScheduleTapped,
-    required this.toggleIsAllDayScheduleTapped,
+    this.isAllDayScheduleTapped,
+    this.toggleIsAllDayScheduleTapped,
   });
 
   @override
@@ -38,6 +38,13 @@ class _DayViewState extends ConsumerState<DayView> {
   late Timer _timer;
 
   DateTime _currentTime = DateTime.now();
+  bool isAllDayScheduleTapped = false;
+
+  void toggleIsAllDayScheduleTapped() {
+    setState(() {
+      isAllDayScheduleTapped = !isAllDayScheduleTapped;
+    });
+  }
 
   @override
   void initState() {
@@ -109,7 +116,7 @@ class _DayViewState extends ConsumerState<DayView> {
 
                           return Stack(
                             children: [
-                              // TODO" 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
+                              // TODO: 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
                               for (var scheduleGroup
                                   in groupOverlappingSchedules(schedules
                                       .where((s) =>
@@ -130,27 +137,38 @@ class _DayViewState extends ConsumerState<DayView> {
                 ),
 
                 // 현재 시간 Indicator
-                Positioned(
-                  top: (_currentTime.hour + _currentTime.minute / 60) *
-                      hourHeight,
-                  left: 60, // 시간 Text 피하고 선부터 시작하기 위해서
-                  right: 7,
-                  child: const Indicator(),
-                ),
+                widget.date.isSameDate(_currentTime)
+                    ? Positioned(
+                        top: (_currentTime.hour + _currentTime.minute / 60) *
+                            hourHeight,
+                        left: 60, // 시간 Text 피하고 선부터 시작하기 위해서
+                        right: 7,
+                        child: const Indicator(),
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
         ),
         IgnorePointer(
-          ignoring: !widget.isAllDayScheduleTapped,
+          ignoring: widget.isAllDayScheduleTapped != null
+              ? !widget.isAllDayScheduleTapped!
+              : !isAllDayScheduleTapped,
           child: AnimatedOpacity(
-            duration: Duration(milliseconds: 500), // 전환 시간
+            duration: Duration(milliseconds: 300), // 전환 시간
             curve: Curves.easeInOut,
-            opacity:
-                widget.isAllDayScheduleTapped ? 0.5 : 0.0, // 조건에 따라 불투명도 조절
+            opacity: widget.isAllDayScheduleTapped != null
+                ? widget.isAllDayScheduleTapped!
+                    ? 0.6
+                    : 0.0
+                : isAllDayScheduleTapped
+                    ? 0.6
+                    : 0.0, // 조건에 따라 불투명도 조절
             child: GestureDetector(
               onTap: () {
-                widget.toggleIsAllDayScheduleTapped();
+                widget.toggleIsAllDayScheduleTapped != null
+                    ? widget.toggleIsAllDayScheduleTapped!()
+                    : toggleIsAllDayScheduleTapped();
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -176,8 +194,12 @@ class _DayViewState extends ConsumerState<DayView> {
               AllDayScheduleBox(
                 date: widget.date,
                 category: ScheduleType.OURS,
-                isTapped: widget.isAllDayScheduleTapped,
-                toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                isTapped: widget.isAllDayScheduleTapped != null
+                    ? widget.isAllDayScheduleTapped!
+                    : isAllDayScheduleTapped,
+                toggleIsTapped: widget.toggleIsAllDayScheduleTapped != null
+                    ? widget.toggleIsAllDayScheduleTapped!
+                    : toggleIsAllDayScheduleTapped,
               ),
               Row(
                 children: [
@@ -185,8 +207,13 @@ class _DayViewState extends ConsumerState<DayView> {
                     child: AllDayScheduleBox(
                       date: widget.date,
                       category: ScheduleType.MINE,
-                      isTapped: widget.isAllDayScheduleTapped,
-                      toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                      isTapped: widget.isAllDayScheduleTapped != null
+                          ? widget.isAllDayScheduleTapped!
+                          : isAllDayScheduleTapped,
+                      toggleIsTapped:
+                          widget.toggleIsAllDayScheduleTapped != null
+                              ? widget.toggleIsAllDayScheduleTapped!
+                              : toggleIsAllDayScheduleTapped,
                     ),
                   ),
                   SizedBox(
@@ -196,8 +223,13 @@ class _DayViewState extends ConsumerState<DayView> {
                     child: AllDayScheduleBox(
                       date: widget.date,
                       category: ScheduleType.YOURS,
-                      isTapped: widget.isAllDayScheduleTapped,
-                      toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                      isTapped: widget.isAllDayScheduleTapped != null
+                          ? widget.isAllDayScheduleTapped!
+                          : isAllDayScheduleTapped,
+                      toggleIsTapped:
+                          widget.toggleIsAllDayScheduleTapped != null
+                              ? widget.toggleIsAllDayScheduleTapped!
+                              : toggleIsAllDayScheduleTapped,
                     ),
                   )
                 ],
