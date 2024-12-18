@@ -70,7 +70,7 @@ abstract class ScheduleRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<void> postDeleteSchedule({
+  Future<ScheduleResponse> postDeleteSchedule({
     @Path() required String scheduleId,
   });
 

@@ -16,6 +16,14 @@ class _HomeScreenState extends State<HomeScreen> {
   final currentWeekDate = getWeekDate(DateTime.now());
   late final PageController _pageController;
 
+  bool isAllDayScheduleTapped = false;
+
+  void toggleIsAllDayScheduleTapped() {
+    setState(() {
+      isAllDayScheduleTapped = !isAllDayScheduleTapped;
+    });
+  }
+
   DateTime selectedDate = DateTime.now();
 
   int getIndex(DateTime tapDate) {
@@ -93,10 +101,15 @@ class _HomeScreenState extends State<HomeScreen> {
             onPageChanged: (index) {
               setState(() {
                 selectedDate = currentWeekDate[index];
+                isAllDayScheduleTapped = false;
               });
             },
             itemBuilder: (context, index) {
-              return DayView(date: selectedDate);
+              return DayView(
+                date: selectedDate,
+                isAllDayScheduleTapped: isAllDayScheduleTapped,
+                toggleIsAllDayScheduleTapped: toggleIsAllDayScheduleTapped,
+              );
             },
           ),
         ),

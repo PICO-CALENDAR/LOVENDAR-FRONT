@@ -193,13 +193,14 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<void> postDeleteSchedule({required String scheduleId}) async {
+  Future<ScheduleResponse> postDeleteSchedule(
+      {required String scheduleId}) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<void>(Options(
+    final _options = _setStreamType<ScheduleResponse>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -215,7 +216,15 @@ class _ScheduleRepository implements ScheduleRepository {
           _dio.options.baseUrl,
           baseUrl,
         )));
-    await _dio.fetch<void>(_options);
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late ScheduleResponse _value;
+    try {
+      _value = ScheduleResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
   }
 
   @override

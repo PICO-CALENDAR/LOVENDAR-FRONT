@@ -5,7 +5,7 @@ class DayViewPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     // 위치 미세 조정
-    const double horizontalPadding = 10;
+    const double horizontalPadding = 8.5;
     // const double hightOffset = 0; // 사용 안함
     // const double textHeightOffset = 0; // 사용 안함
 
@@ -38,7 +38,7 @@ class DayViewPainter extends CustomPainter {
         text: timeText,
         style: TextStyle(
           color: Colors.grey.shade800,
-          fontSize: 12,
+          fontSize: 10.5,
           fontWeight: FontWeight.w600,
         ),
       );
@@ -51,7 +51,7 @@ class DayViewPainter extends CustomPainter {
 
       // 시간 블록 선
       canvas.drawLine(
-        Offset(textPadding + horizontalPadding + 20, y), // 선을 텍스트 뒤쪽에서 시작
+        Offset(textPadding + horizontalPadding + 10, y), // 선을 텍스트 뒤쪽에서 시작
         Offset(size.width - horizontalPadding, y),
         gridPaint,
       );

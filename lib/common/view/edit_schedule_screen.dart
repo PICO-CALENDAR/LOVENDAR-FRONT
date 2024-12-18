@@ -16,9 +16,21 @@ import 'package:pico/common/utils/extenstions.dart';
 import 'package:pico/user/view/register_screen.dart';
 import 'package:go_router/go_router.dart';
 
+enum EditMode {
+  EDIT,
+  ADD,
+}
+
 class EditScheduleScreen extends ConsumerStatefulWidget {
+  final EditMode mode;
+  final ScheduleModel? initialScheduleValue;
+
   static String get routeName => 'editSchedule';
-  const EditScheduleScreen({super.key});
+  const EditScheduleScreen({
+    super.key,
+    this.mode = EditMode.ADD,
+    this.initialScheduleValue,
+  });
 
   @override
   ConsumerState<EditScheduleScreen> createState() => _EditScheduleScreenState();
@@ -78,10 +90,29 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
 
   @override
   void initState() {
-    startDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
-    endDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
-    startTime = _initialDay;
-    endTime = _initialDay.add(Duration(hours: 1));
+    if (widget.mode == EditMode.ADD) {
+      startDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
+      endDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
+      startTime = _initialDay;
+      endTime = _initialDay.add(Duration(hours: 1));
+    } else {
+      if (widget.initialScheduleValue != null) {
+        final initialValue = widget.initialScheduleValue!;
+        _scheduleTitle.text = initialValue.title;
+        _category = initialValue.category;
+        _isAllDay = initialValue.isAllDay;
+        startDay = DateTime(initialValue.startTime.year,
+            initialValue.startTime.month, initialValue.startTime.day);
+        endDay = DateTime(initialValue.endTime.year, initialValue.endTime.month,
+            initialValue.endTime.day);
+        startTime = initialValue.startTime;
+        endTime = initialValue.endTime;
+        _repeatType = initialValue.repeatType;
+        if (initialValue.meetingPeople != null) {
+          _meetingPeople.text = initialValue.meetingPeople!;
+        }
+      }
+    }
 
     super.initState();
   }
@@ -215,8 +246,8 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
     final repository = ref.watch(scheduleRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
-        title: const Text(
-          "일정 추가",
+        title: Text(
+          widget.mode == EditMode.ADD ? "일정 추가" : "일정 수정",
         ),
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
@@ -400,7 +431,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ActionButton(
-                  buttonName: "일정 추가",
+                  buttonName: widget.mode == EditMode.ADD ? "일정 추가" : "일정 수정",
                   onPressed: () async {
                     setState(() {
                       _isSubmitted = true;
