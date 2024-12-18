@@ -1,24 +1,54 @@
+import 'dart:ui';
 import 'package:flutter/material.dart';
-import 'package:pico/screen/splash_screen.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 
-void main() {
-  runApp(const MyApp());
+import 'package:pico/common/provider/go_provider.dart';
+import 'package:pico/common/theme/theme_light.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // 기기의 기본 로케일 가져오기
+  final deviceLocale = PlatformDispatcher.instance.locale;
+  Intl.defaultLocale = deviceLocale.toString(); // 기기 언어 설정으로 로케일 지정
+  // 환경 변수 로드
+  await dotenv.load(fileName: 'assets/config/.env');
+
+  // 앱 시작
+  runApp(
+    const ProviderScope(
+      child: MyApp(),
+    ),
+  );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-        fontFamily: 'Pretendard',
-      ),
-      home: const SplashScreen(),
+  Widget build(BuildContext context, WidgetRef ref) {
+    final router = ref.watch(routerProvider);
+    return MaterialApp.router(
+      title: 'PICO',
+      theme: AppTheme.lightTheme,
+      routerConfig: router,
+      // routes: {
+      //   '/': (context) => const BottomNav(),
+      //   '/login': (context) => const LoginScreen(),
+      //   '/register': (context) => const RegisterScreen(),
+      // },
+      localizationsDelegates: const [
+        GlobalMaterialLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
+      supportedLocales: const [
+        Locale('ko', 'KR'),
+        Locale('en', 'US'),
+      ],
     );
   }
 }
