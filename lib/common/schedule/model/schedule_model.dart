@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/date_operations.dart';
+import 'package:pico/common/utils/extenstions.dart';
 
 part 'schedule_model.g.dart';
 
@@ -108,6 +109,56 @@ class ScheduleModel extends ScheduleModelBase {
   Duration get duration => endTime.difference(startTime);
   Color get color => AppTheme.getColorByScheduleType(category);
 
+  // 특정 날짜에 해당하는 이벤트인지
+  bool isEventOnDate({
+    // required ScheduleModel schedule,
+    required DateTime targetDate,
+  }) {
+    DateTime scheduleStartTime = super.startTime;
+    DateTime scheduleEndTime = super.endTime;
+
+    Duration duration = scheduleEndTime.difference(scheduleStartTime);
+
+    while (scheduleStartTime.isBefore(targetDate) ||
+        scheduleStartTime.isSameDate(targetDate)) {
+      // 현재 타겟날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
+      if ((scheduleStartTime.isSameDate(targetDate) ||
+          targetDate.isAfter(scheduleStartTime) &&
+              targetDate.isBefore(scheduleEndTime) ||
+          scheduleEndTime.isSameDate(targetDate))) {
+        return true;
+      }
+
+      switch (super.repeatType) {
+        case RepeatType.DAILY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 1));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.WEEKLY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 7));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.BIWEEKLY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 14));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.MONTHLY:
+          scheduleStartTime = DateTime(scheduleStartTime.year,
+              scheduleStartTime.month + 1, scheduleStartTime.day);
+          scheduleEndTime = scheduleEndTime.add(duration);
+          break;
+        case RepeatType.YEARLY:
+          scheduleStartTime = DateTime(scheduleStartTime.year + 1,
+              scheduleStartTime.month, scheduleStartTime.day);
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        default:
+          return false;
+      }
+    }
+    return false;
+  }
+
   ScheduleModel({
     required this.scheduleId,
     required super.title,
@@ -121,6 +172,34 @@ class ScheduleModel extends ScheduleModelBase {
     this.repeatStartDate,
     this.repeatEndDate,
   });
+
+  // 복사 생성자
+  ScheduleModel.copyWith({
+    required ScheduleModel original,
+    int? scheduleId, // 변경된 타입에 맞춤
+    String? title,
+    DateTime? startTime,
+    DateTime? endTime,
+    ScheduleType? category,
+    bool? isAllDay,
+    String? meetingPeople,
+    bool? isRepeat,
+    RepeatType? repeatType,
+    DateTime? repeatStartDate, // nullable DateTime 처리
+    DateTime? repeatEndDate, // nullable DateTime 처리
+  }) : this(
+          scheduleId: scheduleId ?? original.scheduleId,
+          title: title ?? original.title,
+          startTime: startTime ?? original.startTime,
+          endTime: endTime ?? original.endTime,
+          category: category ?? original.category,
+          isAllDay: isAllDay ?? original.isAllDay,
+          meetingPeople: meetingPeople ?? original.meetingPeople,
+          isRepeat: isRepeat ?? original.isRepeat,
+          repeatType: repeatType ?? original.repeatType,
+          repeatStartDate: repeatStartDate ?? original.repeatStartDate,
+          repeatEndDate: repeatEndDate ?? original.repeatEndDate,
+        );
 
   factory ScheduleModel.fromJson(Map<String, dynamic> json) =>
       _$ScheduleModelFromJson(json);

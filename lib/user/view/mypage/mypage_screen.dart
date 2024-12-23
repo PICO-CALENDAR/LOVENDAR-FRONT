@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/contants/urls.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 import 'package:pico/user/view/mypage/notifications_setting.dart';
@@ -184,7 +185,12 @@ class MypageScreen extends ConsumerWidget {
         ),
         ListTile(
           onTap: () {
-            ref.read(userProvider.notifier).logOut();
+            showConfirmDialog(
+                title: "로그아웃 하시겠습니까?",
+                context: context,
+                onPressed: () {
+                  ref.read(userProvider.notifier).logOut();
+                });
           },
           title: Text(
             '로그아웃',
@@ -196,10 +202,18 @@ class MypageScreen extends ConsumerWidget {
         ),
         ListTile(
           onTap: () {
-            ref.read(userProvider.notifier).deleteAccount();
+            showConfirmDialog(
+              title: "회원 탈퇴하시겠습니까?",
+              content: "커플 연결이 끊기고,\n 모든 데이터가 삭제됩니다.\n이 작업을 되돌릴 수 없습니다.",
+              context: context,
+              dialogType: ConfirmType.DANGER,
+              onPressed: () {
+                ref.read(userProvider.notifier).deleteAccount();
+              },
+            );
 
             // TODO: 이게 왜 안될까..
-            context.go("/");
+            // context.go("/");
           },
           title: Text(
             '탈퇴하기',

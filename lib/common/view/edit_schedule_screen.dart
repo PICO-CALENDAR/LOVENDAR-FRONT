@@ -8,11 +8,14 @@ import 'package:pico/common/components/action_button.dart';
 import 'package:pico/common/components/date_input.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/toast.dart';
+import 'package:pico/common/provider/selected_day_provider.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/model/update_schedule_body.dart';
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/schedule/repository/schedule_repository.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/user/view/register_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -45,12 +48,22 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
   bool _isAllDay = false;
   ScheduleType _category = ScheduleType.MINE;
   RepeatType? _repeatType;
-  final DateTime _initialDay = DateTime.now();
+  late DateTime _initialDay;
   late DateTime startDay;
   late DateTime endDay;
   late DateTime startTime;
   late DateTime endTime;
   List<DropdownMenuItem<RepeatType>> repeatDropDownMenuItems = [
+    DropdownMenuItem<RepeatType>(
+      value: null,
+      child: Text(
+        "없음",
+        style: TextStyle(
+          color: AppTheme.textColor,
+          fontSize: 14,
+        ),
+      ),
+    ),
     ...RepeatType.values.map(
       (item) => DropdownMenuItem<RepeatType>(
         value: item,
@@ -90,6 +103,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
 
   @override
   void initState() {
+    _initialDay = ref.read(selectedDayProvider);
     if (widget.mode == EditMode.ADD) {
       startDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
       endDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
@@ -249,7 +263,20 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
         title: Text(
           widget.mode == EditMode.ADD ? "일정 추가" : "일정 수정",
         ),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        automaticallyImplyLeading: false, // 이전 버튼 제거
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () {
+              try {
+                context.pop();
+              } catch (e) {
+                context.go("/");
+              }
+            },
+          ),
+        ],
+        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: GestureDetector(
         onTap: () {
@@ -471,7 +498,8 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                               endTime.hour,
                               endTime.minute,
                             );
-                      try {
+
+                      if (widget.mode == EditMode.ADD) {
                         final body = ScheduleModelBase(
                           title: _scheduleTitle.text,
                           startTime: start,
@@ -481,46 +509,35 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                           isRepeat: _repeatType != null,
                           repeatType: _repeatType,
                         );
-                        // print(body.toJson().toString());
 
-                        final response = await repository.postAddSchedule(body);
-                        if (response.success) {
+                        try {
+                          // print(body.toJson().toString());
+
                           ref
                               .read(schedulesProvider.notifier)
-                              .refreshSchedules();
-                          if (mounted) {
-                            Toast.showSuccessToast(
-                              message: "성공적으로 일정이 추가되었습니다",
-                            ).show(context);
-                            context.pop();
-                          }
-                        } else {
+                              .postAddSchedule(body);
+                          Toast.showSuccessToast(
+                            message: "일정을 성공적으로 추가했습니다",
+                          ).show(context);
+                        } catch (e) {
+                          print(e);
                           if (mounted) {
                             Toast.showErrorToast(
                               message: "일정 추가에 문제가 생겼습니다",
                             ).show(context);
                           }
                         }
-                      } on DioException catch (e) {
-                        if (e.response != null) {
-                          print("HTTP 에러: ${e.response?.statusCode}");
-                          print("서버 응답: ${e.response?.data}");
-                        } else {
-                          print("에러 메시지: ${e.message}");
-                        }
-                        if (mounted) {
-                          Toast.showErrorToast(
-                            message: "일정 추가에 문제가 생겼습니다",
-                          ).show(context);
-                        }
-                      } catch (e) {
-                        print(e);
-                        if (mounted) {
-                          Toast.showErrorToast(
-                            message: "일정 추가에 문제가 생겼습니다",
-                          ).show(context);
-                        }
                       }
+                    } else {
+                      // final body = UpdateScheduleBody(
+                      //   title: _scheduleTitle.text,
+                      //   startTime: start,
+                      //   endTime: end,
+                      //   category: _category,
+                      //   isAllDay: _isAllDay,
+                      //   isRepeat: _repeatType != null,
+                      //   repeatType: _repeatType,
+                      // );
                     }
 
                     // else {

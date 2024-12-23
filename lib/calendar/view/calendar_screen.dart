@@ -8,6 +8,7 @@ import 'package:pico/common/components/check_box_chip.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
@@ -85,6 +86,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // Initialize current date.
     _currentDate = DateTime.now();
     _regulateCurrentDate();
+
+    final schedules = ref.read(schedulesProvider);
+    if (schedules.isEmpty) {
+      ref.read(schedulesProvider.notifier).refreshSchedules();
+    }
 
     // Initialize page controller to control page actions.
     _pageController = PageController(initialPage: _currentIndex);

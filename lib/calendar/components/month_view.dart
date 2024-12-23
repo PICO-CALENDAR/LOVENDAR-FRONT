@@ -51,6 +51,7 @@ class MonthView extends ConsumerWidget {
                     WeekRow(
                       selectedMonth: selectedMonth,
                       weekDate: week,
+                      monthDays: monthDays,
                       // scheduleController: scheduleController,
                       slotWidth: slotWidth,
                       dateCellSlotHeight: dateCellSlotHeight,

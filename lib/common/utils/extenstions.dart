@@ -1,3 +1,5 @@
+import 'package:pico/common/schedule/model/schedule_model.dart';
+
 extension DateTimeComparisonByDate on DateTime {
   bool isSameDate(DateTime other) {
     return year == other.year && month == other.month && day == other.day;
@@ -70,5 +72,41 @@ extension DateTimeExtensions on DateTime {
       monthDays.addAll(DateTime(year, month, start).datesOfWeek());
     }
     return monthDays;
+  }
+}
+
+extension ScheduleListExtensions on List<ScheduleModel> {
+  // 여러 날에 걸친 이벤트 시간 수정
+  List<ScheduleModel> adjustMultiDaySchedules({required DateTime targetDate}) {
+    return map((schedule) {
+      final scheduleStartTime = schedule.startTime;
+      final scheduleEndTime = schedule.endTime;
+
+      if (!scheduleStartTime.isSameDate(scheduleEndTime)) {
+        if (targetDate.isSameDate(scheduleStartTime)) {
+          return ScheduleModel.copyWith(
+            original: schedule,
+            endTime: DateTime(scheduleStartTime.year, scheduleStartTime.month,
+                scheduleStartTime.day, 23, 59),
+          );
+        } else if (targetDate.isSameDate(scheduleEndTime)) {
+          return ScheduleModel.copyWith(
+            original: schedule,
+            startTime: DateTime(scheduleEndTime.year, scheduleEndTime.month,
+                scheduleEndTime.day, 0, 0),
+          );
+        } else {
+          return ScheduleModel.copyWith(
+            original: schedule,
+            startTime: DateTime(
+                targetDate.year, targetDate.month, targetDate.day, 0, 0),
+            endTime: DateTime(
+                targetDate.year, targetDate.month, targetDate.day, 23, 59),
+          );
+        }
+      }
+
+      return schedule;
+    }).toList();
   }
 }

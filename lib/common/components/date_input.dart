@@ -54,9 +54,11 @@ class DateInput extends StatelessWidget {
             children: [
               // 취소 및 확인 버튼이 있는 Row
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  vertical: 10,
-                  horizontal: 20,
+                padding: const EdgeInsets.only(
+                  top: 10,
+                  left: 20,
+                  right: 20,
+                  bottom: 5,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -98,12 +100,17 @@ class DateInput extends StatelessWidget {
               ),
               // 연도와 월만 선택할 수 있는 CupertinoDatePicker
               Flexible(
-                child: CupertinoDatePicker(
-                  initialDateTime: initialDate, // 연도와 월만 선택하고 1일로 고정
-                  mode: mode,
-                  onDateTimeChanged: (DateTime newDate) {
-                    dateValue = newDate;
-                  },
+                child: Padding(
+                  padding: EdgeInsets.only(
+                    bottom: 50,
+                  ),
+                  child: CupertinoDatePicker(
+                    initialDateTime: initialDate, // 연도와 월만 선택하고 1일로 고정
+                    mode: mode,
+                    onDateTimeChanged: (DateTime newDate) {
+                      dateValue = newDate;
+                    },
+                  ),
                 ),
               ),
             ],

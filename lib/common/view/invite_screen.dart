@@ -79,7 +79,7 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
           leading: SizedBox.shrink(),
           actions: [
             IconButton(
-              icon: const Icon(Icons.close),
+              icon: const Icon(Icons.close_rounded),
               onPressed: () {
                 try {
                   context.pop();

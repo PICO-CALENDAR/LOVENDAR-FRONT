@@ -28,12 +28,24 @@ class LoginScreen extends ConsumerWidget {
                 children: [
                   Center(
                     child: Image.asset(
-                      'images/pico_logo.png', // Replace with your actual asset path
-                      width: screenWidth * 0.4, // Responsive logo size
+                      'images/lovendar_logo.png', // Replace with your actual asset path
+                      width: screenWidth * 0.6, // Responsive logo size
+                    ),
+                  ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  Text(
+                    'Lovendar',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 30,
+                      color: Colors.brown[900],
+                      fontWeight: FontWeight.w900,
                     ),
                   ),
                   const Text(
-                    '사랑의 순간을 픽! 중요한 일정을 콕!\nPICO와 함께하는 커플 일상 공유',
+                    '사랑을 기록하는 달력, \n우리의 하루를 특별하게',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 16,

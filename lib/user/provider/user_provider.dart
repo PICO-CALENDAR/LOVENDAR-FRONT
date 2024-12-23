@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/repository/user_repository.dart';
+import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_provider.g.dart';
@@ -22,9 +25,12 @@ class User extends _$User {
     return UserModelLoading();
   }
 
+  // 로그아웃
   void logOut() {
     storage.storage.deleteAll();
     state = null;
+    // 스케줄 캐싱 지우기
+    ref.read(schedulesProvider.notifier).resetSchedules();
   }
 
   // 회원 탈퇴
@@ -34,6 +40,7 @@ class User extends _$User {
       await repository.postDeleteAccount();
       storage.storage.deleteAll();
       state = null;
+      ref.read(schedulesProvider.notifier).resetSchedules();
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response.toString());
@@ -43,6 +50,7 @@ class User extends _$User {
     }
   }
 
+  // 유저 정보 가져오기
   void getUserInfo() async {
     final refreshToken = await storage.readRefreshToken();
     final accessToken = await storage.readAccessToken();
@@ -78,4 +86,6 @@ class User extends _$User {
       // state = UserModelError(message: 'Unexpected error: $e');
     }
   }
+
+  // 커플 끊기
 }

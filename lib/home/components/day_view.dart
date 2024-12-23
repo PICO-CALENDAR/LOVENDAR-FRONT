@@ -14,7 +14,7 @@ import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/view/schedule_detail_screen.dart';
 import 'package:pico/home/components/day_view_painter.dart';
 import 'package:pico/home/components/indicator.dart';
-import 'package:pico/common/utils/event_operations.dart';
+import 'package:pico/common/utils/schedule_operations.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class DayView extends ConsumerStatefulWidget {
@@ -49,6 +49,10 @@ class _DayViewState extends ConsumerState<DayView> {
   @override
   void initState() {
     super.initState();
+    final schedules = ref.read(schedulesProvider);
+    if (schedules.isEmpty) {
+      ref.read(schedulesProvider.notifier).refreshSchedules();
+    }
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       setState(() {
         _currentTime = DateTime.now();
@@ -118,15 +122,31 @@ class _DayViewState extends ConsumerState<DayView> {
                             children: [
                               // TODO: 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
                               for (var scheduleGroup
-                                  in groupOverlappingSchedules(schedules
-                                      .where((s) =>
-                                          s.startTime.isSameDate(widget.date))
-                                      .toList()))
+                                  in groupOverlappingSchedules(
+                                schedules: schedules
+                                    .where(
+                                      (s) => s.isEventOnDate(
+                                          targetDate: widget.date),
+                                    )
+                                    .toList()
+                                    .adjustMultiDaySchedules(
+                                        targetDate: widget.date),
+                              ))
+                                // for (var scheduleGroup in schedules
+                                //     .where((s) =>
+                                //         s.isEventOnDate(targetDate: widget.date))
+                                //     .toList()
+                                // .groupOverlappingSchedules())
                                 for (var organizedSchedule
                                     in getOrganizedSchedules(
-                                        scheduleGroup, parentWidth))
+                                  overlappingSchedules: scheduleGroup,
+                                  viewWidth: parentWidth,
+                                ))
+                                  // for (var organizedSchedule in scheduleGroup
+                                  //     .getOrganizedSchedules(parentWidth))
                                   ScheduleBox(
                                     organizedSchedule: organizedSchedule,
+                                    targetDate: widget.date,
                                   ),
                             ],
                           );
@@ -150,6 +170,8 @@ class _DayViewState extends ConsumerState<DayView> {
             ),
           ),
         ),
+
+        // 하루종일 이벤트 관련
         IgnorePointer(
           ignoring: widget.isAllDayScheduleTapped != null
               ? !widget.isAllDayScheduleTapped!
@@ -341,10 +363,19 @@ class AllDayScheduleBox extends ConsumerWidget {
 
 class ScheduleBox extends StatelessWidget {
   final OrganizedSchedule organizedSchedule;
-  const ScheduleBox({super.key, required this.organizedSchedule});
+  final DateTime targetDate;
+
+  const ScheduleBox({
+    super.key,
+    required this.organizedSchedule,
+    required this.targetDate,
+  });
 
   @override
   Widget build(BuildContext context) {
+    print(organizedSchedule.scheduleData.title);
+    print(organizedSchedule.left);
+    print(organizedSchedule.top);
     return Positioned(
       left: organizedSchedule.left,
       top: organizedSchedule.top,

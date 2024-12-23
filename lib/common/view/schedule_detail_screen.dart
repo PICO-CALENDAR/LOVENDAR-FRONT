@@ -24,6 +24,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parentContext = context;
     final userInfo = ref.watch(userProvider) as UserModel;
+    print(schedule.scheduleId);
     return Material(
       child: Navigator(
         onGenerateRoute: (settings) {
@@ -177,6 +178,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                     title: "정말로 삭제하겠습니까?",
                                     content: '일정이 영구 삭제되며,\n이 작업은 되돌릴 수 없습니다',
                                     confirmName: "삭제",
+                                    dialogType: ConfirmType.DANGER,
                                     onPressed: () async {
                                       try {
                                         await ref

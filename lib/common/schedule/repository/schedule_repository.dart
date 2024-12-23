@@ -5,6 +5,7 @@ import 'package:pico/common/dio/dio.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/model/schedule_response.dart';
 import 'package:pico/common/schedule/model/schedules_response.dart';
+import 'package:pico/common/schedule/model/update_schedule_body.dart';
 import 'package:pico/user/model/register_body.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:retrofit/retrofit.dart';
@@ -63,7 +64,9 @@ abstract class ScheduleRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<ScheduleResponse> postUpdateSchedule();
+  Future<ScheduleResponse> postUpdateSchedule(
+    @Body() UpdateScheduleBody body,
+  );
 
   // 일정 삭제
   @POST("/delete/{scheduleId}")

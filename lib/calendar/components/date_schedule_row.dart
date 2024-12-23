@@ -7,12 +7,14 @@ import 'package:pico/calendar/provider/checked_category_provider.dart';
 
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
+import 'package:pico/common/utils/extenstions.dart';
 import 'package:pico/home/components/day_view.dart';
 
 class DateScheduleRow extends ConsumerWidget {
   const DateScheduleRow({
     super.key,
     required this.weekDate,
+    required this.monthDays,
     // required this.scheduleController,
     required this.width,
     required this.height,
@@ -22,6 +24,7 @@ class DateScheduleRow extends ConsumerWidget {
   });
 
   final List<DateTime> weekDate;
+  final List<DateTime> monthDays;
   // final ScheduleController scheduleController;
   final double width;
   final double height;
@@ -52,17 +55,23 @@ class DateScheduleRow extends ConsumerWidget {
         .toList();
 
     final orgSchedules = schedulesController.filterAndSortSchedulesForWeek(
-        schedulesController.organizeSchedules(
-          checkedSchedules,
-        ),
-        weekDate.first,
-        weekDate.last);
-    // for (var event in organizeEvents(events)) {
-    //   print("${event.eventData.title} : ${event.column}");
-    //   print(event.eventData.startTime.isBefore(weekDate.first));
-    //   print((event.eventData.startTime.weekday - 1) * slotWidth + 2);
-    //   print(event.eventData.endTime.isAfter(weekDate.last));
-    // }
+      schedulesController.organizeSchedules(
+        checkedSchedules,
+        monthDays.first,
+        monthDays.last,
+      ),
+      weekDate.first,
+      weekDate.last,
+    );
+
+    for (var event in orgSchedules) {
+      print("${event.scheduleData.title} : ${event.column}");
+      // print(event.scheduleData.startTime.isSameDate(weekDate.first));
+      // print(event.scheduleData.endTime.isSameDate(weekDate.last));
+    }
+
+    // print("weekdate first : ${weekDate.first}");
+    // print("weekdate last : ${weekDate.first}");
 
     return SingleChildScrollView(
       child: Container(
@@ -146,17 +155,17 @@ class DateScheduleRow extends ConsumerWidget {
                       top: (schedule.column - 1) * eventHeight +
                           (gap * (schedule.column - 1)),
                       left: schedule.scheduleData.startTime
-                              .isBefore(weekDate.first)
+                              .isSameDate(weekDate.first)
                           ? 2
                           : (schedule.scheduleData.startTime.weekday - 1) *
                                   slotWidth +
                               2,
-                      right:
-                          schedule.scheduleData.endTime.isAfter(weekDate.last)
-                              ? 2
-                              : (7 - (schedule.scheduleData.endTime.weekday)) *
-                                      slotWidth +
-                                  2,
+                      right: schedule.scheduleData.endTime
+                              .isSameDate(weekDate.last)
+                          ? 2
+                          : (7 - (schedule.scheduleData.endTime.weekday)) *
+                                  slotWidth +
+                              2,
                       child: IgnorePointer(
                         ignoring: true,
                         child: AnimatedSwitcher(
