@@ -159,7 +159,10 @@ class _ScheduleRepository implements ScheduleRepository {
   }
 
   @override
-  Future<ScheduleResponse> postUpdateSchedule(UpdateScheduleBody body) async {
+  Future<ScheduleResponse> postUpdateSchedule({
+    required String scheduleId,
+    required UpdateScheduleBody body,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
@@ -167,13 +170,13 @@ class _ScheduleRepository implements ScheduleRepository {
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
     final _options = _setStreamType<ScheduleResponse>(Options(
-      method: 'POST',
+      method: 'PATCH',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          '/update',
+          '/update/${scheduleId}',
           queryParameters: queryParameters,
           data: _data,
         )

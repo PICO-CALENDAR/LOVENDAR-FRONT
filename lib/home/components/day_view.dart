@@ -71,6 +71,38 @@ class _DayViewState extends ConsumerState<DayView> {
     const hourHeight = 60.0; // 1시간 = 60픽셀
     const totalHeight = 24 * hourHeight; // 24시간의 전체 높이
     final schedules = ref.watch(schedulesProvider);
+    final scheduleObjs = schedules
+        .map(
+          (s) => s.copyScheduleOnDate(targetDate: widget.date),
+        )
+        .whereType<ScheduleModel>()
+        .toList();
+
+    // List<DateTime> getWeekBoundaries(DateTime targetDate) {
+    //   // 특정 날짜의 월요일 계산
+    //   final firstDayOfWeek =
+    //       targetDate.subtract(Duration(days: targetDate.weekday - 1));
+    //   final startOfWeek = DateTime(
+    //       firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day);
+
+    //   // 특정 날짜의 일요일 계산
+    //   final lastDayOfWeek = startOfWeek.add(const Duration(days: 6));
+    //   final endOfWeek =
+    //       DateTime(lastDayOfWeek.year, lastDayOfWeek.month, lastDayOfWeek.day);
+
+    //   return [startOfWeek, endOfWeek];
+    // }
+
+    // final orgSchedules =
+    //     ref.read(schedulesProvider.notifier).filterAndSortSchedulesForWeek(
+    //           ref.read(schedulesProvider.notifier).organizeSchedules(
+    //                 schedules,
+    //                 widget.date.datesOfMonths().first,
+    //                 widget.date.datesOfMonths().last,
+    //               ),
+    //           getWeekBoundaries(widget.date)[0],
+    //           getWeekBoundaries(widget.date)[1],
+    //         );
 
     return Stack(
       children: [
@@ -121,17 +153,36 @@ class _DayViewState extends ConsumerState<DayView> {
                           return Stack(
                             children: [
                               // TODO: 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
+                              // for (var scheduleGroup
+                              //     in groupOverlappingSchedules(
+                              //   schedules: schedules
+                              //       .where(
+                              //         (s) => s.isEventOnDate(
+                              //             targetDate: widget.date),
+                              //       )
+                              //       .toList()
+                              //       .adjustMultiDaySchedules(
+                              //           targetDate: widget.date),
+                              // ))
                               for (var scheduleGroup
                                   in groupOverlappingSchedules(
-                                schedules: schedules
-                                    .where(
-                                      (s) => s.isEventOnDate(
-                                          targetDate: widget.date),
-                                    )
-                                    .toList()
-                                    .adjustMultiDaySchedules(
-                                        targetDate: widget.date),
+                                schedules: scheduleObjs.adjustMultiDaySchedules(
+                                    targetDate: widget.date),
                               ))
+                                // 수정 모드
+                                // for (var scheduleGroup
+                                //     in groupOverlappingSchedules(
+                                //   schedules: orgSchedules
+                                //       .where(
+                                //         (s) => s.scheduleData.isEventOnDate(
+                                //             targetDate: widget.date),
+                                //       )
+                                //       .toList()
+                                //       .map((s) => s.scheduleData)
+                                //       .toList()
+                                //       .adjustMultiDaySchedules(
+                                //           targetDate: widget.date),
+                                // ))
                                 // for (var scheduleGroup in schedules
                                 //     .where((s) =>
                                 //         s.isEventOnDate(targetDate: widget.date))
@@ -280,6 +331,9 @@ class AllDayScheduleBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ScheduleModel? targetSchedule = scheduleObjs.firstWhere(
+    //     (s) => s.scheduleId == organizedSchedule.scheduleData.scheduleId);
+
     final allDaySchedulesInDateByCat = ref
         .read(schedulesProvider.notifier)
         .getAllDaySchedulesByDateAndCat(date: date, category: category);
@@ -297,11 +351,25 @@ class AllDayScheduleBox extends ConsumerWidget {
                     toggleIsTapped();
                   }
                 } else {
-                  showBarModalBottomSheet(
+                  showModalBottomSheet<void>(
                     context: context,
-                    builder: (context) => ScheduleDetailScreen(
-                      schedule: allDaySchedulesInDateByCat[idx],
-                    ),
+                    isScrollControlled: true,
+                    isDismissible: false,
+                    builder: (BuildContext context) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.9,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                          child: ScheduleDetailScreen(
+                            date: date,
+                            schedule: allDaySchedulesInDateByCat[idx],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 }
               },
@@ -361,7 +429,7 @@ class AllDayScheduleBox extends ConsumerWidget {
   }
 }
 
-class ScheduleBox extends StatelessWidget {
+class ScheduleBox extends ConsumerWidget {
   final OrganizedSchedule organizedSchedule;
   final DateTime targetDate;
 
@@ -372,10 +440,18 @@ class ScheduleBox extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    print(organizedSchedule.scheduleData.title);
-    print(organizedSchedule.left);
-    print(organizedSchedule.top);
+  Widget build(BuildContext context, WidgetRef ref) {
+    final schedules = ref.watch(schedulesProvider);
+    final scheduleObjs = schedules
+        .map(
+          (s) => s.copyScheduleOnDate(targetDate: targetDate),
+        )
+        .whereType<ScheduleModel>()
+        .toList();
+
+    ScheduleModel? targetSchedule = scheduleObjs.firstWhere(
+        (s) => s.scheduleId == organizedSchedule.scheduleData.scheduleId);
+
     return Positioned(
       left: organizedSchedule.left,
       top: organizedSchedule.top,
@@ -390,10 +466,22 @@ class ScheduleBox extends StatelessWidget {
           // ),
           child: InkWell(
             onTap: () {
-              showBarModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
-                builder: (context) => ScheduleDetailScreen(
-                  schedule: organizedSchedule.scheduleData,
+                isScrollControlled: true,
+                builder: (context) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    child: ScheduleDetailScreen(
+                      date: targetDate,
+                      schedule:
+                          targetSchedule ?? organizedSchedule.scheduleData,
+                    ),
+                  ),
                 ),
               );
             },
@@ -410,27 +498,40 @@ class ScheduleBox extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 0,
-                      blurRadius: 10,
-                      offset: Offset.fromDirection(
-                          360, 10) // changes position of shadow
-                      ),
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 0,
+                    blurRadius: 10,
+                    offset: Offset.fromDirection(
+                        360, 10), // changes position of shadow
+                  ),
                 ],
               ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      organizedSchedule.scheduleData.title,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    Wrap(
+                      spacing: 4,
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (organizedSchedule.scheduleData.isRepeat)
+                          Icon(
+                            Icons.replay_rounded,
+                            size: 13,
+                          ),
+                        Text(
+                          organizedSchedule.scheduleData.title,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
+
                     Wrap(
                       children: [
                         Text(

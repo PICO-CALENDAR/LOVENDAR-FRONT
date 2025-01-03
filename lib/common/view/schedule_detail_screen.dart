@@ -13,10 +13,12 @@ import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 
 class ScheduleDetailScreen extends ConsumerWidget {
+  final DateTime date;
   final ScheduleModel schedule;
 
   const ScheduleDetailScreen({
     super.key,
+    required this.date,
     required this.schedule,
   });
 
@@ -24,7 +26,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final parentContext = context;
     final userInfo = ref.watch(userProvider) as UserModel;
-    print(schedule.scheduleId);
+
     return Material(
       child: Navigator(
         onGenerateRoute: (settings) {
@@ -65,13 +67,24 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                     crossAxisAlignment:
                                         CrossAxisAlignment.start,
                                     children: [
-                                      Text(
-                                        schedule.title,
-                                        textAlign: TextAlign.start,
-                                        style: TextStyle(
-                                          fontSize: 20,
-                                          fontWeight: FontWeight.bold,
-                                        ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Text(
+                                            schedule.title,
+                                            textAlign: TextAlign.start,
+                                            style: TextStyle(
+                                              fontSize: 20,
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          if (schedule.isRepeat)
+                                            Icon(
+                                              Icons.replay_rounded,
+                                              size: 20,
+                                            ),
+                                        ],
                                       ),
                                       SizedBox(
                                         height: 2,
@@ -118,43 +131,68 @@ class ScheduleDetailScreen extends ConsumerWidget {
                               SizedBox(
                                 height: 5,
                               ),
-                              schedule.isAllDay
-                                  ? Text(
-                                      "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.isAllDay ? "(하루종일)" : ""}",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[600]!,
-                                      ),
-                                    )
-                                  : Text(
-                                      "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.startTime.hour}시 ${schedule.startTime.minute}분",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[600]!,
-                                      ),
-                                    ),
-                              schedule.isAllDay
-                                  ? schedule.startTime
-                                          .isSameDate(schedule.endTime)
-                                      ? SizedBox.shrink()
-                                      : Text(
-                                          "${DateFormat.yMMMMd().format(schedule.endTime)} ${schedule.isAllDay ? "(하루종일)" : ""}",
+                              if (schedule.isRepeat)
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Icons.replay_rounded,
+                                          size: 18,
+                                          color: Theme.of(context)
+                                              .colorScheme
+                                              .error,
+                                        ),
+                                        SizedBox(
+                                          width: 3,
+                                        ),
+                                        Text(
+                                          "반복 : ${schedule.repeatType!.getName()}",
                                           style: TextStyle(
+                                            color: Theme.of(context)
+                                                .colorScheme
+                                                .error,
                                             fontSize: 15,
                                             fontWeight: FontWeight.w500,
-                                            color: Colors.grey[600]!,
                                           ),
-                                        )
-                                  : Text(
-                                      "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.startTime.hour}시 ${schedule.startTime.minute}분",
-                                      style: TextStyle(
-                                        fontSize: 15,
-                                        fontWeight: FontWeight.w500,
-                                        color: Colors.grey[600]!,
-                                      ),
+                                        ),
+                                      ],
                                     ),
+                                    if (schedule.repeatEndDate != null)
+                                      Text(
+                                        "${DateFormat.yMEd().format(schedule.repeatEndDate!)}에 종료",
+                                      ),
+                                  ],
+                                ),
+                              Text(
+                                "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.startTime.hour}시 ${schedule.startTime.minute}분"}",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600]!,
+                                ),
+                              ),
+                              Text(
+                                "${DateFormat.yMMMMd().format(schedule.endTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.endTime.hour}시 ${schedule.endTime.minute}분"}",
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.grey[600]!,
+                                ),
+                              ),
+                              // schedule.startTime.isSameDate(schedule.endTime)
+                              //     ? SizedBox.shrink()
+                              //     : Text(
+                              //         "${DateFormat.yMMMMd().format(schedule.endTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.endTime.hour}시 ${schedule.endTime.minute}분"}",
+                              //         style: TextStyle(
+                              //           fontSize: 15,
+                              //           fontWeight: FontWeight.w500,
+                              //           color: Colors.grey[600]!,
+                              //         ),
+                              //       ),
                             ],
                           ),
                         ),
@@ -163,63 +201,67 @@ class ScheduleDetailScreen extends ConsumerWidget {
                         builder: (context, constraints) {
                           const double gap = 10.0;
                           final parentWidth = constraints.maxWidth - gap;
-
-                          return Row(
-                            children: [
-                              PrimaryButton(
-                                fontSize: 16,
-                                backgroundColor: AppTheme.greyColor,
-                                fontColor: AppTheme.textColor,
-                                width: parentWidth / 2,
-                                buttonName: "삭제",
-                                onPressed: () {
-                                  showConfirmDialog(
-                                    context: context,
-                                    title: "정말로 삭제하겠습니까?",
-                                    content: '일정이 영구 삭제되며,\n이 작업은 되돌릴 수 없습니다',
-                                    confirmName: "삭제",
-                                    dialogType: ConfirmType.DANGER,
-                                    onPressed: () async {
-                                      try {
-                                        await ref
-                                            .read(schedulesProvider.notifier)
-                                            .deleteSchedule(
-                                                schedule.scheduleId);
-                                        Toast.showSuccessToast(
-                                                message: "삭제에 성공했습니다")
-                                            .show(parentContext);
-                                        Navigator.of(parentContext).pop();
-                                        Navigator.of(parentContext).pop();
-                                      } catch (e) {
-                                        Toast.showErrorToast(
-                                                message: "삭제에 실패했습니다")
-                                            .show(parentContext);
-                                      }
-                                    },
-                                  );
-                                },
-                              ),
-                              SizedBox(
-                                width: gap,
-                              ),
-                              PrimaryButton(
-                                fontSize: 16,
-                                width: parentWidth / 2,
-                                buttonName: "수정",
-                                onPressed: () {
-                                  // print("수정");
-                                  Navigator.of(context).push(
-                                    MaterialPageRoute(
-                                      builder: (context) => EditScheduleScreen(
-                                        mode: EditMode.EDIT,
-                                        initialScheduleValue: schedule,
+                          if (schedule.category != ScheduleType.YOURS) {
+                            return Row(
+                              children: [
+                                PrimaryButton(
+                                  fontSize: 16,
+                                  backgroundColor: AppTheme.greyColor,
+                                  fontColor: AppTheme.textColor,
+                                  width: parentWidth / 2,
+                                  buttonName: "삭제",
+                                  onPressed: () {
+                                    showConfirmDialog(
+                                      context: context,
+                                      title: "정말로 삭제하겠습니까?",
+                                      content: '일정이 영구 삭제되며,\n이 작업은 되돌릴 수 없습니다',
+                                      confirmName: "삭제",
+                                      dialogType: ConfirmType.DANGER,
+                                      onPressed: () async {
+                                        try {
+                                          await ref
+                                              .read(schedulesProvider.notifier)
+                                              .deleteSchedule(
+                                                  schedule.scheduleId);
+                                          Toast.showSuccessToast(
+                                                  message: "삭제에 성공했습니다")
+                                              .show(parentContext);
+                                          Navigator.of(parentContext).pop();
+                                          Navigator.of(parentContext).pop();
+                                        } catch (e) {
+                                          Toast.showErrorToast(
+                                                  message: e.toString())
+                                              .show(parentContext);
+                                        }
+                                      },
+                                    );
+                                  },
+                                ),
+                                SizedBox(
+                                  width: gap,
+                                ),
+                                PrimaryButton(
+                                  fontSize: 16,
+                                  width: parentWidth / 2,
+                                  buttonName: "수정",
+                                  onPressed: () {
+                                    // print("수정");
+                                    Navigator.of(context).push(
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditScheduleScreen(
+                                          mode: EditMode.EDIT,
+                                          initialScheduleValue: schedule,
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
-                              ),
-                            ],
-                          );
+                                    );
+                                  },
+                                ),
+                              ],
+                            );
+                          } else {
+                            return SizedBox.shrink();
+                          }
                         },
                       ),
                     ],

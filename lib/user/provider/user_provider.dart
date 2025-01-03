@@ -34,13 +34,11 @@ class User extends _$User {
   }
 
   // 회원 탈퇴
-  void deleteAccount() async {
+  Future<void> deleteAccount() async {
     try {
       // 회원 탈퇴
       await repository.postDeleteAccount();
-      storage.storage.deleteAll();
-      state = null;
-      ref.read(schedulesProvider.notifier).resetSchedules();
+      logOut();
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response.toString());
@@ -88,4 +86,17 @@ class User extends _$User {
   }
 
   // 커플 끊기
+  Future<void> unLinkCouple() async {
+    try {
+      // 커플 연결 해제
+      await repository.postDeleteCoupleInfo();
+      getUserInfo();
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 }

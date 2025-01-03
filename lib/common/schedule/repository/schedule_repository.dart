@@ -60,13 +60,14 @@ abstract class ScheduleRepository {
   );
 
   // 일정 수정
-  @POST("/update")
+  @PATCH("/update/{scheduleId}")
   @Headers({
     'accessToken': 'true',
   })
-  Future<ScheduleResponse> postUpdateSchedule(
-    @Body() UpdateScheduleBody body,
-  );
+  Future<ScheduleResponse> postUpdateSchedule({
+    @Path() required String scheduleId,
+    @Body() required UpdateScheduleBody body,
+  });
 
   // 일정 삭제
   @POST("/delete/{scheduleId}")

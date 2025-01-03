@@ -84,11 +84,11 @@ List<List<ScheduleModel>> groupOverlappingSchedules({
         .map((s) => s.endTime)
         .reduce((a, b) => a.isAfter(b) ? a : b);
 
-    print("$i 번째");
-    print("현재 그룹 상태:  ${groupedSchedules.toString()}");
-    print("현재 값:  ${currentSchedule.toJson()}");
-    print("그룹의 가장 이른 시작 시간: $earliestStartTime");
-    print("그룹의 가장 늦은 종료 시간: $latestEndTime");
+    // print("$i 번째");
+    // print("현재 그룹 상태:  ${groupedSchedules.toString()}");
+    // print("현재 값:  ${currentSchedule.toJson()}");
+    // print("그룹의 가장 이른 시작 시간: $earliestStartTime");
+    // print("그룹의 가장 늦은 종료 시간: $latestEndTime");
 
     // 현재 일정이 그룹과 겹치는지 확인
     if (currentSchedule.startTime.isBefore(latestEndTime) &&

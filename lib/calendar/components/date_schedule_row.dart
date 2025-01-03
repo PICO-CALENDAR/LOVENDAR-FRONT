@@ -1,13 +1,17 @@
 // 이벤트 보여지는 cell 부분
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:pico/calendar/provider/checked_category_provider.dart';
+import 'package:pico/common/provider/selected_day_provider.dart';
 
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
+import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/home/components/day_view.dart';
 
 class DateScheduleRow extends ConsumerWidget {
@@ -54,21 +58,17 @@ class DateScheduleRow extends ConsumerWidget {
         .where((schedule) => filteredKeys.contains(schedule.category))
         .toList();
 
-    final orgSchedules = schedulesController.filterAndSortSchedulesForWeek(
-      schedulesController.organizeSchedules(
-        checkedSchedules,
-        monthDays.first,
-        monthDays.last,
-      ),
-      weekDate.first,
-      weekDate.last,
-    );
-
-    for (var event in orgSchedules) {
-      print("${event.scheduleData.title} : ${event.column}");
-      // print(event.scheduleData.startTime.isSameDate(weekDate.first));
-      // print(event.scheduleData.endTime.isSameDate(weekDate.last));
-    }
+    final orgSchedules = schedulesController
+        .filterAndSortSchedulesForWeek(
+          schedulesController.organizeSchedules(
+            checkedSchedules,
+            monthDays.first,
+            monthDays.last,
+          ),
+          weekDate.first,
+          weekDate.last,
+        )
+        .toList();
 
     // print("weekdate first : ${weekDate.first}");
     // print("weekdate last : ${weekDate.first}");
@@ -92,48 +92,221 @@ class DateScheduleRow extends ConsumerWidget {
                 for (var date in weekDate)
                   GestureDetector(
                     onTap: () {
-                      showBarModalBottomSheet(
+                      showModalBottomSheet<void>(
                         context: context,
-                        builder: (context) {
-                          return Scaffold(
-                            appBar: AppBar(
-                              title: Text(
-                                "${DateFormat.yMMMMd().format(date)} 일정",
-                              ),
-                            ),
-                            body: SafeArea(
-                              child: Padding(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 15,
-                                ),
-                                child: Column(
+                        isScrollControlled: true,
+                        backgroundColor: Colors.transparent,
+                        builder: (BuildContext context) {
+                          return DraggableScrollableSheet(
+                            initialChildSize: 1,
+                            minChildSize: 1,
+                            maxChildSize: 1,
+                            builder: (context, scrollController) {
+                              final topContainerHeight =
+                                  MediaQuery.of(context).size.height * 0.2;
+                              return SizedBox(
+                                height: MediaQuery.of(context).size.height,
+                                child: Stack(
                                   children: [
-                                    Text(
-                                      "${DateFormat.yMMMMEEEEd().format(date)} 세부 일정",
-                                      style: TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
+                                    // Positioned.fill(
+                                    //   child: BackdropFilter(
+                                    //     filter: ImageFilter.blur(
+                                    //         sigmaX: 5, sigmaY: 5),
+                                    //     child: Container(
+                                    //       color: Colors.grey.withOpacity(
+                                    //           0.2), // 흐린 배경에 살짝 어두운 느낌 추가
+                                    //     ),
+                                    //   ),
+                                    // ),
+                                    // 투명한 상단 영역
+                                    Positioned(
+                                      top: 0,
+                                      left: 0,
+                                      right: 0,
+                                      height: topContainerHeight,
+                                      child: GestureDetector(
+                                        onTap: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        child: BackdropFilter(
+                                          filter: ImageFilter.blur(
+                                              sigmaX: 5, sigmaY: 5),
+                                          child: Container(
+                                            padding: EdgeInsets.symmetric(
+                                              vertical: 10,
+                                              horizontal: 30,
+                                            ),
+                                            color: Colors.grey.withOpacity(0.2),
+                                            child: Column(
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.end,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
+                                              children: [
+                                                Text(
+                                                  DateFormat.yMMMEd()
+                                                      .format(date),
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 20,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  "세부일정",
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                       ),
                                     ),
-                                    SizedBox(
-                                      height: 10,
-                                    ),
-                                    SizedBox(
+                                    // 불투명한 하단 영역
+                                    Positioned(
+                                      top: topContainerHeight,
+                                      left: 0,
+                                      right: 0,
                                       height:
-                                          MediaQuery.of(context).size.height *
-                                              0.6,
-                                      child: DayView(
-                                        date: date,
+                                          MediaQuery.of(context).size.height -
+                                              topContainerHeight,
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          color: Colors.white,
+                                          borderRadius: BorderRadius.vertical(
+                                            top: Radius.circular(16),
+                                          ),
+                                        ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              margin: EdgeInsets.symmetric(
+                                                vertical: 20,
+                                              ),
+                                              height: 4,
+                                              width: 60,
+                                              decoration: BoxDecoration(
+                                                color: Colors.grey[300],
+                                                borderRadius:
+                                                    BorderRadius.circular(10),
+                                              ),
+                                            ),
+                                            Expanded(
+                                              child: DayView(
+                                                date: date,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
-                                    )
+                                    ),
+
+                                    Positioned(
+                                      bottom: 40,
+                                      right: 20,
+                                      child: FloatingActionButton(
+                                        heroTag: 'add-btn',
+                                        elevation: 1,
+                                        shape: CircleBorder(),
+                                        onPressed: () {
+                                          ref
+                                              .read(
+                                                  selectedDayProvider.notifier)
+                                              .setSelectedDay(date);
+                                          // Navigator.push(
+                                          //   context,
+                                          //   MaterialPageRoute(
+                                          //     builder: (context) =>
+                                          //         EditScheduleScreen(),
+                                          //   ),
+                                          // );
+
+                                          showModalBottomSheet<void>(
+                                            context: context,
+                                            isScrollControlled: true,
+                                            isDismissible: false,
+                                            builder: (BuildContext context) {
+                                              return SizedBox(
+                                                height: MediaQuery.of(context)
+                                                        .size
+                                                        .height *
+                                                    0.9,
+                                                child: ClipRRect(
+                                                  borderRadius:
+                                                      const BorderRadius.only(
+                                                    topLeft:
+                                                        Radius.circular(20),
+                                                    topRight:
+                                                        Radius.circular(20),
+                                                  ),
+                                                  child: EditScheduleScreen(),
+                                                ),
+                                              );
+                                            },
+                                          );
+                                        },
+                                        backgroundColor:
+                                            Theme.of(context).primaryColor,
+                                        child: const Icon(
+                                          Icons.add_rounded,
+                                          color: Colors.white,
+                                          size: 45,
+                                        ),
+                                      ),
+                                    ),
                                   ],
                                 ),
-                              ),
-                            ),
+                              );
+                            },
                           );
                         },
                       );
+
+                      // showBarModalBottomSheet(
+                      //   context: context,
+                      //   builder: (context) {
+                      //     return Scaffold(
+                      //       appBar: AppBar(
+                      //         title: Text(
+                      //           "${DateFormat.yMMMMd().format(date)} 일정",
+                      //         ),
+                      //       ),
+                      //       body: SafeArea(
+                      //         child: Padding(
+                      //           padding: const EdgeInsets.symmetric(
+                      //             horizontal: 20,
+                      //             vertical: 15,
+                      //           ),
+                      //           child: Column(
+                      //             children: [
+                      //               Text(
+                      //                 "${DateFormat.yMMMMEEEEd().format(date)} 세부 일정",
+                      //                 style: TextStyle(
+                      //                   fontSize: 18,
+                      //                   fontWeight: FontWeight.bold,
+                      //                 ),
+                      //               ),
+                      //               SizedBox(
+                      //                 height: 10,
+                      //               ),
+                      //               SizedBox(
+                      //                 height:
+                      //                     MediaQuery.of(context).size.height *
+                      //                         0.6,
+                      //                 child: DayView(
+                      //                   date: date,
+                      //                 ),
+                      //               )
+                      //             ],
+                      //           ),
+                      //         ),
+                      //       ),
+                      //     );
+                      //   },
+                      // );
                     },
                     child: Container(
                       width: slotWidth,

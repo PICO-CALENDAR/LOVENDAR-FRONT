@@ -12,6 +12,9 @@ class Urls {
       "https://foggy-science-cab.notion.site/13c74a2c070c807a8366cd61961af833?pvs=4";
 
   static void onGoOnSite(String url) async {
-    await launchUrlString(url);
+    await launchUrlString(
+      url,
+      mode: LaunchMode.externalApplication,
+    );
   }
 }

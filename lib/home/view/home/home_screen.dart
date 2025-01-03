@@ -8,6 +8,7 @@ import 'package:pico/common/utils/date_operations.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'home';
   const HomeScreen({super.key});
 
   @override

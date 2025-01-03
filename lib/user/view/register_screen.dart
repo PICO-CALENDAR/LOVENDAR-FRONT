@@ -8,6 +8,7 @@ import 'package:pico/common/components/action_button.dart';
 import 'package:pico/common/components/date_input.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/round_checkbox.dart';
+import 'package:pico/common/components/toast.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/user/model/register_body.dart';
 import 'package:pico/user/model/user_model.dart';
@@ -303,10 +304,10 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
 
                                   ref.read(userProvider.notifier).getUserInfo();
 
-                                  // 로그인 후 홈으로 이동
-                                  if (context.mounted) {
-                                    context.go("/");
-                                  }
+                                  // // 로그인 후 홈으로 이동
+                                  // if (context.mounted) {
+                                  //   context.go("/");
+                                  // }
                                   // 성공 시 처리
                                 } on DioException catch (e) {
                                   if (e.response != null) {
@@ -337,11 +338,8 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               //   ),
                               // );
                             } else if (!_isTermsAgreed) {
-                              ScaffoldMessenger.of(context).showSnackBar(
-                                const SnackBar(
-                                  content: Text("필수 약관에 동의해야 합니다."),
-                                ),
-                              );
+                              Toast.showErrorToast(message: "필수 약관에 동의해야 합니다")
+                                  .show(context);
                             }
                           }),
                     ],

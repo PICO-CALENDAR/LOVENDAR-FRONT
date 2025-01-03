@@ -9,10 +9,12 @@ import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
+import 'package:pico/common/schedule/repository/schedule_repository.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'calendar';
   const CalendarScreen({super.key});
 
   @override
@@ -69,11 +71,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   // 페이지 전환 시 달 업데이트
   void _onPageChange(int value) {
     if (mounted) {
+      final updatedDate = DateTime(
+        _currentDate.year,
+        _currentDate.month + (value - _currentIndex),
+      );
+      if (_currentDate.year != updatedDate.year) {
+        ref
+            .read(schedulesProvider.notifier)
+            .refreshSchedules(year: updatedDate.year);
+      }
       setState(() {
-        _currentDate = DateTime(
-          _currentDate.year,
-          _currentDate.month + (value - _currentIndex),
-        );
+        _currentDate = updatedDate;
         _currentIndex = value;
       });
     }

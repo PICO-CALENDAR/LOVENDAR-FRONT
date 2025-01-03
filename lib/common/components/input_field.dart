@@ -4,6 +4,7 @@ import 'package:pico/common/theme/theme_light.dart';
 class InputField extends StatelessWidget {
   final String title;
   final String hint;
+  final String? initialValue;
   final TextEditingController controller;
   final String? Function(String?)? validator;
 
@@ -11,6 +12,7 @@ class InputField extends StatelessWidget {
     super.key,
     required this.title,
     required this.hint,
+    this.initialValue,
     required this.controller,
     this.validator,
   });
@@ -47,7 +49,7 @@ class InputField extends StatelessWidget {
                 ],
               ),
             ),
-            TextField(
+            TextFormField(
               onChanged: (value) => state.didChange(value),
               controller: controller,
               decoration: InputDecoration(

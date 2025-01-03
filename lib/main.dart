@@ -35,6 +35,7 @@ class MyApp extends ConsumerWidget {
       title: 'PICO',
       theme: AppTheme.lightTheme,
       routerConfig: router,
+      debugShowCheckedModeBanner: false,
       // routes: {
       //   '/': (context) => const BottomNav(),
       //   '/login': (context) => const LoginScreen(),

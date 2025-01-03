@@ -11,6 +11,7 @@ import 'package:pico/common/view/splash_screen.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 import 'package:pico/user/view/login_screen.dart';
+import 'package:pico/user/view/mypage/mypage_screen.dart';
 import 'package:pico/user/view/register_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
@@ -50,12 +51,19 @@ final routerProvider = Provider<GoRouter>((ref) {
       name: RegisterScreen.routeName,
       builder: (_, __) => RegisterScreen(),
     ),
+    GoRoute(
+      path: '/mypage',
+      name: MypageScreen.routeName,
+      builder: (_, __) => MypageScreen(),
+    ),
   ];
 
   String? redirectLogic(BuildContext context, GoRouterState goState) {
     final isLoginPage = goState.uri.toString() == '/login';
     final isSplashPage = goState.uri.toString() == '/splash';
     final isRegisterPage = goState.uri.toString() == '/register';
+
+    print("현재 주소 : ${goState.uri.toString()}");
 
     print("user: $user");
     // return null;
@@ -80,7 +88,7 @@ final routerProvider = Provider<GoRouter>((ref) {
     // 로그인이 성공적으로 된 상태
     if (user is UserModel) {
       //로그인 페이지나 스플레시 페이지이면 홈으로 가도록 설정
-      return isLoginPage || isSplashPage ? "/" : null;
+      return (isLoginPage || isSplashPage) ? "/" : null;
     }
     return null;
 

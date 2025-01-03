@@ -159,6 +159,66 @@ class ScheduleModel extends ScheduleModelBase {
     return false;
   }
 
+  // 특정 날짜에 해당하는 스케줄이면, 알맞은 허위객체 생성
+  ScheduleModel? copyScheduleOnDate({
+    // required ScheduleModel schedule,
+    required DateTime targetDate,
+  }) {
+    DateTime scheduleStartTime = super.startTime;
+    DateTime scheduleEndTime = super.endTime;
+
+    Duration duration = scheduleEndTime.difference(scheduleStartTime);
+
+    while (scheduleStartTime.isBefore(targetDate) ||
+        scheduleStartTime.isSameDate(targetDate)) {
+      // 현재 타겟날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
+      if ((scheduleStartTime.isSameDate(targetDate) ||
+          targetDate.isAfter(scheduleStartTime) &&
+              targetDate.isBefore(scheduleEndTime) ||
+          scheduleEndTime.isSameDate(targetDate))) {
+        return ScheduleModel.copyWith(
+          original: this,
+          startTime: DateTime(
+              scheduleStartTime.year,
+              scheduleStartTime.month,
+              scheduleStartTime.day,
+              super.startTime.hour,
+              super.startTime.minute),
+          endTime: DateTime(scheduleEndTime.year, scheduleEndTime.month,
+              scheduleEndTime.day, super.endTime.hour, super.endTime.minute),
+        );
+      }
+
+      switch (super.repeatType) {
+        case RepeatType.DAILY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 1));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.WEEKLY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 7));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.BIWEEKLY:
+          scheduleStartTime = scheduleStartTime.add(Duration(days: 14));
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        case RepeatType.MONTHLY:
+          scheduleStartTime = DateTime(scheduleStartTime.year,
+              scheduleStartTime.month + 1, scheduleStartTime.day);
+          scheduleEndTime = scheduleEndTime.add(duration);
+          break;
+        case RepeatType.YEARLY:
+          scheduleStartTime = DateTime(scheduleStartTime.year + 1,
+              scheduleStartTime.month, scheduleStartTime.day);
+          scheduleEndTime = scheduleStartTime.add(duration);
+          break;
+        default:
+          return null;
+      }
+    }
+    return null;
+  }
+
   ScheduleModel({
     required this.scheduleId,
     required super.title,

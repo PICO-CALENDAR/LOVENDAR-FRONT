@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/calendar/provider/checked_category_provider.dart';
+import 'package:pico/common/model/custom_exception.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/model/update_schedule_body.dart';
@@ -9,15 +11,21 @@ import 'package:pico/common/utils/extenstions.dart';
 final schedulesProvider =
     StateNotifierProvider<SchedulesProvider, List<ScheduleModel>>((ref) {
   final repository = ref.watch(scheduleRepositoryProvider);
-  return SchedulesProvider(repository: repository);
+  final checkedCategoryState = ref.watch(checkedCategoryProvider);
+  return SchedulesProvider(
+    repository: repository,
+    checkedCategoryState: checkedCategoryState,
+  );
 });
 
 // Notifier 클래스
 class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   final ScheduleRepository repository;
+  final Map<ScheduleType, bool> checkedCategoryState;
 
   SchedulesProvider({
     required this.repository,
+    required this.checkedCategoryState,
   }) : super([]) {
     // refreshSchedulesInWeek();
     refreshSchedules();
@@ -25,10 +33,11 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
 
   // 전체 스케줄 가져오기
   // TODO: Future로 바꿔서 로딩 표시해야함
-  void refreshSchedules() async {
+  void refreshSchedules({int? year}) async {
     try {
-      final response =
-          await repository.getSchedulesByYear(DateTime.now().year.toString());
+      year ??= DateTime.now().year;
+
+      final response = await repository.getSchedulesByYear(year.toString());
       // TODO: 일주일만 가져올때, 연도 바뀔때 처리해야 함
       state = [...response.items];
     } catch (e) {
@@ -60,15 +69,24 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   Future<void> deleteSchedule(int scheduleId) async {
     try {
       final response = await repository.postDeleteSchedule(
-          scheduleId: scheduleId.toString());
+        scheduleId: scheduleId.toString(),
+      );
 
       if (response.success) {
-        refreshSchedules();
+        // 해당 scheduleId를 제외한 새로운 리스트를 생성
+        state = state
+            .where((schedule) =>
+                schedule.scheduleId != response.schedule.scheduleId)
+            .toList();
       } else {
-        throw Exception("삭제에 실패하였습니다.");
+        throw CustomException("삭제에 실패하였습니다.");
+      }
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 404) {
+        throw CustomException("상대방 일정은 삭제할 수 없습니다.");
       }
     } catch (e) {
-      throw Exception("삭제에 실패하였습니다.");
+      throw CustomException("삭제에 실패하였습니다.");
     }
   }
 
@@ -77,9 +95,10 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
     try {
       final response = await repository.postAddSchedule(body);
       if (response.success) {
-        refreshSchedules();
+        state = [...state, response.schedule];
+        // refreshSchedules();
       } else {
-        throw Exception("일정 추가 실패");
+        throw CustomException("일정 추가 실패");
       }
     } catch (e) {
       rethrow;
@@ -87,13 +106,25 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   }
 
   //일정 수정
-  Future<void> postEditSchedule(UpdateScheduleBody body) async {
+  Future<void> postEditSchedule(
+      {required String scheduleId, required UpdateScheduleBody body}) async {
     try {
-      final response = await repository.postUpdateSchedule(body);
+      final response = await repository.postUpdateSchedule(
+          scheduleId: scheduleId, body: body);
       if (response.success) {
-        refreshSchedules();
+        int index = state.indexWhere(
+            (schedule) => schedule.scheduleId == response.schedule.scheduleId);
+
+        state = index != -1
+            ? [
+                ...state.sublist(0, index),
+                response.schedule,
+                ...state.sublist(index + 1),
+              ]
+            : [...state, response.schedule];
+        // refreshSchedules();
       } else {
-        throw Exception("일정 수정 실패");
+        throw CustomException("일정 수정 실패");
       }
     } catch (e) {
       rethrow;
@@ -134,12 +165,21 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
       return schedule.isEventOnDate(targetDate: date);
     }
 
-    return state
+    final allDaySchedules = state
         .where((schedule) =>
             schedule.isAllDay &&
             isScheduleInGivenDate(schedule) &&
             schedule.category == category)
         .toList();
+
+    final allDaySchedulesObj = allDaySchedules
+        .map(
+          (s) => s.copyScheduleOnDate(targetDate: date),
+        )
+        .whereType<ScheduleModel>()
+        .toList();
+
+    return allDaySchedulesObj;
   }
 
   // 월간뷰에서 스케줄 컬럼화 정리
@@ -345,8 +385,8 @@ class ColumnedScheduleData {
 }
 
 // 주간 범위 내에 일정이 존재하는지 확인
-bool _isWithinWeek(
-    DateTime start, DateTime end, DateTime weekStart, DateTime weekEnd) {
-  return start.isBefore(weekEnd.add(const Duration(days: 1))) &&
-      end.isAfter(weekStart.subtract(const Duration(days: 1)));
-}
+// bool _isWithinWeek(
+//     DateTime start, DateTime end, DateTime weekStart, DateTime weekEnd) {
+//   return start.isBefore(weekEnd.add(const Duration(days: 1))) &&
+//       end.isAfter(weekStart.subtract(const Duration(days: 1)));
+// }

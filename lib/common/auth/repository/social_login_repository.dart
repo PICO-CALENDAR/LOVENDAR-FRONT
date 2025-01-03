@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 enum SocialType {
@@ -21,6 +22,10 @@ class SocialLoginRepository implements SocialRepositoryImpl {
     final googleSignIn = GoogleSignIn(
       serverClientId:
           "321782365913-og9m52o0si8lfhm24opd8o2shn1tqhqr.apps.googleusercontent.com",
+      // scopes: [
+      //   "email",
+      //   "https://www.googleapis.com/auth/userinfo.profile",
+      // ],
     );
     try {
       final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
@@ -34,7 +39,7 @@ class SocialLoginRepository implements SocialRepositoryImpl {
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
-      // print("googleAuth : ${googleAuth.accessToken}");
+      debugPrint("googleAuth : ${googleUser.email}");
 
       return googleAuth.idToken; // idToken 반환
     } catch (error) {

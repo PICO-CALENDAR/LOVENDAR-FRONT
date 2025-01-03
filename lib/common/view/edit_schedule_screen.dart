@@ -513,18 +513,77 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                         try {
                           // print(body.toJson().toString());
 
-                          ref
+                          await ref
                               .read(schedulesProvider.notifier)
                               .postAddSchedule(body);
                           Toast.showSuccessToast(
                             message: "일정을 성공적으로 추가했습니다",
                           ).show(context);
+                          Navigator.of(context).pop();
                         } catch (e) {
                           print(e);
                           if (mounted) {
                             Toast.showErrorToast(
                               message: "일정 추가에 문제가 생겼습니다",
                             ).show(context);
+                          }
+                        }
+                      } else {
+                        if (widget.initialScheduleValue != null) {
+                          final initial = widget.initialScheduleValue!;
+                          final bool isTitleChanged =
+                              initial.title != _scheduleTitle.text;
+                          final bool isStartTimeChanged =
+                              !initial.startTime.isAtSameMomentAs(start);
+                          final bool isEndTimeChanged =
+                              !initial.endTime.isAtSameMomentAs(end);
+                          final bool isCategoryChanged =
+                              initial.category != _category;
+                          final bool isAllDayChanged =
+                              initial.isAllDay != _isAllDay;
+                          final bool isRepeatTypeChanged =
+                              initial.repeatType != _repeatType;
+
+                          final UpdateScheduleBody updatedBody =
+                              UpdateScheduleBody(
+                            title: isTitleChanged
+                                ? _scheduleTitle.text
+                                : initial.title,
+                            startTime:
+                                isStartTimeChanged ? start : initial.startTime,
+                            endTime: isEndTimeChanged ? end : initial.endTime,
+                            category: isCategoryChanged
+                                ? _category
+                                : initial.category,
+                            isAllDay:
+                                isAllDayChanged ? _isAllDay : initial.isAllDay,
+                            isRepeat: isRepeatTypeChanged
+                                ? _repeatType != null
+                                : initial.isRepeat,
+                            repeatType: isRepeatTypeChanged
+                                ? _repeatType
+                                : initial.repeatType,
+                          );
+
+                          try {
+                            // print(body.toJson().toString());
+
+                            await ref
+                                .read(schedulesProvider.notifier)
+                                .postEditSchedule(
+                                  scheduleId: initial.scheduleId.toString(),
+                                  body: updatedBody,
+                                );
+                            Toast.showSuccessToast(
+                              message: "일정을 성공적으로 수정했습니다",
+                            ).show(context);
+                            Navigator.of(context).pop();
+                          } catch (e) {
+                            if (mounted) {
+                              Toast.showErrorToast(
+                                message: "일정 수정에 문제가 생겼습니다",
+                              ).show(context);
+                            }
                           }
                         }
                       }
