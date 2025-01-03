@@ -168,7 +168,7 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
                                   ),
                                 ),
                                 Text(
-                                  userInfo.name,
+                                  userInfo.partnerName!,
                                   style: TextStyle(
                                     color: Colors.grey,
                                     fontWeight: FontWeight.w400,

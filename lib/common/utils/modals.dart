@@ -216,3 +216,18 @@ void showInviteModal(BuildContext context) {
     },
   );
 }
+
+Route createBluredBackgroundPage({required Widget screen}) {
+  return PageRouteBuilder(
+    opaque: false,
+    pageBuilder: (context, animation, secondaryAnimation) {
+      return screen;
+    },
+    transitionsBuilder: (context, animation, secondaryAnimation, child) {
+      return FadeTransition(
+        opacity: animation,
+        child: child,
+      );
+    },
+  );
+}
