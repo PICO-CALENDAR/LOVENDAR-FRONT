@@ -27,32 +27,35 @@ class BluredContainer extends StatelessWidget {
     return ClipRRect(
       borderRadius: BorderRadius.circular(13),
       child: BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 블러 강도 조절
-        child: type == BluredContainerType.CIRCLE
-            ? SizedBox(
-                width: width?.toDouble() ?? 50, // 기본 크기 제공
-                height: width?.toDouble() ?? 50, // 1:1 비율 유지
-                child: AspectRatio(
-                  aspectRatio: 1,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(50),
-                      color: Colors.white.withOpacity(0.3),
-                    ),
-                    child: child,
-                  ),
-                ),
-              )
-            : Container(
-                width: width?.toDouble(),
-                height: height?.toDouble(),
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(13),
-                  color: Colors.white.withOpacity(0.3),
-                ),
-                child: child,
-              ),
-      ),
+          filter: ImageFilter.blur(sigmaX: 10, sigmaY: 10), // 블러 강도 조절
+          child: LayoutBuilder(
+            builder: (context, constraints) {
+              return type == BluredContainerType.CIRCLE
+                  ? SizedBox(
+                      width: width?.toDouble() ?? 50, // 기본 크기 제공
+                      height: width?.toDouble() ?? 50, // 1:1 비율 유지
+                      child: AspectRatio(
+                        aspectRatio: 1,
+                        child: Container(
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(50),
+                            color: Colors.white.withOpacity(0.3),
+                          ),
+                          child: child,
+                        ),
+                      ),
+                    )
+                  : Container(
+                      width: width?.toDouble(),
+                      height: height?.toDouble(),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(13),
+                        color: Colors.white.withOpacity(0.3),
+                      ),
+                      child: child,
+                    );
+            },
+          )),
     );
   }
 }

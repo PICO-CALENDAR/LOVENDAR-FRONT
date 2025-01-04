@@ -135,6 +135,9 @@ flutter:
           weight: 800
         - asset: assets/fonts/Pretendard-Black.ttf
           weight: 900
+    - family: Kyobo
+      fonts:
+        - asset : assets/fonts/KyoboHandwriting2019.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

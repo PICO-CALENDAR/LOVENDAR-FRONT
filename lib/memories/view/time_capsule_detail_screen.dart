@@ -3,14 +3,18 @@ import 'dart:ui';
 
 import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pico/user/model/user_model.dart';
+import 'package:pico/user/provider/user_provider.dart';
 
-class TimeCapsuleDetailScreen extends StatelessWidget {
+class TimeCapsuleDetailScreen extends ConsumerWidget {
   final int index;
   const TimeCapsuleDetailScreen({super.key, required this.index});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final userInfo = ref.watch(userProvider) as UserModel;
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Stack(
@@ -47,19 +51,63 @@ class TimeCapsuleDetailScreen extends StatelessWidget {
                     width: MediaQuery.of(context).size.width,
                     height: MediaQuery.of(context).size.width * 1.2,
                     child: Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          DateFormat.yMEd().format(DateTime.now()),
-                          style: const TextStyle(color: Colors.grey),
-                        ),
-                        Text(
-                          "편지 제목 $index",
+                          "제목 $index",
                           style: const TextStyle(
                             fontSize: 24,
+                            fontFamily: "Kyobo",
                             fontWeight: FontWeight.bold,
                           ),
                         ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Column(
+                              children: [
+                                Text(
+                                  DateFormat.yMEd().format(DateTime.now()),
+                                  style: const TextStyle(
+                                    color: Colors.grey,
+                                    fontFamily: "Kyobo",
+                                    height: 1,
+                                  ),
+                                ),
+                                Text(
+                                  "기념일 종류 $index",
+                                  style: const TextStyle(
+                                    fontSize: 20,
+                                    fontFamily: "Kyobo",
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.end,
+                              children: [
+                                CircleAvatar(
+                                  radius: 15,
+                                  backgroundImage: NetworkImage(
+                                    userInfo.partnerProfileImage!,
+                                  ),
+                                ),
+                                SizedBox(
+                                  height: 5,
+                                ),
+                                Text(
+                                  "From. ${userInfo.partnerName}",
+                                  style: const TextStyle(
+                                    fontFamily: "Kyobo",
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        )
                       ],
                     ),
                   ),

@@ -3,6 +3,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/memories/view/time_capsule_detail_screen.dart';
 
 class SentboxScreen extends StatelessWidget {
@@ -28,6 +29,7 @@ class SentboxScreen extends StatelessWidget {
                       const Text(
                         "보낸 타임캡슐",
                         style: TextStyle(
+                          fontFamily: "Kyobo",
                           color: Colors.white,
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -53,37 +55,44 @@ class SentboxScreen extends StatelessWidget {
                       return GestureDetector(
                         onTap: () {
                           Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TimeCapsuleDetailScreen(index: index),
+                            createBluredBackgroundPage(
+                              screen: TimeCapsuleDetailScreen(index: index),
                             ),
                           );
                         },
                         child: Hero(
                           tag: index,
-                          child: Container(
-                            padding: const EdgeInsets.all(18),
-                            margin: const EdgeInsets.symmetric(
-                                vertical: 8, horizontal: 16),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  DateFormat.yMEd().format(DateTime.now()),
-                                  style: const TextStyle(color: Colors.grey),
-                                ),
-                                Text(
-                                  "편지 제목 $index",
-                                  style: const TextStyle(
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: Container(
+                              padding: const EdgeInsets.all(18),
+                              margin: const EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 16),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat.yMEd().format(DateTime.now()),
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontFamily: "Kyobo",
+                                      height: 1,
+                                    ),
                                   ),
-                                ),
-                              ],
+                                  Text(
+                                    "편지 제목 $index",
+                                    style: const TextStyle(
+                                      fontFamily: "Kyobo",
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

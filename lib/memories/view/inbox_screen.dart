@@ -29,6 +29,7 @@ class InboxScreen extends StatelessWidget {
                       const Text(
                         "받은 타임캡슐",
                         style: TextStyle(
+                          fontFamily: "Kyobo",
                           color: Colors.white,
                           fontSize: 25,
                           fontWeight: FontWeight.bold,
@@ -82,11 +83,16 @@ class InboxScreen extends StatelessWidget {
                                 children: [
                                   Text(
                                     DateFormat.yMEd().format(DateTime.now()),
-                                    style: const TextStyle(color: Colors.grey),
+                                    style: const TextStyle(
+                                      color: Colors.grey,
+                                      fontFamily: "Kyobo",
+                                      height: 1,
+                                    ),
                                   ),
                                   Text(
                                     "편지 제목 $index",
                                     style: const TextStyle(
+                                      fontFamily: "Kyobo",
                                       fontSize: 24,
                                       fontWeight: FontWeight.bold,
                                     ),
