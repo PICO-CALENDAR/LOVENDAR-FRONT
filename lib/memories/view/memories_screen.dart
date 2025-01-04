@@ -74,8 +74,6 @@ class _MemoriesScreenState extends ConsumerState<MemoriesScreen>
 
         // 새 버튼 - 투명 픽셀 감지 적용
         TransparentTouchableImage(
-          width: MediaQuery.of(context).size.width,
-          height: MediaQuery.of(context).size.height,
           imagePath: 'images/bird.png',
           onTap: () {
             HapticFeedback.heavyImpact();
@@ -84,6 +82,7 @@ class _MemoriesScreenState extends ConsumerState<MemoriesScreen>
             });
           },
         ),
+
         // 기본 말풍선
         if (!isBirdTapped)
           AnimatedBuilder(

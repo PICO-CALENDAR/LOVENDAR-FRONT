@@ -298,7 +298,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                       );
 
                                   // 회원가입한 걸로 auth 저장 (token 저장 로직 포함)
-                                  ref
+                                  await ref
                                       .read(authProvider.notifier)
                                       .register(response);
 

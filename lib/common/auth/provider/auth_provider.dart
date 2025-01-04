@@ -23,7 +23,7 @@ class Auth extends _$Auth {
     return null;
   }
 
-  register(AuthResponse response) async {
+  Future<void> register(AuthResponse response) async {
     await secureStorage.saveAccessToken(response.accessToken);
     await secureStorage.saveRefreshToken(response.refreshToken);
     state = AuthModel(

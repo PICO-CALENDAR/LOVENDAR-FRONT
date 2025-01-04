@@ -9,14 +9,14 @@ import 'package:pico/memories/components/image_painter.dart';
 class TransparentTouchableImage extends StatefulWidget {
   final String imagePath;
   final VoidCallback onTap;
-  final double? width;
-  final double? height;
+  // final double? width;
+  // final double? height;
 
   const TransparentTouchableImage({
     required this.imagePath,
     required this.onTap,
-    this.width,
-    this.height,
+    // this.width,
+    // this.height,
     super.key,
   });
 
@@ -98,13 +98,13 @@ class _TransparentTouchableImageState extends State<TransparentTouchableImage> {
           },
           child: CustomPaint(
             size: Size(
-              widget.width ?? constraints.maxWidth,
-              widget.height ?? constraints.maxHeight,
+              constraints.maxWidth,
+              constraints.maxHeight,
             ),
             painter: ImagePainter(
               image: _image!,
-              width: widget.width,
-              height: widget.height,
+              // width: widget.width,
+              // height: widget.height,
             ),
           ),
         );

@@ -5,22 +5,25 @@ import 'dart:ui';
 
 class ImagePainter extends CustomPainter {
   final Image image;
-  final double? width;
-  final double? height;
 
-  ImagePainter({required this.image, this.width, this.height});
+  ImagePainter({
+    required this.image,
+  });
 
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint();
     final Rect rect = Offset.zero & size;
+
     canvas.drawImageRect(
       image,
       Rect.fromLTWH(
         0,
         0,
-        width ?? image.width.toDouble(),
-        height ?? image.height.toDouble(),
+        // image.width.toDouble(),
+        // image.height.toDouble(),
+        size.width,
+        size.height,
       ),
       rect,
       paint,
