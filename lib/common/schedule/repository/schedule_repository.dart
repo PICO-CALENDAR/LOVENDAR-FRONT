@@ -2,6 +2,7 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/auth/model/google_auth_response.dart';
 import 'package:pico/common/dio/dio.dart';
+import 'package:pico/common/schedule/model/delete_repeat_schedule_body.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/model/schedule_response.dart';
 import 'package:pico/common/schedule/model/schedules_response.dart';
@@ -80,8 +81,11 @@ abstract class ScheduleRepository {
 
   // 반복 일정 삭제
   @POST("/delete/repeat/{scheduleId}")
+  @Headers({
+    'accessToken': 'true',
+  })
   Future<ScheduleResponse> postDeleteRepeatSchedule({
     @Path() required String scheduleId,
-    @Body() required RegisterBody body,
+    @Body() required DeleteRepeatScheduleBody body,
   });
 }

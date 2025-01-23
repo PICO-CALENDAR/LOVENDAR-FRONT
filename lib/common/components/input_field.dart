@@ -20,6 +20,7 @@ class InputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
+      initialValue: initialValue,
       validator: validator,
       builder: (FormFieldState<String> state) {
         return Column(

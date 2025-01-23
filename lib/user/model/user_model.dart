@@ -23,7 +23,7 @@ class UserModelError extends UserModelBase {
 @JsonSerializable()
 class UserModel extends UserModelBase {
   final String name;
-  final String profileImage;
+  final String? profileImage;
   final String email;
   @JsonKey(
     fromJson: _genderFromJson,

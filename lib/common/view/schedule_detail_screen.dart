@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pico/common/components/primary_button.dart';
 import 'package:pico/common/components/toast.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
@@ -57,10 +58,19 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                 decoration: BoxDecoration(
                                   color: schedule.color,
                                   borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                        color: Colors.grey.withOpacity(0.1),
+                                        spreadRadius: 0,
+                                        blurRadius: 10,
+                                        offset: Offset.fromDirection(360,
+                                            10) // changes position of shadow
+                                        ),
+                                  ],
                                 ),
                                 child: Padding(
                                   padding: const EdgeInsets.symmetric(
-                                    horizontal: 15,
+                                    horizontal: 20,
                                     vertical: 10,
                                   ),
                                   child: Column(
@@ -108,12 +118,18 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                               ScheduleType.YOURS)
                                             CircleAvatar(
                                               radius: 12,
-                                              backgroundImage: NetworkImage(
-                                                userInfo.profileImage,
-                                              ),
+                                              backgroundImage:
+                                                  userInfo.profileImage != null
+                                                      ? NetworkImage(
+                                                          userInfo
+                                                              .profileImage!,
+                                                        )
+                                                      : AssetImage(
+                                                          "images/profile_placeholder.png",
+                                                        ),
                                             ),
                                           SizedBox(
-                                            width: 7,
+                                            width: 5,
                                           ),
                                           Text(
                                             "${schedule.category.getName()}의 일정",
@@ -129,7 +145,60 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                 ),
                               ),
                               SizedBox(
-                                height: 5,
+                                height: 10,
+                              ),
+                              if (schedule.meetingPeople != null)
+                                Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 20,
+                                    vertical: 10,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(10),
+                                    boxShadow: [
+                                      BoxShadow(
+                                          color: Colors.grey.withOpacity(0.1),
+                                          spreadRadius: 0,
+                                          blurRadius: 10,
+                                          offset: Offset.fromDirection(360,
+                                              10) // changes position of shadow
+                                          ),
+                                    ],
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Icon(
+                                            MdiIcons.accountGroup,
+                                            color: AppTheme.textColor,
+                                          ),
+                                          SizedBox(
+                                            width: 10,
+                                          ),
+                                          Text(
+                                            "만나는 사람",
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Text(
+                                        schedule.meetingPeople!,
+                                        style: TextStyle(
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+
+                              SizedBox(
+                                height: 10,
                               ),
                               if (schedule.isRepeat)
                                 Row(
@@ -211,30 +280,98 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                   width: parentWidth / 2,
                                   buttonName: "삭제",
                                   onPressed: () {
-                                    showConfirmDialog(
-                                      context: context,
-                                      title: "정말로 삭제하겠습니까?",
-                                      content: '일정이 영구 삭제되며,\n이 작업은 되돌릴 수 없습니다',
-                                      confirmName: "삭제",
-                                      dialogType: ConfirmType.DANGER,
-                                      onPressed: () async {
-                                        try {
-                                          await ref
-                                              .read(schedulesProvider.notifier)
-                                              .deleteSchedule(
-                                                  schedule.scheduleId);
-                                          Toast.showSuccessToast(
-                                                  message: "삭제에 성공했습니다")
-                                              .show(parentContext);
-                                          Navigator.of(parentContext).pop();
-                                          Navigator.of(parentContext).pop();
-                                        } catch (e) {
-                                          Toast.showErrorToast(
-                                                  message: e.toString())
-                                              .show(parentContext);
-                                        }
-                                      },
-                                    );
+                                    if (schedule.isRepeat) {
+                                      //반복 일정인 경우
+                                      showOptionsDialog(
+                                        context: context,
+                                        title: "반복 일정 삭제",
+                                        content:
+                                            '모든 일정을 삭제하시겠습니까, 아니면 현재 일정과 이후 모든 일정을 삭제하겠습니까?',
+                                        firstOptionName: "모든 일정 삭제",
+                                        firstOptionPressed: () async {
+                                          // 모든 일정 삭제
+                                          try {
+                                            await ref
+                                                .read(
+                                                    schedulesProvider.notifier)
+                                                .deleteSchedule(
+                                                    schedule.scheduleId);
+                                            if (parentContext.mounted) {
+                                              Toast.showSuccessToast(
+                                                      message:
+                                                          "모든 반복 일정이 삭제되었습니다")
+                                                  .show(parentContext);
+                                              Navigator.of(parentContext).pop();
+                                              Navigator.of(parentContext).pop();
+                                            }
+                                          } catch (e) {
+                                            if (parentContext.mounted) {
+                                              Toast.showErrorToast(
+                                                      message: e.toString())
+                                                  .show(parentContext);
+                                            }
+                                          }
+                                        },
+                                        secondOptionName: "현재 일정 및 이후 일정만 삭제",
+                                        secondOptionPressed: () async {
+                                          // 현재 일정 및 이후 일정 삭제
+                                          print(schedule.scheduleId);
+
+                                          try {
+                                            await ref
+                                                .read(
+                                                    schedulesProvider.notifier)
+                                                .deleteRepeatSchedule(
+                                                  scheduleId:
+                                                      schedule.scheduleId,
+                                                  repeatEndDate:
+                                                      schedule.startTime,
+                                                );
+                                            if (parentContext.mounted) {
+                                              Toast.showSuccessToast(
+                                                      message:
+                                                          "현재 일정 및 이후 일정이 삭제되었습니다")
+                                                  .show(parentContext);
+                                              Navigator.of(parentContext).pop();
+                                              Navigator.of(parentContext).pop();
+                                            }
+                                          } catch (e) {
+                                            if (parentContext.mounted) {
+                                              Toast.showErrorToast(
+                                                      message: e.toString())
+                                                  .show(parentContext);
+                                            }
+                                          }
+                                        },
+                                      );
+                                    } else {
+                                      showConfirmDialog(
+                                        context: context,
+                                        title: "정말로 삭제하겠습니까?",
+                                        content:
+                                            '일정이 영구 삭제되며,\n이 작업은 되돌릴 수 없습니다',
+                                        confirmName: "삭제",
+                                        dialogType: ConfirmType.DANGER,
+                                        onPressed: () async {
+                                          try {
+                                            await ref
+                                                .read(
+                                                    schedulesProvider.notifier)
+                                                .deleteSchedule(
+                                                    schedule.scheduleId);
+                                            Toast.showSuccessToast(
+                                                    message: "삭제에 성공했습니다")
+                                                .show(parentContext);
+                                            Navigator.of(parentContext).pop();
+                                            Navigator.of(parentContext).pop();
+                                          } catch (e) {
+                                            Toast.showErrorToast(
+                                                    message: e.toString())
+                                                .show(parentContext);
+                                          }
+                                        },
+                                      );
+                                    }
                                   },
                                 ),
                                 SizedBox(

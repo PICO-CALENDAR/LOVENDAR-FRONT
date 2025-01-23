@@ -26,6 +26,7 @@ class RegisterScreen extends ConsumerStatefulWidget {
 class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _nicknameController = TextEditingController();
   DateTime? _birthDate;
   DateTime? _dDay;
   // 나중에 개인정보 수집 약관 동의에 대해서도 처리
@@ -38,6 +39,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    _nicknameController.dispose();
     super.dispose();
   }
 
@@ -123,9 +125,23 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                         children: [
                           // Name TextFormField
                           InputField(
-                            title: "별명",
-                            hint: "피코",
+                            title: "이름",
+                            hint: "김피코",
                             controller: _nameController,
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return '이름(실명)을 입력해주세요';
+                              }
+                              return null;
+                            },
+                          ),
+                          const SizedBox(height: 16.0),
+
+                          // Name TextFormField
+                          InputField(
+                            title: "별명",
+                            hint: "귀여운 피코",
+                            controller: _nicknameController,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return '별명을 입력해주세요';
@@ -278,8 +294,9 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                               final authInfo = ref.read(authProvider);
                               if (authInfo is AuthModel) {
                                 final body = RegisterBody(
+                                  name: _nameController.text,
                                   gender: _genderValue,
-                                  nickName: _nameController.text,
+                                  nickName: _nicknameController.text,
                                   birth: _birthDate!
                                       .toIso8601String()
                                       .split("T")[0],
@@ -316,13 +333,15 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   } else {
                                     print("에러 메시지: ${e.message}");
                                   }
+                                  if (context.mounted) {
+                                    Toast.showErrorToast(
+                                            message: "회원가입 중 오류가 발생했습니다")
+                                        .show(context);
+                                  }
                                 }
                               } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text("잘못된 접근입니다"),
-                                  ),
-                                );
+                                Toast.showErrorToast(message: "잘못된 접근입니다")
+                                    .show(context);
                               }
 
                               // ScaffoldMessenger.of(context).showSnackBar(

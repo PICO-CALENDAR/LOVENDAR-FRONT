@@ -17,12 +17,10 @@ class AuthModelLoading extends AuthModelBase {}
 @JsonSerializable()
 class AuthModel extends AuthModelBase {
   final int id;
-  final String name;
   final bool isRegistered;
 
   AuthModel({
     required this.id,
-    required this.name,
     required this.isRegistered,
   });
 

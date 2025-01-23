@@ -5,6 +5,7 @@ part 'register_body.g.dart';
 
 @JsonSerializable()
 class RegisterBody {
+  final String name;
   final Gender gender;
   final String nickName;
   final String birth;
@@ -13,6 +14,7 @@ class RegisterBody {
   final bool isMarketingAgreed;
 
   RegisterBody({
+    required this.name,
     required this.gender,
     required this.nickName,
     required this.birth,

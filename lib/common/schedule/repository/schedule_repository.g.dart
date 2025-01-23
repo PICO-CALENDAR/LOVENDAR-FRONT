@@ -234,11 +234,12 @@ class _ScheduleRepository implements ScheduleRepository {
   @override
   Future<ScheduleResponse> postDeleteRepeatSchedule({
     required String scheduleId,
-    required RegisterBody body,
+    required DeleteRepeatScheduleBody body,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
     final _data = <String, dynamic>{};
     _data.addAll(body.toJson());
     final _options = _setStreamType<ScheduleResponse>(Options(

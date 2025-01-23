@@ -43,7 +43,6 @@ class MonthView extends ConsumerWidget {
               final slotWidth = totalWidth / 7;
               final dateCellSlotHeight = (totalHeight / 6) * 0.3;
               final eventCellSlotHeight = (totalHeight / 6) * 0.7;
-              print(eventCellSlotHeight);
 
               return Column(
                 children: [

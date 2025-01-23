@@ -322,19 +322,24 @@ class DateScheduleRow extends ConsumerWidget {
                   ),
               ],
             ),
+
             for (var schedule in orgSchedules)
               schedule.column <= maxColumn
                   ? Positioned(
                       top: (schedule.column - 1) * eventHeight +
                           (gap * (schedule.column - 1)),
                       left: schedule.scheduleData.startTime
-                              .isSameDate(weekDate.first)
+                                  .isSameDate(weekDate.first) ||
+                              schedule.scheduleData.startTime
+                                  .isBefore(weekDate.first)
                           ? 2
                           : (schedule.scheduleData.startTime.weekday - 1) *
                                   slotWidth +
                               2,
                       right: schedule.scheduleData.endTime
-                              .isSameDate(weekDate.last)
+                                  .isSameDate(weekDate.last) ||
+                              schedule.scheduleData.endTime
+                                  .isAfter(weekDate.last)
                           ? 2
                           : (7 - (schedule.scheduleData.endTime.weekday)) *
                                   slotWidth +
@@ -353,8 +358,15 @@ class DateScheduleRow extends ConsumerWidget {
                             ),
                             decoration: BoxDecoration(
                               color: schedule.scheduleData.color,
-                              borderRadius: const BorderRadius.all(
-                                Radius.circular(5),
+                              borderRadius: BorderRadius.horizontal(
+                                left: schedule.scheduleData.startTime
+                                        .isBefore(weekDate.first)
+                                    ? Radius.zero
+                                    : Radius.circular(5),
+                                right: schedule.scheduleData.endTime
+                                        .isAfter(weekDate.last)
+                                    ? Radius.zero
+                                    : Radius.circular(5),
                               ),
                             ),
                             child: Row(
@@ -397,7 +409,7 @@ class DateScheduleRow extends ConsumerWidget {
                         ),
                       ),
                     )
-                  : const SizedBox.shrink()
+                  : const SizedBox.shrink(),
           ],
         ),
       ),

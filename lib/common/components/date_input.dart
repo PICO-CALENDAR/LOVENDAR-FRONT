@@ -13,7 +13,7 @@ class DateInput extends StatelessWidget {
   final String? title;
   final String? placeholder;
   final String invalidateMessage;
-  final DateTime initialDate;
+  final DateTime? initialDate;
   final DateTime? Function() getDate;
   final void Function(DateTime?) setDate;
   final DateInputSize size;
@@ -88,7 +88,7 @@ class DateInput extends StatelessWidget {
                           state.didChange(dateValue);
                           setDate(dateValue);
                         } else {
-                          dateValue = initialDate;
+                          dateValue = initialDate ?? DateTime.now();
                           state.didChange(dateValue);
                           setDate(dateValue);
                         }
@@ -177,11 +177,13 @@ class DateInput extends StatelessWidget {
                   ),
                 ),
                 child: Text(
-                  date == null && placeholder != null
-                      ? placeholder!
-                      : mode == CupertinoDatePickerMode.date
-                          ? DateFormat.yMMMMd().format(date!)
-                          : DateFormat.jm().format(date!),
+                  date == null
+                      ? "종료 날짜를 입력해주세요"
+                      : placeholder != null
+                          ? placeholder!
+                          : mode == CupertinoDatePickerMode.date
+                              ? DateFormat.yMMMMd().format(date)
+                              : DateFormat.jm().format(date),
                   style: TextStyle(
                     fontSize: 14,
                     color: date == null ? Colors.grey : AppTheme.textColor,

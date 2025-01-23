@@ -90,33 +90,42 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Column(
-                  children: [
-                    CircleAvatar(
-                      radius: 40,
-                      backgroundColor: Colors.grey,
-                      backgroundImage: NetworkImage(
-                        userInfo.profileImage,
-                      ), // Replace with actual image path
-                    ),
-                    SizedBox(
-                      height: 5,
-                    ),
-                    Text(
-                      userInfo.nickName,
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
+                GestureDetector(
+                  onTap: () {
+                    showProfileDetail(context);
+                  },
+                  child: Column(
+                    children: [
+                      CircleAvatar(
+                        radius: 40,
+                        backgroundColor: Colors.grey,
+                        backgroundImage: userInfo.profileImage != null
+                            ? NetworkImage(
+                                userInfo.profileImage!,
+                              )
+                            : AssetImage(
+                                "images/profile_placeholder.png",
+                              ),
                       ),
-                    ),
-                    Text(
-                      userInfo.name,
-                      style: TextStyle(
-                        color: Colors.grey,
-                        fontWeight: FontWeight.w400,
+                      SizedBox(
+                        height: 5,
                       ),
-                    ),
-                  ],
+                      Text(
+                        userInfo.nickName,
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      Text(
+                        userInfo.name,
+                        style: TextStyle(
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
                 Lottie.asset(
                   "assets/animations/heart.json",

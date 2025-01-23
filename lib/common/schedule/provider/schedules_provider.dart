@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/calendar/provider/checked_category_provider.dart';
 import 'package:pico/common/model/custom_exception.dart';
 import 'package:pico/common/model/event_controller.dart';
+import 'package:pico/common/schedule/model/delete_repeat_schedule_body.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/model/update_schedule_body.dart';
 import 'package:pico/common/schedule/repository/schedule_repository.dart';
@@ -70,6 +71,37 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
     try {
       final response = await repository.postDeleteSchedule(
         scheduleId: scheduleId.toString(),
+      );
+
+      if (response.success) {
+        // 해당 scheduleId를 제외한 새로운 리스트를 생성
+        state = state
+            .where((schedule) =>
+                schedule.scheduleId != response.schedule.scheduleId)
+            .toList();
+      } else {
+        throw CustomException("삭제에 실패하였습니다.");
+      }
+    } on DioException catch (e) {
+      if (e.response!.statusCode == 404) {
+        throw CustomException("상대방 일정은 삭제할 수 없습니다.");
+      }
+    } catch (e) {
+      throw CustomException("삭제에 실패하였습니다.");
+    }
+  }
+
+  // 일정 삭제 (반복 일정)
+  Future<void> deleteRepeatSchedule({
+    required int scheduleId,
+    required DateTime repeatEndDate,
+  }) async {
+    try {
+      final response = await repository.postDeleteRepeatSchedule(
+        scheduleId: scheduleId.toString(),
+        body: DeleteRepeatScheduleBody(
+          repeatEndDate: repeatEndDate.toIso8601String(),
+        ),
       );
 
       if (response.success) {
@@ -306,6 +338,7 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
         columnedSchedules.add(organized);
       }
     }
+
     return columnedSchedules;
   }
 
@@ -332,8 +365,21 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
       final startTime = schedule.scheduleData.startTime.withoutTime;
       final endTime = schedule.scheduleData.endTime.withoutTime;
 
-      return startTime.isBefore(weekEnd.withoutTime.add(Duration(days: 1))) &&
-          endTime.isAfter(weekStart.withoutTime.subtract(Duration(days: 1)));
+      // if (startTime.isBefore(weekStart.withoutTime) &&
+      //     (endTime.isAfter(weekStart.withoutTime) ||
+      //         endTime.isSameDate(weekStart.withoutTime))) {
+      //   return true;
+      // }
+
+      // if (endTime.isAfter(weekEnd.withoutTime) &&
+      //         startTime.isBefore(weekEnd.withoutTime) ||
+      //     startTime.isSameDate(weekEnd.withoutTime)) {
+      //   return true;
+      // }
+      return (startTime.isBefore(weekEnd.withoutTime) ||
+              startTime.isSameDate(weekEnd.withoutTime)) &&
+          (endTime.isAfter(weekStart.withoutTime) ||
+              endTime.isSameDate(weekStart.withoutTime));
     }).toList();
 
     return result;

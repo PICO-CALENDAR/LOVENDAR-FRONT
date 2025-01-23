@@ -14,6 +14,7 @@ void main() async {
   // 기기의 기본 로케일 가져오기
   final deviceLocale = PlatformDispatcher.instance.locale;
   Intl.defaultLocale = deviceLocale.toString(); // 기기 언어 설정으로 로케일 지정
+
   // 환경 변수 로드
   await dotenv.load(fileName: 'assets/config/.env');
 
