@@ -287,7 +287,7 @@ Route createBluredBackgroundPage({required Widget screen}) {
   );
 }
 
-// 초대 모달
+// 사용자 프로필 정보
 void showProfileDetail(BuildContext context) {
   showModalBottomSheet(
     context: context,
@@ -390,5 +390,26 @@ void showProfileDetail(BuildContext context) {
         },
       );
     },
+  );
+}
+
+// 버튼 옵션 모달
+void showButtonsModal(BuildContext context, List<Widget> children) {
+  showCupertinoModalBottomSheet(
+    expand: false,
+    context: context,
+    backgroundColor: Colors.transparent,
+    builder: (context) => Material(
+      child: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: children,
+          ),
+        ),
+      ),
+    ),
   );
 }

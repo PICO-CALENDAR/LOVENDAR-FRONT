@@ -5,15 +5,17 @@ class InputField extends StatelessWidget {
   final String title;
   final String hint;
   final String? initialValue;
-  final TextEditingController controller;
+  final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final bool? enabled;
 
   const InputField({
     super.key,
     required this.title,
     required this.hint,
     this.initialValue,
-    required this.controller,
+    this.controller,
+    this.enabled = true,
     this.validator,
   });
 
@@ -53,6 +55,7 @@ class InputField extends StatelessWidget {
             TextFormField(
               onChanged: (value) => state.didChange(value),
               controller: controller,
+              enabled: enabled,
               decoration: InputDecoration(
                 hintText: hint,
               ),

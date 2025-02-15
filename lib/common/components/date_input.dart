@@ -178,12 +178,12 @@ class DateInput extends StatelessWidget {
                 ),
                 child: Text(
                   date == null
-                      ? "종료 날짜를 입력해주세요"
-                      : placeholder != null
+                      ? placeholder != null
                           ? placeholder!
-                          : mode == CupertinoDatePickerMode.date
-                              ? DateFormat.yMMMMd().format(date)
-                              : DateFormat.jm().format(date),
+                          : "날짜를 입력해주세요"
+                      : mode == CupertinoDatePickerMode.date
+                          ? DateFormat.yMMMMd().format(date)
+                          : DateFormat.jm().format(date),
                   style: TextStyle(
                     fontSize: 14,
                     color: date == null ? Colors.grey : AppTheme.textColor,

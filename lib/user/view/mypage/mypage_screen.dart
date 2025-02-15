@@ -104,7 +104,7 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
                                 userInfo.profileImage!,
                               )
                             : AssetImage(
-                                "images/profile_placeholder.png",
+                                "images/basic_profile.png",
                               ),
                       ),
                       SizedBox(
@@ -144,9 +144,12 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
                           ? CircleAvatar(
                               radius: 40,
                               backgroundColor: Colors.grey,
-                              backgroundImage: NetworkImage(
-                                userInfo.partnerProfileImage!,
-                              ), // Replace with actual image path
+                              backgroundImage: userInfo.partnerProfileImage !=
+                                      null
+                                  ? NetworkImage(userInfo.partnerProfileImage!)
+                                  : AssetImage(
+                                      "images/basic_profile.png",
+                                    ), // Replace  // Replace with actual image path
                             )
                           : DottedBorder(
                               color: AppTheme.primaryColorDark,

@@ -37,6 +37,16 @@ abstract class UserRepository {
   //   @Body() RegisterBody body,
   // );
 
+  // 유저 프로필 이미지 업데이트
+  @POST("/update/profile/image")
+  @MultiPart()
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> postProfileImage(
+    @Part(name: 'file') List<MultipartFile> file,
+  );
+
   // 초대 코드 생성
   @GET("/make/invite/code")
   @Headers({
@@ -44,7 +54,7 @@ abstract class UserRepository {
   })
   Future<InviteCodeModel> getInviteCode();
 
-  // 초대 코드 생성
+  // 커플 연결
   @POST("/make/couple")
   @Headers({
     'accessToken': 'true',

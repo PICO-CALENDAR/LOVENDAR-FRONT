@@ -56,6 +56,42 @@ class _UserRepository implements UserRepository {
   }
 
   @override
+  Future<UserModel> postProfileImage(List<MultipartFile> file) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    _data.files.addAll(file.map((i) => MapEntry('file', i)));
+    final _options = _setStreamType<UserModel>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+        .compose(
+          _dio.options,
+          '/update/profile/image',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late UserModel _value;
+    try {
+      _value = UserModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
   Future<InviteCodeModel> getInviteCode() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};

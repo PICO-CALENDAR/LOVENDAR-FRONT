@@ -99,4 +99,18 @@ class User extends _$User {
       print(e);
     }
   }
+
+  Future<void> updateUserProfile(imgFile) async {
+    try {
+      // 유저 프로필 변경
+      final userInfo = await repository.postProfileImage(imgFile);
+      state = userInfo;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
 }
