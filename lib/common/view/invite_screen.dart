@@ -72,25 +72,6 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
       },
       child: Scaffold(
         backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        appBar: AppBar(
-          title: const Text(
-            "커플 연결을 진행해주세요",
-          ),
-          leading: SizedBox.shrink(),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.close),
-              onPressed: () {
-                try {
-                  context.pop();
-                } catch (e) {
-                  context.go("/");
-                }
-              },
-            ),
-          ],
-          backgroundColor: Theme.of(context).scaffoldBackgroundColor,
-        ),
         body: SafeArea(
           child: SingleChildScrollView(
             child: Padding(
@@ -275,17 +256,17 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
                       ActionButton(
                         buttonName: "커플 연결하기",
                         onPressed: () async {
-                          if (mounted) {
-                            Toast.showSuccessToast(
-                              message: "커플 연결에 성공했습니다!",
-                            ).show(context);
-                            Confetti.launch(
-                              context,
-                              options: const ConfettiOptions(
-                                  particleCount: 100, spread: 70, y: 0.6),
-                            );
-                            context.go("/");
-                          }
+                          // if (mounted) {
+                          //   Toast.showSuccessToast(
+                          //     message: "커플 연결에 성공했습니다!",
+                          //   ).show(context);
+                          //   Confetti.launch(
+                          //     context,
+                          //     options: const ConfettiOptions(
+                          //         particleCount: 100, spread: 70, y: 0.6),
+                          //   );
+                          //   context.go("/");
+                          // }
                           if (inviteCodeInputController.text.isNotEmpty) {
                             final provider = ref.read(userRepositoryProvider);
                             final body = InviteCodeModel(
@@ -294,19 +275,20 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
                               await provider.postLinkingCouple(body);
                               ref.read(userProvider.notifier).getUserInfo();
 
-                              if (mounted) {
-                                Toast.showSuccessToast(
-                                  message: "커플 연결에 성공했습니다!",
-                                ).show(context);
-                                Confetti.launch(
-                                  context,
-                                  options: const ConfettiOptions(
-                                      particleCount: 100, spread: 70, y: 0.6),
-                                );
-                                context.go("/");
+                              if (context.mounted) {
+                                // context.go('/?status=success');
+                                // Toast.showSuccessToast(
+                                //   message: "커플 연결에 성공했습니다!",
+                                // ).show(context);
+                                // Confetti.launch(
+                                //   context,
+                                //   options: const ConfettiOptions(
+                                //       particleCount: 100, spread: 70, y: 0.6),
+                                // );
+                                // Navigator.of(context).pop("invite_success");
                               }
                             } catch (e) {
-                              if (mounted) {
+                              if (context.mounted) {
                                 Toast.showErrorToast(
                                   message: "유효하지 않은 초대코드입니다.",
                                 ).show(context);

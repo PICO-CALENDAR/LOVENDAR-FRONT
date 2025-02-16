@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pico/common/auth/model/apple_auth_request.dart';
 
 import 'package:pico/common/auth/model/auth_model.dart';
 import 'package:pico/common/auth/model/google_auth_request.dart';
@@ -23,17 +24,59 @@ class Auth extends _$Auth {
     return null;
   }
 
-  register(AuthResponse response) async {
+  Future<void> register(AuthResponse response) async {
     await secureStorage.saveAccessToken(response.accessToken);
     await secureStorage.saveRefreshToken(response.refreshToken);
-    state = AuthModel(
-        id: response.id,
-        name: response.name,
-        isRegistered: response.isRegistered);
+    state = AuthModel(id: response.id, isRegistered: response.isRegistered);
   }
 
   logout() {
     ref.read(userProvider.notifier).logOut();
+  }
+
+  appleLogin(BuildContext context) async {
+    try {
+      state = AuthModelLoading();
+      final authInfo = await SocialLoginRepository()
+          .socialLogin(socialType: SocialType.apple);
+      if (authInfo == null) {
+        return;
+      }
+
+      final AppleAuthBody authReq = AppleAuthBody(
+        idToken: authInfo[0],
+        authorizationCode: authInfo[1],
+      );
+
+      final response = await authRepository.postAppleSignin(authReq);
+
+      // 가입되어 있지 않은 상태
+      if (!response.isRegistered) {
+        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+
+        ref.read(userProvider.notifier).getUserInfo();
+
+        // 로그인 상태 업데이트
+        if (context.mounted) {
+          context.go("/register");
+        }
+      } else {
+        // 가입된 상태
+        await secureStorage.saveAccessToken(response.accessToken);
+        await secureStorage.saveRefreshToken(response.refreshToken);
+        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+        ref.read(userProvider.notifier).getUserInfo();
+        // 로그인 상태 업데이트
+        if (context.mounted) {
+          context.go("/");
+        }
+      }
+    } catch (e) {
+      print("로그인 에러");
+      print(e);
+
+      state = null;
+    }
   }
 
   googleLogin(BuildContext context) async {
@@ -44,13 +87,13 @@ class Auth extends _$Auth {
 
       print("idToken : $idToken");
 
-      if (idToken == null) {
-        if (context.mounted) {
-          return context.go("/login");
-        }
-      }
+      // if (idToken == null) {
+      //   if (context.mounted) {
+      //     return context.go("/login");
+      //   }
+      // }
 
-      final GoogleAuthBody authReq = GoogleAuthBody(idToken: idToken!);
+      final GoogleAuthBody authReq = GoogleAuthBody(idToken: idToken![0]);
 
       // print("authReq: ${authReq.toJson()}");
 
@@ -58,10 +101,7 @@ class Auth extends _$Auth {
 
       // 가입되어 있지 않은 상태
       if (!response.isRegistered) {
-        state = AuthModel(
-            id: response.id,
-            name: response.name,
-            isRegistered: response.isRegistered);
+        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
 
         ref.read(userProvider.notifier).getUserInfo();
         // 로그인 상태 업데이트
@@ -72,10 +112,7 @@ class Auth extends _$Auth {
         // 가입된 상태
         await secureStorage.saveAccessToken(response.accessToken);
         await secureStorage.saveRefreshToken(response.refreshToken);
-        state = AuthModel(
-            id: response.id,
-            name: response.name,
-            isRegistered: response.isRegistered);
+        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
         ref.read(userProvider.notifier).getUserInfo();
         // 로그인 상태 업데이트
         if (context.mounted) {

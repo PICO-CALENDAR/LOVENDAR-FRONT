@@ -1,7 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
+import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/repository/user_repository.dart';
+import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'user_provider.g.dart';
@@ -22,18 +25,20 @@ class User extends _$User {
     return UserModelLoading();
   }
 
+  // 로그아웃
   void logOut() {
     storage.storage.deleteAll();
     state = null;
+    // 스케줄 캐싱 지우기
+    ref.read(schedulesProvider.notifier).resetSchedules();
   }
 
   // 회원 탈퇴
-  void deleteAccount() async {
+  Future<void> deleteAccount() async {
     try {
       // 회원 탈퇴
       await repository.postDeleteAccount();
-      storage.storage.deleteAll();
-      state = null;
+      logOut();
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response.toString());
@@ -43,6 +48,7 @@ class User extends _$User {
     }
   }
 
+  // 유저 정보 가져오기
   void getUserInfo() async {
     final refreshToken = await storage.readRefreshToken();
     final accessToken = await storage.readAccessToken();
@@ -76,6 +82,35 @@ class User extends _$User {
       storage.storage.deleteAll();
       // Handle other exceptions
       // state = UserModelError(message: 'Unexpected error: $e');
+    }
+  }
+
+  // 커플 끊기
+  Future<void> unLinkCouple() async {
+    try {
+      // 커플 연결 해제
+      await repository.postDeleteCoupleInfo();
+      getUserInfo();
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response.toString());
+      }
+    } catch (e) {
+      print(e);
+    }
+  }
+
+  Future<void> updateUserProfile(imgFile) async {
+    try {
+      // 유저 프로필 변경
+      final userInfo = await repository.postProfileImage(imgFile);
+      state = userInfo;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        print(e.response.toString());
+      }
+    } catch (e) {
+      print(e);
     }
   }
 }

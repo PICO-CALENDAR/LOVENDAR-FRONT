@@ -10,6 +10,7 @@ class WeekRow extends ConsumerWidget {
     super.key,
     required this.selectedMonth,
     required this.weekDate,
+    required this.monthDays,
     // required this.scheduleController,
     required this.slotWidth,
     required this.dateCellSlotHeight,
@@ -20,6 +21,7 @@ class WeekRow extends ConsumerWidget {
 
   final int selectedMonth;
   final List<DateTime> weekDate;
+  final List<DateTime> monthDays;
   // final ScheduleController scheduleController;
   final double slotWidth;
   final double dateCellSlotHeight;
@@ -47,6 +49,7 @@ class WeekRow extends ConsumerWidget {
           children: [
             DateScheduleRow(
               weekDate: weekDate,
+              monthDays: monthDays,
               // scheduleController: scheduleController,
               width: totalWidth,
               height: eventCellSlotHeight,

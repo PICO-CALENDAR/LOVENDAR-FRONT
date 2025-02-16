@@ -8,11 +8,14 @@ import 'package:pico/common/components/action_button.dart';
 import 'package:pico/common/components/date_input.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/toast.dart';
+import 'package:pico/common/provider/selected_day_provider.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/model/update_schedule_body.dart';
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/schedule/repository/schedule_repository.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/user/view/register_screen.dart';
 import 'package:go_router/go_router.dart';
 
@@ -38,19 +41,30 @@ class EditScheduleScreen extends ConsumerStatefulWidget {
 
 class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _scheduleTitle = TextEditingController();
-  final TextEditingController _meetingPeople = TextEditingController();
+  late final TextEditingController _scheduleTitle = TextEditingController();
+  late final TextEditingController _meetingPeople = TextEditingController();
   bool _isSubmitted = false; // 저장 혹은 추가 버튼 눌렀는지 여부를 추적
 
   bool _isAllDay = false;
   ScheduleType _category = ScheduleType.MINE;
   RepeatType? _repeatType;
-  final DateTime _initialDay = DateTime.now();
+  DateTime? repeatEndDate;
+  late DateTime _initialDay;
   late DateTime startDay;
   late DateTime endDay;
   late DateTime startTime;
   late DateTime endTime;
   List<DropdownMenuItem<RepeatType>> repeatDropDownMenuItems = [
+    DropdownMenuItem<RepeatType>(
+      value: null,
+      child: Text(
+        "없음",
+        style: TextStyle(
+          color: AppTheme.textColor,
+          fontSize: 14,
+        ),
+      ),
+    ),
     ...RepeatType.values.map(
       (item) => DropdownMenuItem<RepeatType>(
         value: item,
@@ -90,6 +104,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
 
   @override
   void initState() {
+    _initialDay = ref.read(selectedDayProvider);
     if (widget.mode == EditMode.ADD) {
       startDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
       endDay = DateTime(_initialDay.year, _initialDay.month, _initialDay.day);
@@ -122,6 +137,143 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
     _scheduleTitle.dispose();
     _meetingPeople.dispose();
     super.dispose();
+  }
+
+  Future<void> onSubmit() async {
+    setState(() {
+      _isSubmitted = true;
+    });
+
+    if (_formKey.currentState!.validate() && isDateRangeValid()) {
+      // 일정 추가
+
+      final start = _isAllDay
+          ? DateTime(
+              startDay.year,
+              startDay.month,
+              startDay.day,
+              0,
+              0,
+            )
+          : DateTime(
+              startDay.year,
+              startDay.month,
+              startDay.day,
+              startTime.hour,
+              startTime.minute,
+            );
+      final end = _isAllDay
+          ? DateTime(
+              endDay.year,
+              endDay.month,
+              endDay.day,
+              0,
+              0,
+            )
+          : DateTime(
+              endDay.year,
+              endDay.month,
+              endDay.day,
+              endTime.hour,
+              endTime.minute,
+            );
+
+      if (widget.mode == EditMode.ADD) {
+        final body = ScheduleModelBase(
+          title: _scheduleTitle.text,
+          startTime: start,
+          endTime: end,
+          category: _category,
+          isAllDay: _isAllDay,
+          isRepeat: _repeatType != null,
+          repeatType: _repeatType,
+          meetingPeople:
+              _meetingPeople.text.isNotEmpty ? _meetingPeople.text : null,
+        );
+
+        try {
+          // print(body.toJson().toString());
+
+          await ref.read(schedulesProvider.notifier).postAddSchedule(body);
+          Toast.showSuccessToast(
+            message: "일정을 성공적으로 추가했습니다",
+          ).show(context);
+          Navigator.of(context).pop();
+        } catch (e) {
+          print(e);
+          if (mounted) {
+            Toast.showErrorToast(
+              message: "일정 추가에 문제가 생겼습니다",
+            ).show(context);
+          }
+        }
+      } else {
+        if (widget.initialScheduleValue != null) {
+          final initial = widget.initialScheduleValue!;
+          final bool isTitleChanged = initial.title != _scheduleTitle.text;
+          final bool isStartTimeChanged =
+              !initial.startTime.isAtSameMomentAs(start);
+          final bool isEndTimeChanged = !initial.endTime.isAtSameMomentAs(end);
+          final bool isCategoryChanged = initial.category != _category;
+          final bool isAllDayChanged = initial.isAllDay != _isAllDay;
+          final bool isRepeatTypeChanged = initial.repeatType != _repeatType;
+          final bool isMeetingPeopleChanged =
+              initial.meetingPeople != _meetingPeople.text;
+
+          final UpdateScheduleBody updatedBody = UpdateScheduleBody(
+            title: isTitleChanged ? _scheduleTitle.text : initial.title,
+            startTime: isStartTimeChanged ? start : initial.startTime,
+            endTime: isEndTimeChanged ? end : initial.endTime,
+            category: isCategoryChanged ? _category : initial.category,
+            isAllDay: isAllDayChanged ? _isAllDay : initial.isAllDay,
+            isRepeat:
+                isRepeatTypeChanged ? _repeatType != null : initial.isRepeat,
+            repeatType: isRepeatTypeChanged ? _repeatType : initial.repeatType,
+            meetingPeople: isMeetingPeopleChanged
+                ? _meetingPeople.text
+                : initial.meetingPeople,
+          );
+
+          try {
+            // print(body.toJson().toString());
+
+            await ref.read(schedulesProvider.notifier).postEditSchedule(
+                  scheduleId: initial.scheduleId.toString(),
+                  body: updatedBody,
+                );
+            if (context.mounted) {
+              Toast.showSuccessToast(
+                message: "일정을 성공적으로 수정했습니다",
+              ).show(context);
+              Navigator.of(context).pop();
+            }
+          } catch (e) {
+            if (context.mounted) {
+              Toast.showErrorToast(
+                message: "일정 수정에 문제가 생겼습니다",
+              ).show(context);
+            }
+          }
+        }
+      }
+    } else {
+      // final body = UpdateScheduleBody(
+      //   title: _scheduleTitle.text,
+      //   startTime: start,
+      //   endTime: end,
+      //   category: _category,
+      //   isAllDay: _isAllDay,
+      //   isRepeat: _repeatType != null,
+      //   repeatType: _repeatType,
+      // );
+    }
+
+    // else {
+    //   // if (!isDateRangeValid()) {
+    //   //   print("날짜 범위가 잘못되었습니다.");
+    //   // }
+    //   // print("폼 검증 실패");
+    // }
   }
 
   Widget _buildTabButton(ScheduleType label) {
@@ -243,13 +395,25 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final repository = ref.watch(scheduleRepositoryProvider);
     return Scaffold(
       appBar: AppBar(
         title: Text(
           widget.mode == EditMode.ADD ? "일정 추가" : "일정 수정",
         ),
-        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+        automaticallyImplyLeading: false, // 이전 버튼 제거
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.close_rounded),
+            onPressed: () {
+              try {
+                context.pop();
+              } catch (e) {
+                context.go("/");
+              }
+            },
+          ),
+        ],
+        // backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       ),
       body: GestureDetector(
         onTap: () {
@@ -271,9 +435,11 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // 일정 제목
                           InputField(
                             title: "일정 이름",
                             hint: "일정 이름을 입력하세요",
+                            initialValue: widget.initialScheduleValue?.title,
                             controller: _scheduleTitle,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
@@ -283,6 +449,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                             },
                           ),
                           const SizedBox(height: 16),
+                          // 일정 카테고리
                           Row(
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: [
@@ -295,6 +462,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                           ),
                           const SizedBox(height: 16),
                           const SizedBox(height: 16),
+                          // 하루종일 이벤트인지
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
@@ -331,6 +499,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
+
                           if (!isDateRangeValid())
                             Padding(
                               padding: const EdgeInsets.symmetric(
@@ -350,10 +519,14 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                                 ],
                               ),
                             ),
+                          // 시작 날짜 설정
                           _buildDateTimePicker('시작', context),
                           const SizedBox(height: 16),
+                          // 종료 날짜 설정
                           _buildDateTimePicker('종료', context),
                           const SizedBox(height: 16),
+
+                          // 반복
                           Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -365,7 +538,13 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                                     color: Theme.of(context).primaryColor,
                                   ),
                                   SizedBox(width: 8),
-                                  Text('반복', style: TextStyle(fontSize: 16)),
+                                  Text(
+                                    '반복',
+                                    style: const TextStyle(
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
                                 ],
                               ),
                               SizedBox(
@@ -389,7 +568,9 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                                   // ),
                                   items: repeatDropDownMenuItems,
                                   onChanged: (value) {
-                                    _repeatType = value;
+                                    setState(() {
+                                      _repeatType = value;
+                                    });
                                   },
                                   // onSaved: (value) {
                                   //   repeatType = value;
@@ -416,6 +597,51 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                             ],
                           ),
                           const SizedBox(height: 16),
+                          // if (_repeatType != null)
+                          //   Row(
+                          //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          //     children: [
+                          //       Row(
+                          //         children: [
+                          //           Icon(
+                          //             MdiIcons.repeatOff,
+                          //             color: Theme.of(context).primaryColor,
+                          //           ),
+                          //           SizedBox(width: 8),
+                          //           Text(
+                          //             '반복 종료',
+                          //             style: const TextStyle(
+                          //               fontSize: 15,
+                          //               fontWeight: FontWeight.w500,
+                          //             ),
+                          //           ),
+                          //         ],
+                          //       ),
+                          //       Row(
+                          //         children: [
+                          //           DateInput(
+                          //             validator: (value) => null,
+                          //             size: DateInputSize.small,
+                          //             initialDate: repeatEndDate,
+                          //             getDate: () => repeatEndDate,
+                          //             setDate: (DateTime? newDate) {
+                          //               if (newDate != null) {
+                          //                 setState(() {
+                          //                   repeatEndDate = newDate;
+                          //                 });
+                          //               }
+                          //             },
+                          //           ),
+                          //           TextButton.icon(
+                          //             onPressed: () {},
+                          //             icon: Icon(Icons.cabin),
+                          //             label: Text(""),
+                          //           )
+                          //         ],
+                          //       ),
+                          //     ],
+                          //   ),
+
                           InputField(
                             title: "만나는 사람",
                             hint: "만나는 사람을 입력해주세요",
@@ -432,104 +658,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                     const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                 child: ActionButton(
                   buttonName: widget.mode == EditMode.ADD ? "일정 추가" : "일정 수정",
-                  onPressed: () async {
-                    setState(() {
-                      _isSubmitted = true;
-                    });
-
-                    if (_formKey.currentState!.validate() &&
-                        isDateRangeValid()) {
-                      // 일정 추가
-
-                      final start = _isAllDay
-                          ? DateTime(
-                              startDay.year,
-                              startDay.month,
-                              startDay.day,
-                              0,
-                              0,
-                            )
-                          : DateTime(
-                              startDay.year,
-                              startDay.month,
-                              startDay.day,
-                              startTime.hour,
-                              startTime.minute,
-                            );
-                      final end = _isAllDay
-                          ? DateTime(
-                              endDay.year,
-                              endDay.month,
-                              endDay.day,
-                              0,
-                              0,
-                            )
-                          : DateTime(
-                              endDay.year,
-                              endDay.month,
-                              endDay.day,
-                              endTime.hour,
-                              endTime.minute,
-                            );
-                      try {
-                        final body = ScheduleModelBase(
-                          title: _scheduleTitle.text,
-                          startTime: start,
-                          endTime: end,
-                          category: _category,
-                          isAllDay: _isAllDay,
-                          isRepeat: _repeatType != null,
-                          repeatType: _repeatType,
-                        );
-                        // print(body.toJson().toString());
-
-                        final response = await repository.postAddSchedule(body);
-                        if (response.success) {
-                          ref
-                              .read(schedulesProvider.notifier)
-                              .refreshSchedules();
-                          if (mounted) {
-                            Toast.showSuccessToast(
-                              message: "성공적으로 일정이 추가되었습니다",
-                            ).show(context);
-                            context.pop();
-                          }
-                        } else {
-                          if (mounted) {
-                            Toast.showErrorToast(
-                              message: "일정 추가에 문제가 생겼습니다",
-                            ).show(context);
-                          }
-                        }
-                      } on DioException catch (e) {
-                        if (e.response != null) {
-                          print("HTTP 에러: ${e.response?.statusCode}");
-                          print("서버 응답: ${e.response?.data}");
-                        } else {
-                          print("에러 메시지: ${e.message}");
-                        }
-                        if (mounted) {
-                          Toast.showErrorToast(
-                            message: "일정 추가에 문제가 생겼습니다",
-                          ).show(context);
-                        }
-                      } catch (e) {
-                        print(e);
-                        if (mounted) {
-                          Toast.showErrorToast(
-                            message: "일정 추가에 문제가 생겼습니다",
-                          ).show(context);
-                        }
-                      }
-                    }
-
-                    // else {
-                    //   // if (!isDateRangeValid()) {
-                    //   //   print("날짜 범위가 잘못되었습니다.");
-                    //   // }
-                    //   // print("폼 검증 실패");
-                    // }
-                  },
+                  onPressed: onSubmit,
                 ),
               ),
             ],

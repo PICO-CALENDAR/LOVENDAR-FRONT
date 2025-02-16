@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/common/theme/theme_light.dart';
+import 'package:pico/common/utils/extenstions.dart';
+import 'package:pico/common/view/edit_schedule_screen.dart';
 
 class DateNumberCell extends ConsumerWidget {
   const DateNumberCell({
@@ -39,9 +41,8 @@ class DateNumberCell extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final bool isToday = date.toString() == DateTime.now().toString();
+    final bool isToday = date.isSameDate(DateTime.now());
     final bool isInMonth = date.month == selectedMonth;
-
     return Container(
       width: width,
       height: height,

@@ -4,20 +4,25 @@ import 'package:pico/common/theme/theme_light.dart';
 class InputField extends StatelessWidget {
   final String title;
   final String hint;
-  final TextEditingController controller;
+  final String? initialValue;
+  final TextEditingController? controller;
   final String? Function(String?)? validator;
+  final bool? enabled;
 
   const InputField({
     super.key,
     required this.title,
     required this.hint,
-    required this.controller,
+    this.initialValue,
+    this.controller,
+    this.enabled = true,
     this.validator,
   });
 
   @override
   Widget build(BuildContext context) {
     return FormField<String>(
+      initialValue: initialValue,
       validator: validator,
       builder: (FormFieldState<String> state) {
         return Column(
@@ -47,9 +52,10 @@ class InputField extends StatelessWidget {
                 ],
               ),
             ),
-            TextField(
+            TextFormField(
               onChanged: (value) => state.didChange(value),
               controller: controller,
+              enabled: enabled,
               decoration: InputDecoration(
                 hintText: hint,
               ),

@@ -3,14 +3,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/calendar/components/month_view.dart';
+import 'package:pico/calendar/provider/checked_category_provider.dart';
 import 'package:pico/common/components/check_box_chip.dart';
 import 'package:pico/common/model/event_controller.dart';
 import 'package:pico/common/contants/calendar_const.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
+import 'package:pico/common/schedule/repository/schedule_repository.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
+  static String get routeName => 'calendar';
   const CalendarScreen({super.key});
 
   @override
@@ -34,12 +38,6 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   late PageController _pageController;
   late List<ScheduleModel> schedule;
   // late ScheduleController _scheduleController;
-
-  Map<ScheduleType, bool> categoryCheckState = {
-    ScheduleType.MINE: true,
-    ScheduleType.YOURS: true,
-    ScheduleType.OURS: true,
-  };
 
   /// Sets the minimum and maximum dates for current view.
   void _setDateRange() {
@@ -73,11 +71,17 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   // 페이지 전환 시 달 업데이트
   void _onPageChange(int value) {
     if (mounted) {
+      final updatedDate = DateTime(
+        _currentDate.year,
+        _currentDate.month + (value - _currentIndex),
+      );
+      if (_currentDate.year != updatedDate.year) {
+        ref
+            .read(schedulesProvider.notifier)
+            .refreshSchedules(year: updatedDate.year);
+      }
       setState(() {
-        _currentDate = DateTime(
-          _currentDate.year,
-          _currentDate.month + (value - _currentIndex),
-        );
+        _currentDate = updatedDate;
         _currentIndex = value;
       });
     }
@@ -90,6 +94,11 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
     // Initialize current date.
     _currentDate = DateTime.now();
     _regulateCurrentDate();
+
+    final schedules = ref.read(schedulesProvider);
+    if (schedules.isEmpty) {
+      ref.read(schedulesProvider.notifier).refreshSchedules();
+    }
 
     // Initialize page controller to control page actions.
     _pageController = PageController(initialPage: _currentIndex);
@@ -183,6 +192,7 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
   @override
   Widget build(BuildContext context) {
     final koreanWeekday = ["월", "화", "수", "목", "금", "토", "일"];
+    final categoryCheckedState = ref.watch(checkedCategoryProvider);
 
     return Column(
       children: [
@@ -259,33 +269,30 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
               return Row(
                 children: [
                   CheckBoxChip(
-                    label: "내 일정",
-                    width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.MINE]!,
-                    color: AppTheme.getColorByScheduleType(ScheduleType.MINE),
-                    accentColor: AppTheme.getDarkerColorByScheduleType(
-                      ScheduleType.MINE,
-                    ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.MINE] =
-                          !categoryCheckState[ScheduleType.MINE]!;
-                    }),
-                  ),
+                      label: "내 일정",
+                      width: checkboxbtnWidth,
+                      isChecked: categoryCheckedState[ScheduleType.MINE]!,
+                      color: AppTheme.getColorByScheduleType(ScheduleType.MINE),
+                      accentColor: AppTheme.getDarkerColorByScheduleType(
+                        ScheduleType.MINE,
+                      ),
+                      onPressed: () => ref
+                          .read(checkedCategoryProvider.notifier)
+                          .toggleCategory(ScheduleType.MINE)),
                   const SizedBox(
                     width: seperatedGap,
                   ),
                   CheckBoxChip(
                     label: "상대 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.YOURS]!,
+                    isChecked: categoryCheckedState[ScheduleType.YOURS]!,
                     color: AppTheme.getColorByScheduleType(ScheduleType.YOURS),
                     accentColor: AppTheme.getDarkerColorByScheduleType(
                       ScheduleType.YOURS,
                     ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.YOURS] =
-                          !categoryCheckState[ScheduleType.YOURS]!;
-                    }),
+                    onPressed: () => ref
+                        .read(checkedCategoryProvider.notifier)
+                        .toggleCategory(ScheduleType.YOURS),
                   ),
                   const SizedBox(
                     width: seperatedGap,
@@ -293,15 +300,14 @@ class _CalendarScreenState extends ConsumerState<CalendarScreen> {
                   CheckBoxChip(
                     label: "우리 일정",
                     width: checkboxbtnWidth,
-                    isChecked: categoryCheckState[ScheduleType.OURS]!,
+                    isChecked: categoryCheckedState[ScheduleType.OURS]!,
                     color: AppTheme.getColorByScheduleType(ScheduleType.OURS),
                     accentColor: AppTheme.getDarkerColorByScheduleType(
                       ScheduleType.OURS,
                     ),
-                    onPressed: () => setState(() {
-                      categoryCheckState[ScheduleType.OURS] =
-                          !categoryCheckState[ScheduleType.OURS]!;
-                    }),
+                    onPressed: () => ref
+                        .read(checkedCategoryProvider.notifier)
+                        .toggleCategory(ScheduleType.OURS),
                   ),
                 ],
               );

@@ -7,6 +7,7 @@ part of 'register_body.dart';
 // **************************************************************************
 
 RegisterBody _$RegisterBodyFromJson(Map<String, dynamic> json) => RegisterBody(
+      name: json['name'] as String,
       gender: $enumDecode(_$GenderEnumMap, json['gender']),
       nickName: json['nickName'] as String,
       birth: json['birth'] as String,
@@ -17,6 +18,7 @@ RegisterBody _$RegisterBodyFromJson(Map<String, dynamic> json) => RegisterBody(
 
 Map<String, dynamic> _$RegisterBodyToJson(RegisterBody instance) =>
     <String, dynamic>{
+      'name': instance.name,
       'gender': _$GenderEnumMap[instance.gender]!,
       'nickName': instance.nickName,
       'birth': instance.birth,

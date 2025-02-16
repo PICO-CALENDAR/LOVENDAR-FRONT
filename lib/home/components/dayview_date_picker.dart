@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/date_operations.dart';
+import 'package:pico/common/utils/extenstions.dart';
 
 class DayviewDatePicker extends StatelessWidget {
   final DateTime now = DateTime.now();
@@ -17,7 +18,7 @@ class DayviewDatePicker extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 5),
       decoration: BoxDecoration(
         color: Theme.of(context).scaffoldBackgroundColor,
         boxShadow: [
@@ -31,7 +32,7 @@ class DayviewDatePicker extends StatelessWidget {
         ],
       ),
       child: Padding(
-        padding: const EdgeInsets.only(top: 7, bottom: 12, left: 5, right: 5),
+        padding: const EdgeInsets.only(top: 7, bottom: 12),
         child: Row(
           children: [
             for (var date in getWeekDate(now))
@@ -65,14 +66,19 @@ class DateWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final today = DateTime.now();
     return GestureDetector(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 2.5),
+        padding: const EdgeInsets.symmetric(horizontal: 3),
         child: Container(
           padding: const EdgeInsets.symmetric(vertical: 9),
           decoration: BoxDecoration(
-            color: isSelected ? AppTheme.primaryColor : Colors.transparent,
+            color: isSelected
+                ? AppTheme.primaryColor
+                : today.isSameDate(date)
+                    ? Colors.grey.shade200
+                    : Colors.transparent,
             borderRadius: BorderRadius.circular(13),
           ),
           child: Column(

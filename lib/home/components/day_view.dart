@@ -14,20 +14,20 @@ import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/view/schedule_detail_screen.dart';
 import 'package:pico/home/components/day_view_painter.dart';
 import 'package:pico/home/components/indicator.dart';
-import 'package:pico/common/utils/event_operations.dart';
+import 'package:pico/common/utils/schedule_operations.dart';
 import 'package:pico/common/utils/extenstions.dart';
 
 class DayView extends ConsumerStatefulWidget {
   final DateTime date;
 
-  final bool isAllDayScheduleTapped;
-  final void Function() toggleIsAllDayScheduleTapped;
+  final bool? isAllDayScheduleTapped;
+  final void Function()? toggleIsAllDayScheduleTapped;
 
   const DayView({
     super.key,
     required this.date,
-    required this.isAllDayScheduleTapped,
-    required this.toggleIsAllDayScheduleTapped,
+    this.isAllDayScheduleTapped,
+    this.toggleIsAllDayScheduleTapped,
   });
 
   @override
@@ -38,10 +38,21 @@ class _DayViewState extends ConsumerState<DayView> {
   late Timer _timer;
 
   DateTime _currentTime = DateTime.now();
+  bool isAllDayScheduleTapped = false;
+
+  void toggleIsAllDayScheduleTapped() {
+    setState(() {
+      isAllDayScheduleTapped = !isAllDayScheduleTapped;
+    });
+  }
 
   @override
   void initState() {
     super.initState();
+    final schedules = ref.read(schedulesProvider);
+    if (schedules.isEmpty) {
+      ref.read(schedulesProvider.notifier).refreshSchedules();
+    }
     _timer = Timer.periodic(const Duration(minutes: 1), (_) {
       setState(() {
         _currentTime = DateTime.now();
@@ -60,6 +71,38 @@ class _DayViewState extends ConsumerState<DayView> {
     const hourHeight = 60.0; // 1시간 = 60픽셀
     const totalHeight = 24 * hourHeight; // 24시간의 전체 높이
     final schedules = ref.watch(schedulesProvider);
+    final scheduleObjs = schedules
+        .map(
+          (s) => s.copyScheduleOnDate(targetDate: widget.date),
+        )
+        .whereType<ScheduleModel>()
+        .toList();
+
+    // List<DateTime> getWeekBoundaries(DateTime targetDate) {
+    //   // 특정 날짜의 월요일 계산
+    //   final firstDayOfWeek =
+    //       targetDate.subtract(Duration(days: targetDate.weekday - 1));
+    //   final startOfWeek = DateTime(
+    //       firstDayOfWeek.year, firstDayOfWeek.month, firstDayOfWeek.day);
+
+    //   // 특정 날짜의 일요일 계산
+    //   final lastDayOfWeek = startOfWeek.add(const Duration(days: 6));
+    //   final endOfWeek =
+    //       DateTime(lastDayOfWeek.year, lastDayOfWeek.month, lastDayOfWeek.day);
+
+    //   return [startOfWeek, endOfWeek];
+    // }
+
+    // final orgSchedules =
+    //     ref.read(schedulesProvider.notifier).filterAndSortSchedulesForWeek(
+    //           ref.read(schedulesProvider.notifier).organizeSchedules(
+    //                 schedules,
+    //                 widget.date.datesOfMonths().first,
+    //                 widget.date.datesOfMonths().last,
+    //               ),
+    //           getWeekBoundaries(widget.date)[0],
+    //           getWeekBoundaries(widget.date)[1],
+    //         );
 
     return Stack(
       children: [
@@ -109,17 +152,52 @@ class _DayViewState extends ConsumerState<DayView> {
 
                           return Stack(
                             children: [
-                              // TODO" 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
+                              // TODO: 여기에 전달 되는 event들은 특정 날짜에 해당하는 데이터여야 한다.
+                              // for (var scheduleGroup
+                              //     in groupOverlappingSchedules(
+                              //   schedules: schedules
+                              //       .where(
+                              //         (s) => s.isEventOnDate(
+                              //             targetDate: widget.date),
+                              //       )
+                              //       .toList()
+                              //       .adjustMultiDaySchedules(
+                              //           targetDate: widget.date),
+                              // ))
                               for (var scheduleGroup
-                                  in groupOverlappingSchedules(schedules
-                                      .where((s) =>
-                                          s.startTime.isSameDate(widget.date))
-                                      .toList()))
+                                  in groupOverlappingSchedules(
+                                schedules: scheduleObjs.adjustMultiDaySchedules(
+                                    targetDate: widget.date),
+                              ))
+                                // 수정 모드
+                                // for (var scheduleGroup
+                                //     in groupOverlappingSchedules(
+                                //   schedules: orgSchedules
+                                //       .where(
+                                //         (s) => s.scheduleData.isEventOnDate(
+                                //             targetDate: widget.date),
+                                //       )
+                                //       .toList()
+                                //       .map((s) => s.scheduleData)
+                                //       .toList()
+                                //       .adjustMultiDaySchedules(
+                                //           targetDate: widget.date),
+                                // ))
+                                // for (var scheduleGroup in schedules
+                                //     .where((s) =>
+                                //         s.isEventOnDate(targetDate: widget.date))
+                                //     .toList()
+                                // .groupOverlappingSchedules())
                                 for (var organizedSchedule
                                     in getOrganizedSchedules(
-                                        scheduleGroup, parentWidth))
+                                  overlappingSchedules: scheduleGroup,
+                                  viewWidth: parentWidth,
+                                ))
+                                  // for (var organizedSchedule in scheduleGroup
+                                  //     .getOrganizedSchedules(parentWidth))
                                   ScheduleBox(
                                     organizedSchedule: organizedSchedule,
+                                    targetDate: widget.date,
                                   ),
                             ],
                           );
@@ -130,27 +208,40 @@ class _DayViewState extends ConsumerState<DayView> {
                 ),
 
                 // 현재 시간 Indicator
-                Positioned(
-                  top: (_currentTime.hour + _currentTime.minute / 60) *
-                      hourHeight,
-                  left: 60, // 시간 Text 피하고 선부터 시작하기 위해서
-                  right: 7,
-                  child: const Indicator(),
-                ),
+                widget.date.isSameDate(_currentTime)
+                    ? Positioned(
+                        top: (_currentTime.hour + _currentTime.minute / 60) *
+                            hourHeight,
+                        left: 60, // 시간 Text 피하고 선부터 시작하기 위해서
+                        right: 7,
+                        child: const Indicator(),
+                      )
+                    : SizedBox.shrink(),
               ],
             ),
           ),
         ),
+
+        // 하루종일 이벤트 관련
         IgnorePointer(
-          ignoring: !widget.isAllDayScheduleTapped,
+          ignoring: widget.isAllDayScheduleTapped != null
+              ? !widget.isAllDayScheduleTapped!
+              : !isAllDayScheduleTapped,
           child: AnimatedOpacity(
-            duration: Duration(milliseconds: 500), // 전환 시간
+            duration: Duration(milliseconds: 300), // 전환 시간
             curve: Curves.easeInOut,
-            opacity:
-                widget.isAllDayScheduleTapped ? 0.5 : 0.0, // 조건에 따라 불투명도 조절
+            opacity: widget.isAllDayScheduleTapped != null
+                ? widget.isAllDayScheduleTapped!
+                    ? 0.6
+                    : 0.0
+                : isAllDayScheduleTapped
+                    ? 0.6
+                    : 0.0, // 조건에 따라 불투명도 조절
             child: GestureDetector(
               onTap: () {
-                widget.toggleIsAllDayScheduleTapped();
+                widget.toggleIsAllDayScheduleTapped != null
+                    ? widget.toggleIsAllDayScheduleTapped!()
+                    : toggleIsAllDayScheduleTapped();
               },
               child: Container(
                 decoration: BoxDecoration(
@@ -176,8 +267,12 @@ class _DayViewState extends ConsumerState<DayView> {
               AllDayScheduleBox(
                 date: widget.date,
                 category: ScheduleType.OURS,
-                isTapped: widget.isAllDayScheduleTapped,
-                toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                isTapped: widget.isAllDayScheduleTapped != null
+                    ? widget.isAllDayScheduleTapped!
+                    : isAllDayScheduleTapped,
+                toggleIsTapped: widget.toggleIsAllDayScheduleTapped != null
+                    ? widget.toggleIsAllDayScheduleTapped!
+                    : toggleIsAllDayScheduleTapped,
               ),
               Row(
                 children: [
@@ -185,8 +280,13 @@ class _DayViewState extends ConsumerState<DayView> {
                     child: AllDayScheduleBox(
                       date: widget.date,
                       category: ScheduleType.MINE,
-                      isTapped: widget.isAllDayScheduleTapped,
-                      toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                      isTapped: widget.isAllDayScheduleTapped != null
+                          ? widget.isAllDayScheduleTapped!
+                          : isAllDayScheduleTapped,
+                      toggleIsTapped:
+                          widget.toggleIsAllDayScheduleTapped != null
+                              ? widget.toggleIsAllDayScheduleTapped!
+                              : toggleIsAllDayScheduleTapped,
                     ),
                   ),
                   SizedBox(
@@ -196,8 +296,13 @@ class _DayViewState extends ConsumerState<DayView> {
                     child: AllDayScheduleBox(
                       date: widget.date,
                       category: ScheduleType.YOURS,
-                      isTapped: widget.isAllDayScheduleTapped,
-                      toggleIsTapped: widget.toggleIsAllDayScheduleTapped,
+                      isTapped: widget.isAllDayScheduleTapped != null
+                          ? widget.isAllDayScheduleTapped!
+                          : isAllDayScheduleTapped,
+                      toggleIsTapped:
+                          widget.toggleIsAllDayScheduleTapped != null
+                              ? widget.toggleIsAllDayScheduleTapped!
+                              : toggleIsAllDayScheduleTapped,
                     ),
                   )
                 ],
@@ -226,6 +331,9 @@ class AllDayScheduleBox extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // ScheduleModel? targetSchedule = scheduleObjs.firstWhere(
+    //     (s) => s.scheduleId == organizedSchedule.scheduleData.scheduleId);
+
     final allDaySchedulesInDateByCat = ref
         .read(schedulesProvider.notifier)
         .getAllDaySchedulesByDateAndCat(date: date, category: category);
@@ -243,11 +351,25 @@ class AllDayScheduleBox extends ConsumerWidget {
                     toggleIsTapped();
                   }
                 } else {
-                  showBarModalBottomSheet(
+                  showModalBottomSheet<void>(
                     context: context,
-                    builder: (context) => ScheduleDetailScreen(
-                      schedule: allDaySchedulesInDateByCat[idx],
-                    ),
+                    isScrollControlled: true,
+                    isDismissible: false,
+                    builder: (BuildContext context) {
+                      return SizedBox(
+                        height: MediaQuery.of(context).size.height * 0.9,
+                        child: ClipRRect(
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(20),
+                            topRight: Radius.circular(20),
+                          ),
+                          child: ScheduleDetailScreen(
+                            date: date,
+                            schedule: allDaySchedulesInDateByCat[idx],
+                          ),
+                        ),
+                      );
+                    },
                   );
                 }
               },
@@ -307,12 +429,29 @@ class AllDayScheduleBox extends ConsumerWidget {
   }
 }
 
-class ScheduleBox extends StatelessWidget {
+class ScheduleBox extends ConsumerWidget {
   final OrganizedSchedule organizedSchedule;
-  const ScheduleBox({super.key, required this.organizedSchedule});
+  final DateTime targetDate;
+
+  const ScheduleBox({
+    super.key,
+    required this.organizedSchedule,
+    required this.targetDate,
+  });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final schedules = ref.watch(schedulesProvider);
+    final scheduleObjs = schedules
+        .map(
+          (s) => s.copyScheduleOnDate(targetDate: targetDate),
+        )
+        .whereType<ScheduleModel>()
+        .toList();
+
+    ScheduleModel? targetSchedule = scheduleObjs.firstWhere(
+        (s) => s.scheduleId == organizedSchedule.scheduleData.scheduleId);
+
     return Positioned(
       left: organizedSchedule.left,
       top: organizedSchedule.top,
@@ -327,10 +466,22 @@ class ScheduleBox extends StatelessWidget {
           // ),
           child: InkWell(
             onTap: () {
-              showBarModalBottomSheet(
+              showModalBottomSheet(
                 context: context,
-                builder: (context) => ScheduleDetailScreen(
-                  schedule: organizedSchedule.scheduleData,
+                isScrollControlled: true,
+                builder: (context) => SizedBox(
+                  height: MediaQuery.of(context).size.height * 0.7,
+                  child: ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(20),
+                      topRight: Radius.circular(20),
+                    ),
+                    child: ScheduleDetailScreen(
+                      date: targetDate,
+                      schedule:
+                          targetSchedule ?? organizedSchedule.scheduleData,
+                    ),
+                  ),
                 ),
               );
             },
@@ -347,27 +498,40 @@ class ScheduleBox extends StatelessWidget {
               decoration: BoxDecoration(
                 boxShadow: [
                   BoxShadow(
-                      color: Colors.grey.withOpacity(0.1),
-                      spreadRadius: 0,
-                      blurRadius: 10,
-                      offset: Offset.fromDirection(
-                          360, 10) // changes position of shadow
-                      ),
+                    color: Colors.grey.withOpacity(0.1),
+                    spreadRadius: 0,
+                    blurRadius: 10,
+                    offset: Offset.fromDirection(
+                        360, 10), // changes position of shadow
+                  ),
                 ],
               ),
               child: SingleChildScrollView(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      organizedSchedule.scheduleData.title,
-                      maxLines: 1,
-                      style: const TextStyle(
-                        fontSize: 11.5,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      overflow: TextOverflow.ellipsis,
+                    Wrap(
+                      spacing: 4,
+                      alignment: WrapAlignment.spaceBetween,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        if (organizedSchedule.scheduleData.isRepeat)
+                          Icon(
+                            Icons.replay_rounded,
+                            size: 13,
+                          ),
+                        Text(
+                          organizedSchedule.scheduleData.title,
+                          maxLines: 1,
+                          style: const TextStyle(
+                            fontSize: 11.5,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ],
                     ),
+
                     Wrap(
                       children: [
                         Text(

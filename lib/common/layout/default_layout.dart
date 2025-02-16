@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:pico/common/components/primary_button.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/calendar/view/calendar_screen.dart';
 import 'package:pico/home/view/home/home_screen.dart';
@@ -24,11 +26,11 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
   int currentIndex = 0;
 
   List screens = [
-    const HomeScreen(),
+    HomeScreen(),
     // const BarEventMonthlyCalendar(),
     CalendarScreen(),
-    const MemoriesScreen(),
-    const MypageScreen(),
+    MemoriesScreen(),
+    MypageScreen(),
   ];
 
   // void _bottomSheetInviteDialog({
@@ -93,13 +95,37 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
     final userInfo = ref.watch(userProvider);
     return Scaffold(
       floatingActionButton: FloatingActionButton(
+        heroTag: 'add-btn',
+        shape: CircleBorder(),
         elevation: 1,
         onPressed: () {
           // if (userInfo is UserModel && userInfo.partnerId == null) {
           //   print(userInfo.partnerId);
           //   return _bottomSheetInviteDialog(context: context);
           // }
-          context.push("/editSchedule");
+          // context.push(
+          //   "/editSchedule",
+          // );
+
+          showModalBottomSheet<void>(
+            context: context,
+            isScrollControlled: true,
+            isDismissible: false,
+            builder: (BuildContext context) {
+              return SizedBox(
+                height: MediaQuery.of(context).size.height * 0.9,
+                child: ClipRRect(
+                  borderRadius: const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                  ),
+                  child: EditScheduleScreen(),
+                ),
+              );
+            },
+          );
+
+          // showAddScheduleModal(context);
           // Navigator.push(
           //   context,
           //   MaterialPageRoute(
@@ -181,7 +207,7 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
                                   buttonName: "커플 연결하기",
                                   fontSize: 14,
                                   onPressed: () {
-                                    context.go("/invite");
+                                    showInviteModal(context);
                                   },
                                 ),
                               ],
@@ -203,8 +229,8 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
             Expanded(
                 child: _buildBottomNavItem(
                     Icons.calendar_month_rounded, "캘린더", 1)),
-            SizedBox(
-              width: MediaQuery.of(context).size.width / 5,
+            Expanded(
+              child: SizedBox(),
             ), // FloatingActionButton 공간
             Expanded(
                 child:

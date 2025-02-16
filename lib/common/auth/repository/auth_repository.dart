@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pico/common/auth/model/apple_auth_request.dart';
 import 'package:pico/common/auth/model/google_auth_request.dart';
 import 'package:pico/common/auth/model/google_auth_response.dart';
 import 'package:pico/common/dio/dio.dart';
@@ -21,5 +22,10 @@ abstract class AuthRepository {
   @POST("/app/login/google")
   Future<AuthResponse> postGoogleSignin(
     @Body() GoogleAuthBody authReq,
+  );
+
+  @POST("/app/login/apple")
+  Future<AuthResponse> postAppleSignin(
+    @Body() AppleAuthBody authReq,
   );
 }

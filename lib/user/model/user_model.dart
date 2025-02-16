@@ -23,7 +23,7 @@ class UserModelError extends UserModelBase {
 @JsonSerializable()
 class UserModel extends UserModelBase {
   final String name;
-  final String profileImage;
+  final String? profileImage;
   final String email;
   @JsonKey(
     fromJson: _genderFromJson,
@@ -33,6 +33,7 @@ class UserModel extends UserModelBase {
   final String nickName;
   final String birth;
   final int? partnerId;
+  final String? partnerName;
   final String? partnerNickname;
   final String? partnerProfileImage;
   final bool isTermsAgreed;
@@ -46,6 +47,7 @@ class UserModel extends UserModelBase {
     required this.nickName,
     required this.birth,
     this.partnerId,
+    this.partnerName,
     this.partnerNickname,
     this.partnerProfileImage,
     required this.isTermsAgreed,

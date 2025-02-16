@@ -43,7 +43,6 @@ class MonthView extends ConsumerWidget {
               final slotWidth = totalWidth / 7;
               final dateCellSlotHeight = (totalHeight / 6) * 0.3;
               final eventCellSlotHeight = (totalHeight / 6) * 0.7;
-              print(eventCellSlotHeight);
 
               return Column(
                 children: [
@@ -51,6 +50,7 @@ class MonthView extends ConsumerWidget {
                     WeekRow(
                       selectedMonth: selectedMonth,
                       weekDate: week,
+                      monthDays: monthDays,
                       // scheduleController: scheduleController,
                       slotWidth: slotWidth,
                       dateCellSlotHeight: dateCellSlotHeight,

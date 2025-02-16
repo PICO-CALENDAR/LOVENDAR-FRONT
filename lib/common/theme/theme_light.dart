@@ -52,7 +52,7 @@ class AppTheme {
       case ScheduleType.YOURS:
         return const Color.fromARGB(255, 86, 96, 73);
       case ScheduleType.OURS:
-        return const Color.fromARGB(255, 176, 131, 119);
+        return const Color(0xFFB08377);
       default:
         throw ArgumentError("Invalid EventCategory: $category");
     }
