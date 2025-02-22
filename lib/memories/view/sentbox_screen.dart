@@ -4,6 +4,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/common/utils/modals.dart';
+import 'package:pico/memories/components/timecapsule/timecapsule_list_item.dart';
 import 'package:pico/memories/view/time_capsule_detail_screen.dart';
 
 class SentboxScreen extends StatelessWidget {
@@ -62,39 +63,7 @@ class SentboxScreen extends StatelessWidget {
                         },
                         child: Hero(
                           tag: index,
-                          child: Material(
-                            type: MaterialType.transparency,
-                            child: Container(
-                              padding: const EdgeInsets.all(18),
-                              margin: const EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(10),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    DateFormat.yMEd().format(DateTime.now()),
-                                    style: const TextStyle(
-                                      color: Colors.grey,
-                                      fontFamily: "Kyobo",
-                                      height: 1,
-                                    ),
-                                  ),
-                                  Text(
-                                    "편지 제목 $index",
-                                    style: const TextStyle(
-                                      fontFamily: "Kyobo",
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
+                          child: TimecapsuleListItem(),
                         ),
                       );
                     },

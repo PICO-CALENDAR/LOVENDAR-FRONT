@@ -267,7 +267,7 @@ class _MemoriesScreenState extends ConsumerState<MemoriesScreen>
                       height: 50,
                       child: Center(
                         child: Text(
-                          "받은 타임캡슐 보기",
+                          "타임캡슐 보기",
                           style: TextStyle(
                             fontFamily: "Kyobo",
                             color: Colors.black,

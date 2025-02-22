@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/components/compact_input.dart';
 import 'package:pico/common/components/input_field.dart';
+import 'package:pico/common/components/picture/pick_picture_btn.dart';
+import 'package:pico/common/components/picture/take_picture_btn.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/image_controller.dart';
 import 'package:pico/common/utils/modals.dart';
@@ -27,61 +29,19 @@ class ProfileDetail extends ConsumerWidget {
             padding: const EdgeInsets.all(3),
             child: GestureDetector(
               onTap: () {
+                // TODO : 이거 잘 동작하는지 확인해야 함
                 showButtonsModal(
                   context,
                   [
-                    ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                      title: Text(
-                        '사진 갤러리에서 선택',
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      leading: Icon(Icons.image_outlined),
-                      onTap: () async {
-                        final croppedImg =
-                            await imageController.pickImageFromGallery();
-
-                        if (croppedImg != null) {
-                          final multipartFile = await MultipartFile.fromFile(
-                              croppedImg.path,
-                              filename: 'file');
-                          ref
-                              .read(userProvider.notifier)
-                              .updateUserProfile([multipartFile]);
-                        }
-                        if (context.mounted) {
-                          Navigator.of(context).pop();
-                        }
-                      },
+                    PickPictureBtn(
+                      imageController: imageController,
+                      uploadFn:
+                          ref.read(userProvider.notifier).updateUserProfile,
                     ),
-                    ListTile(
-                      contentPadding:
-                          EdgeInsets.symmetric(horizontal: 30, vertical: 5),
-                      title: Text(
-                        '사진 찍기',
-                        overflow: TextOverflow.ellipsis,
-                        maxLines: 1,
-                        style: TextStyle(
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
-                      leading: Icon(Icons.camera_alt_outlined),
-                      onTap: () async {
-                        final croppedImg = await imageController.takePhoto();
-                        if (croppedImg != null) {
-                          ref
-                              .read(userProvider.notifier)
-                              .updateUserProfile(croppedImg.path);
-                        }
-                        if (context.mounted) {
-                          Navigator.of(context).pop();
-                        }
-                      },
+                    TakePictureBtn(
+                      imageController: imageController,
+                      uploadFn:
+                          ref.read(userProvider.notifier).updateUserProfile,
                     ),
                   ],
                 );

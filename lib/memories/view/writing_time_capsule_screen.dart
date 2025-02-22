@@ -1,6 +1,9 @@
 import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:pico/memories/view/timecapsule_editor/anniversary_selection_form.dart';
+import 'package:pico/memories/view/timecapsule_editor/letter_form.dart';
+import 'package:pico/memories/view/timecapsule_editor/photo_upload_form.dart';
 
 class WritingTimeCapsuleScreen extends StatefulWidget {
   const WritingTimeCapsuleScreen({super.key});
@@ -122,7 +125,7 @@ class _WritingTimeCapsuleScreenState extends State<WritingTimeCapsuleScreen> {
                     physics: NeverScrollableScrollPhysics(), // 스크롤 막기
                     controller: _pageController,
                     onPageChanged: _onPageChanged,
-                    children: const [
+                    children: [
                       AnniversarySelectionForm(),
                       PhotoUploadForm(),
                       LetterForm(),
@@ -133,7 +136,10 @@ class _WritingTimeCapsuleScreenState extends State<WritingTimeCapsuleScreen> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     TextButton(
-                      onPressed: _prevPage,
+                      onPressed: () {
+                        _prevPage();
+                        FocusScope.of(context).unfocus(); // 키보드 내리기
+                      },
                       child: Text(
                         _currentPage == 0 ? "" : "이전",
                         style:
@@ -141,7 +147,10 @@ class _WritingTimeCapsuleScreenState extends State<WritingTimeCapsuleScreen> {
                       ),
                     ),
                     TextButton(
-                      onPressed: _nextPage,
+                      onPressed: () {
+                        _nextPage();
+                        FocusScope.of(context).unfocus(); // 키보드 내리기
+                      },
                       child: Text(
                         _currentPage == 2 ? "완료" : "다음",
                         style:
@@ -154,48 +163,6 @@ class _WritingTimeCapsuleScreenState extends State<WritingTimeCapsuleScreen> {
             ),
           ),
         ),
-      ),
-    );
-  }
-}
-
-class AnniversarySelectionForm extends StatelessWidget {
-  const AnniversarySelectionForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        '기념일 선택 페이지',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
-    );
-  }
-}
-
-class PhotoUploadForm extends StatelessWidget {
-  const PhotoUploadForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        '사진 첨부 페이지',
-        style: TextStyle(color: Colors.white, fontSize: 20),
-      ),
-    );
-  }
-}
-
-class LetterForm extends StatelessWidget {
-  const LetterForm({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text(
-        '편지 작성 페이지',
-        style: TextStyle(color: Colors.white, fontSize: 20),
       ),
     );
   }
