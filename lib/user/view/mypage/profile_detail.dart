@@ -56,7 +56,7 @@ class ProfileDetail extends ConsumerWidget {
                             userInfo.profileImage!,
                           )
                         : AssetImage(
-                            "images/profile_placeholder.png",
+                            "images/basic_profile.png",
                           ),
                   ),
                   Positioned(

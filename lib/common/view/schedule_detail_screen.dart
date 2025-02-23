@@ -125,7 +125,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                                               .profileImage!,
                                                         )
                                                       : AssetImage(
-                                                          "images/profile_placeholder.png",
+                                                          "images/basic_profile.png",
                                                         ),
                                             ),
                                           SizedBox(
@@ -148,54 +148,55 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                 height: 10,
                               ),
                               if (schedule.meetingPeople != null)
-                                Container(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 20,
-                                    vertical: 10,
-                                  ),
-                                  decoration: BoxDecoration(
-                                    color: Colors.white,
-                                    borderRadius: BorderRadius.circular(10),
-                                    boxShadow: [
-                                      BoxShadow(
-                                          color: Colors.grey.withOpacity(0.1),
-                                          spreadRadius: 0,
-                                          blurRadius: 10,
-                                          offset: Offset.fromDirection(360,
-                                              10) // changes position of shadow
-                                          ),
-                                    ],
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
-                                    children: [
-                                      Row(
-                                        children: [
-                                          Icon(
-                                            MdiIcons.accountGroup,
-                                            color: AppTheme.textColor,
-                                          ),
-                                          SizedBox(
-                                            width: 10,
-                                          ),
-                                          Text(
-                                            "만나는 사람",
-                                            style: TextStyle(
-                                              fontWeight: FontWeight.w500,
+                                if (schedule.meetingPeople!.isNotEmpty)
+                                  Container(
+                                    padding: EdgeInsets.symmetric(
+                                      horizontal: 20,
+                                      vertical: 10,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.white,
+                                      borderRadius: BorderRadius.circular(10),
+                                      boxShadow: [
+                                        BoxShadow(
+                                            color: Colors.grey.withOpacity(0.1),
+                                            spreadRadius: 0,
+                                            blurRadius: 10,
+                                            offset: Offset.fromDirection(360,
+                                                10) // changes position of shadow
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                      Text(
-                                        schedule.meetingPeople!,
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
+                                      ],
+                                    ),
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Row(
+                                          children: [
+                                            Icon(
+                                              MdiIcons.accountGroup,
+                                              color: AppTheme.textColor,
+                                            ),
+                                            SizedBox(
+                                              width: 10,
+                                            ),
+                                            Text(
+                                              "만나는 사람",
+                                              style: TextStyle(
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                            ),
+                                          ],
                                         ),
-                                      ),
-                                    ],
+                                        Text(
+                                          schedule.meetingPeople!,
+                                          style: TextStyle(
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
                                   ),
-                                ),
 
                               SizedBox(
                                 height: 10,
