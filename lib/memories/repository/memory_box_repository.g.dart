@@ -90,9 +90,10 @@ class _MemoryBoxRepository implements MemoryBoxRepository {
   }
 
   @override
-  Future<TimecapsulesWithAnni> getTimecapsulesByAnniversary(String date) async {
+  Future<TimecapsulesWithAnni> getTimecapsulesByAnniversary(
+      String title) async {
     final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'date': date};
+    final queryParameters = <String, dynamic>{r'title': title};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
@@ -116,6 +117,137 @@ class _MemoryBoxRepository implements MemoryBoxRepository {
     late TimecapsulesWithAnni _value;
     try {
       _value = TimecapsulesWithAnni.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsulesResponse> getOpenedMyTimecapsules() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/opendate/past',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesResponse _value;
+    try {
+      _value = TimecapsulesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsulesResponse> getUpcomingMyTimecapsules() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/opendate/upcoming',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesResponse _value;
+    try {
+      _value = TimecapsulesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsuleModel> postTimeCapsule(
+    int scheduleId,
+    String scheduleStartTime,
+    String scheduleEndTime,
+    String letterTitle,
+    String letter,
+    List<MultipartFile> photo,
+  ) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    _data.fields.add(MapEntry(
+      'scheduleId',
+      scheduleId.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'scheduleStartTime',
+      scheduleStartTime,
+    ));
+    _data.fields.add(MapEntry(
+      'scheduleEndTime',
+      scheduleEndTime,
+    ));
+    _data.fields.add(MapEntry(
+      'letterTitle',
+      letterTitle,
+    ));
+    _data.fields.add(MapEntry(
+      'letter',
+      letter,
+    ));
+    _data.files.addAll(photo.map((i) => MapEntry('photo', i)));
+    final _options = _setStreamType<TimecapsuleModel>(Options(
+      method: 'POST',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+        .compose(
+          _dio.options,
+          '/add',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsuleModel _value;
+    try {
+      _value = TimecapsuleModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

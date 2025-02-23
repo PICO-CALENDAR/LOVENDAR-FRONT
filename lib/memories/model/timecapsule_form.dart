@@ -1,9 +1,6 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:dio/dio.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 
-part 'timecapsule_form.g.dart';
-
-@JsonSerializable()
 class TimecapsuleForm {
   final ScheduleModel? schedule;
   final String? photo;
@@ -30,6 +27,4 @@ class TimecapsuleForm {
       letter: letter ?? this.letter,
     );
   }
-
-  Map<String, dynamic> toJson() => _$TimecapsuleFormToJson(this);
 }

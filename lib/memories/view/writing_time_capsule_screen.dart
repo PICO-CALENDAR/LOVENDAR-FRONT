@@ -7,7 +7,9 @@ import 'package:flutter_confetti/flutter_confetti.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:pico/common/components/toast.dart';
+import 'package:pico/memories/provider/memory_box_provider.dart';
 import 'package:pico/memories/provider/timecapsule_form_provider.dart';
+import 'package:pico/memories/repository/memory_box_repository.dart';
 import 'package:pico/memories/view/timecapsule_editor/anniversary_selection_form.dart';
 import 'package:pico/memories/view/timecapsule_editor/letter_form.dart';
 import 'package:pico/memories/view/timecapsule_editor/photo_upload_form.dart';
@@ -31,7 +33,7 @@ class _WritingTimeCapsuleScreenState
     });
   }
 
-  void _nextPage() {
+  void _nextPage() async {
     final timecapsuleForm = ref.read(timecapsuleFormProvider);
     final validations = [
       timecapsuleForm.schedule != null,
@@ -58,19 +60,43 @@ class _WritingTimeCapsuleScreenState
         curve: Curves.easeInOut,
       );
     } else if (_currentPage == 2) {
-      // 맨 마지막, 저장 후
-      ref.read(timecapsuleFormProvider.notifier).resetAll();
-      Navigator.of(context).pop();
+      // 맨 마지막, 타임캡슐 생성하기
+      // 유효성 검사
+      if (timecapsuleForm.letterTitle!.length > 16) {
+        Toast.showErrorToast(
+          message: "16자 이하로 제목을 작성해주세요",
+        ).show(context);
+        return;
+      }
 
-      Toast.showSuccessToast(message: "타임캡슐을 성공적으로 생성했습니다").show(context);
-      Confetti.launch(
-        context,
-        options: const ConfettiOptions(
-          particleCount: 100,
-          spread: 70,
-          y: 0.6,
-        ),
-      );
+      if (timecapsuleForm.letterTitle!.isEmpty ||
+          timecapsuleForm.letter!.isEmpty) {
+        Toast.showErrorToast(
+          message: "제목과 편지를 작성해주요",
+        ).show(context);
+        return;
+      }
+      // 모든 일정 삭제
+      try {
+        await ref.read(memoryBoxProvider.notifier).createTimecapsule();
+        if (mounted) {
+          ref.read(timecapsuleFormProvider.notifier).resetAll();
+          Navigator.of(context).pop();
+          Toast.showSuccessToast(message: "타임캡슐을 성공적으로 생성했습니다").show(context);
+          Confetti.launch(
+            context,
+            options: const ConfettiOptions(
+              particleCount: 100,
+              spread: 70,
+              y: 0.6,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          Toast.showErrorToast(message: e.toString()).show(context);
+        }
+      }
     }
   }
 

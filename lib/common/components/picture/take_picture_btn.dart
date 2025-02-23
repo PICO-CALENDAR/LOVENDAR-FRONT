@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/utils/image_controller.dart';
@@ -33,6 +34,14 @@ class TakePictureBtn extends ConsumerWidget {
         if (croppedImg != null) {
           uploadFn(croppedImg.path);
         }
+
+        // if (croppedImg != null) {
+        //   final multipartFile =
+        //       await MultipartFile.fromFile(croppedImg.path, filename: 'file');
+        //   // TODO: 동작 잘하는지 확인
+        //   uploadFn([multipartFile]);
+        // }
+
         if (context.mounted) {
           Navigator.of(context).pop();
         }

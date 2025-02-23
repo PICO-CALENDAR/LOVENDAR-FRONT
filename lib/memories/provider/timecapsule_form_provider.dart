@@ -1,7 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/memories/model/timecapsule_form.dart';
 import 'package:pico/memories/repository/memory_box_repository.dart';
+import 'package:retrofit/retrofit.dart';
 
 final timecapsuleFormProvider =
     StateNotifierProvider<TimecapsuleFormProvider, TimecapsuleForm>((ref) {
@@ -27,7 +29,7 @@ class TimecapsuleFormProvider extends StateNotifier<TimecapsuleForm> {
       String? photo}) {
     state = TimecapsuleForm(
       schedule: schedule ?? state.schedule,
-      letterTitle: letter ?? state.letter,
+      letterTitle: letterTitle ?? state.letterTitle,
       letter: letter ?? state.letter,
       photo: photo ?? state.photo,
     );

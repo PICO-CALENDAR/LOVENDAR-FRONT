@@ -34,11 +34,15 @@ class PickPictureBtn extends ConsumerWidget {
             await imageController.pickImageFromGallery(ratio: ratio);
 
         if (croppedImg != null) {
-          final multipartFile =
-              await MultipartFile.fromFile(croppedImg.path, filename: 'file');
-          // TODO: 동작 잘하는지 확인
-          uploadFn([multipartFile]);
+          uploadFn(croppedImg.path);
         }
+
+        // if (croppedImg != null) {
+        //   final multipartFile =
+        //       await MultipartFile.fromFile(croppedImg.path, filename: 'file');
+        //   // TODO: 동작 잘하는지 확인
+        //   uploadFn([multipartFile]);
+        // }
         if (context.mounted) {
           Navigator.of(context).pop();
         }
