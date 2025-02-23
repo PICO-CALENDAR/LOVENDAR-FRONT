@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pico/memories/provider/timecapsule_form_provider.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 
@@ -28,7 +29,7 @@ class TimecapsuleFront extends ConsumerWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              "To.누구누구에게",
+              "제목을 입력하세요",
               style: const TextStyle(
                 fontSize: 24,
                 fontFamily: "Kyobo",
@@ -63,7 +64,6 @@ class TimecapsuleFront extends ConsumerWidget {
                   children: [
                     CircleAvatar(
                       radius: 15,
-
                       // TODO: 실제 작성자 image로 바꾸기
                       backgroundImage: userInfo.partnerProfileImage != null
                           ? NetworkImage(

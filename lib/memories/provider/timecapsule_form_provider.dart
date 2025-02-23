@@ -20,9 +20,14 @@ class TimecapsuleFormProvider extends StateNotifier<TimecapsuleForm> {
   }) : super(TimecapsuleForm());
 
   // 타임캡슐 데이터 업데이트
-  void updateForm({ScheduleModel? schedule, String? letter, String? photo}) {
+  void updateForm(
+      {ScheduleModel? schedule,
+      String? letterTitle,
+      String? letter,
+      String? photo}) {
     state = TimecapsuleForm(
       schedule: schedule ?? state.schedule,
+      letterTitle: letter ?? state.letter,
       letter: letter ?? state.letter,
       photo: photo ?? state.photo,
     );

@@ -2,6 +2,8 @@ import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/dio/dio.dart';
 import 'package:pico/common/schedule/model/schedules_response.dart';
+import 'package:pico/memories/model/timecapsules_with_anni.dart';
+import 'package:pico/memories/model/timecapsules_with_anni_response.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
@@ -24,6 +26,22 @@ abstract class MemoryBoxRepository {
     'accessToken': 'true',
   })
   Future<SchedulesResponse> getUpcomingAnniversaries();
+
+  // 나와 상대방의 전체 타임캡슐 조회
+  @GET("/get/all")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<TimecapsulesWithAnniResponse> getTimecapsules();
+
+  // 나와 연인이 생성한 해당 기념일의 타입캡슐들을 조회
+  @GET("/get/anniversary")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<TimecapsulesWithAnni> getTimecapsulesByAnniversary(
+    @Query('date') String date, // 예시: 특정 기념일의 날짜를 query로 전달
+  );
 
   // // 유저 프로필 이미지 업데이트
   // @POST("/update/profile/image")

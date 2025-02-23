@@ -16,9 +16,10 @@ class Toast {
       fontWeight: FontWeight.w700,
       fontSize: 14,
     ),
+    DelightSnackbarPosition position = DelightSnackbarPosition.top,
   }) {
     return DelightToastBar(
-      position: DelightSnackbarPosition.top,
+      position: position,
       animationDuration: Duration(milliseconds: 300),
       animationCurve: Curves.fastEaseInToSlowEaseOut,
       autoDismiss: true,
@@ -35,6 +36,7 @@ class Toast {
 
   static DelightToastBar showSuccessToast({
     required String message,
+    DelightSnackbarPosition position = DelightSnackbarPosition.top,
   }) {
     return showCustomToast(
       icon: Icon(
@@ -53,6 +55,7 @@ class Toast {
 
   static DelightToastBar showErrorToast({
     required String message,
+    DelightSnackbarPosition position = DelightSnackbarPosition.top,
   }) {
     return showCustomToast(
       icon: Icon(

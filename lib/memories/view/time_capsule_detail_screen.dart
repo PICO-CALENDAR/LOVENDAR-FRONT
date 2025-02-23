@@ -42,7 +42,11 @@ class TimeCapsuleDetailScreen extends ConsumerWidget {
                 tag: index,
                 child: TimecapsuleFront(),
               ),
-              back: TimecapsuleBack(),
+              // TODO : 실제 값 데이터에 맞게 수정
+              back: TimecapsuleBack(
+                scheduleTitle: "test",
+                scheduleStartTime: DateTime.now(),
+              ),
             ),
           ),
           // Center(
