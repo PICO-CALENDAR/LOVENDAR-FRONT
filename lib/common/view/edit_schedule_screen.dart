@@ -89,7 +89,6 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
           startTime.hour, startTime.minute);
       final end = DateTime(
           endDay.year, endDay.month, endDay.day, endTime.hour, endTime.minute);
-
       return start.isBefore(end);
     }
   }
@@ -208,6 +207,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
           }
         }
       } else {
+        // 일정 수정
         if (widget.initialScheduleValue != null) {
           final initial = widget.initialScheduleValue!;
           final bool isTitleChanged = initial.title != _scheduleTitle.text;
@@ -234,24 +234,76 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                 : initial.meetingPeople,
           );
 
-          try {
-            // print(body.toJson().toString());
+          // 원래 반복 일정이었을 경우
+          if (initial.isRepeat) {
+            showOptionsDialog(
+              context: context,
+              title: "반복 일정 수정",
+              content: '현재 일정만 수정하시겠습니까, 아니면 현재 일정과 이후 모든 일정을 수정하겠습니까?',
+              firstOptionName: "현재 일정만",
+              firstOptionPressed: () async {
+                // 현재 일정만 수정
+                // try {
+                //   await ref
+                //       .read(schedulesProvider.notifier)
+                //       .deleteSchedule(schedule.scheduleId);
+                //   if (parentContext.mounted) {
+                //     Toast.showSuccessToast(message: "모든 반복 일정이 삭제되었습니다")
+                //         .show(parentContext);
+                //     Navigator.of(parentContext).pop();
+                //     Navigator.of(parentContext).pop();
+                //   }
+                // } catch (e) {
+                //   if (parentContext.mounted) {
+                //     Toast.showErrorToast(message: e.toString())
+                //         .show(parentContext);
+                //   }
+                // }
+              },
+              secondOptionName: "현재 일정 및 이후 일정",
+              secondOptionPressed: () async {
+                // 현재 일정 및 이후 일정 삭제
 
-            await ref.read(schedulesProvider.notifier).postEditSchedule(
-                  scheduleId: initial.scheduleId.toString(),
-                  body: updatedBody,
-                );
-            if (context.mounted) {
-              Toast.showSuccessToast(
-                message: "일정을 성공적으로 수정했습니다",
-              ).show(context);
-              Navigator.of(context).pop();
-            }
-          } catch (e) {
-            if (context.mounted) {
-              Toast.showErrorToast(
-                message: "일정 수정에 문제가 생겼습니다",
-              ).show(context);
+                // try {
+                //   await ref
+                //       .read(schedulesProvider.notifier)
+                //       .deleteRepeatSchedule(
+                //         scheduleId: schedule.scheduleId,
+                //         repeatEndDate: schedule.startTime,
+                //       );
+                //   if (parentContext.mounted) {
+                //     Toast.showSuccessToast(message: "현재 일정 및 이후 일정이 삭제되었습니다")
+                //         .show(parentContext);
+                //     Navigator.of(parentContext).pop();
+                //     Navigator.of(parentContext).pop();
+                //   }
+                // } catch (e) {
+                //   if (parentContext.mounted) {
+                //     Toast.showErrorToast(message: e.toString())
+                //         .show(parentContext);
+                //   }
+                // }
+              },
+            );
+          } else {
+            try {
+              // print(body.toJson().toString());
+              await ref.read(schedulesProvider.notifier).postEditSchedule(
+                    scheduleId: initial.scheduleId.toString(),
+                    body: updatedBody,
+                  );
+              if (context.mounted) {
+                Toast.showSuccessToast(
+                  message: "일정을 성공적으로 수정했습니다",
+                ).show(context);
+                Navigator.of(context).pop();
+              }
+            } catch (e) {
+              if (context.mounted) {
+                Toast.showErrorToast(
+                  message: "일정 수정에 문제가 생겼습니다",
+                ).show(context);
+              }
             }
           }
         }
@@ -551,6 +603,7 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                                 width: 200,
                                 height: 40,
                                 child: DropdownButtonFormField2<RepeatType>(
+                                  value: _repeatType,
                                   decoration: InputDecoration(
                                     isDense: true,
                                     isCollapsed: true,

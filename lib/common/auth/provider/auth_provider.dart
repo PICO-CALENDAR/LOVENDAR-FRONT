@@ -8,6 +8,7 @@ import 'package:pico/common/auth/model/google_auth_response.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
 import 'package:pico/common/auth/repository/auth_repository.dart';
 import 'package:pico/common/auth/repository/social_login_repository.dart';
+import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 import 'package:pico/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -27,11 +28,20 @@ class Auth extends _$Auth {
   Future<void> register(AuthResponse response) async {
     await secureStorage.saveAccessToken(response.accessToken);
     await secureStorage.saveRefreshToken(response.refreshToken);
-    state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+    state = AuthModel(
+      id: response.id,
+      isRegistered: response.isRegistered,
+      isLoggedIn: false,
+    );
   }
 
-  logout() {
-    ref.read(userProvider.notifier).logOut();
+  authReset() async {
+    state = null;
+    await secureStorage.storage.deleteAll();
+  }
+
+  resetBeforeRegister() {
+    state = null;
   }
 
   appleLogin(BuildContext context) async {
@@ -50,26 +60,41 @@ class Auth extends _$Auth {
 
       final response = await authRepository.postAppleSignin(authReq);
 
+      print(response.toString());
+
       // 가입되어 있지 않은 상태
       if (!response.isRegistered) {
-        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+        state = AuthModel(
+          id: response.id,
+          isRegistered: response.isRegistered,
+          isLoggedIn: false,
+        );
 
-        ref.read(userProvider.notifier).getUserInfo();
+        // ref.read(userProvider.notifier).getUserInfo();
 
-        // 로그인 상태 업데이트
-        if (context.mounted) {
-          context.go("/register");
-        }
+        // // 로그인 상태 업데이트
+        // if (context.mounted) {
+        //   context.go("/register");
+        // }
       } else {
         // 가입된 상태
         await secureStorage.saveAccessToken(response.accessToken);
         await secureStorage.saveRefreshToken(response.refreshToken);
-        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+
         ref.read(userProvider.notifier).getUserInfo();
-        // 로그인 상태 업데이트
-        if (context.mounted) {
-          context.go("/");
+        final user = ref.read(userProvider);
+        if (user is UserModel) {
+          state = AuthModel(
+            id: response.id,
+            isRegistered: response.isRegistered,
+            isLoggedIn: true,
+          );
         }
+
+        // // 로그인 상태 업데이트
+        // if (context.mounted) {
+        //   context.go("/");
+        // }
       }
     } catch (e) {
       print("로그인 에러");
@@ -101,23 +126,38 @@ class Auth extends _$Auth {
 
       // 가입되어 있지 않은 상태
       if (!response.isRegistered) {
-        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
+        state = AuthModel(
+          id: response.id,
+          isRegistered: response.isRegistered,
+          isLoggedIn: false,
+        );
 
-        ref.read(userProvider.notifier).getUserInfo();
-        // 로그인 상태 업데이트
-        if (context.mounted) {
-          context.go("/register");
-        }
+        // ref.read(userProvider.notifier).getUserInfo();
+        //  로그인 상태 업데이트
+        // if (context.mounted) {
+        //   context.go("/register");
+        // }
       } else {
         // 가입된 상태
         await secureStorage.saveAccessToken(response.accessToken);
         await secureStorage.saveRefreshToken(response.refreshToken);
-        state = AuthModel(id: response.id, isRegistered: response.isRegistered);
-        ref.read(userProvider.notifier).getUserInfo();
-        // 로그인 상태 업데이트
-        if (context.mounted) {
-          context.go("/");
+
+        await ref.read(userProvider.notifier).getUserInfo();
+        final user = ref.read(userProvider);
+        print("user");
+        print(user);
+        if (user is UserModel) {
+          state = AuthModel(
+            id: response.id,
+            isRegistered: response.isRegistered,
+            isLoggedIn: true,
+          );
         }
+
+        // // 로그인 상태 업데이트
+        // if (context.mounted) {
+        //   context.go("/");
+        // }
       }
     } catch (e) {
       print("로그인 에러");

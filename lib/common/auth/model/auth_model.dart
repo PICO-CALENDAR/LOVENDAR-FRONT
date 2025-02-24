@@ -18,10 +18,12 @@ class AuthModelLoading extends AuthModelBase {}
 class AuthModel extends AuthModelBase {
   final int id;
   final bool isRegistered;
+  final bool isLoggedIn;
 
   AuthModel({
     required this.id,
     required this.isRegistered,
+    required this.isLoggedIn,
   });
 
   factory AuthModel.fromJson(Map<String, dynamic> json) =>

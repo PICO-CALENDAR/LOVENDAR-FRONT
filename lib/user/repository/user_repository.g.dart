@@ -190,13 +190,13 @@ class _UserRepository implements UserRepository {
   }
 
   @override
-  Future<AuthResponse> postDeleteAccount() async {
+  Future<UserModel> postDeleteAccount() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<AuthResponse>(Options(
+    final _options = _setStreamType<UserModel>(Options(
       method: 'DELETE',
       headers: _headers,
       extra: _extra,
@@ -213,9 +213,9 @@ class _UserRepository implements UserRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AuthResponse _value;
+    late UserModel _value;
     try {
-      _value = AuthResponse.fromJson(_result.data!);
+      _value = UserModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;

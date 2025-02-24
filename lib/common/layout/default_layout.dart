@@ -96,6 +96,7 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
     final userInfo = ref.watch(userProvider);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false, // 키보드로 인한 화면 조정 비활성화
       floatingActionButton: FloatingActionButton(
         heroTag: 'add-btn',
         shape: CircleBorder(),

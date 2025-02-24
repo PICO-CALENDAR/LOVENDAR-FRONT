@@ -18,7 +18,8 @@ final routerProvider = Provider<GoRouter>((ref) {
   // watch - 값이 변경될때마다 다시 빌드
   // read - 한번만 읽고 값이 변경돼도 다시 빌드하지 않음
   // final provider = ref.watch(authProvider);
-  final user = ref.watch(userProvider);
+  // final user = ref.watch(userProvider);
+  final auth = ref.watch(authProvider);
 
   List<GoRoute> routes = [
     GoRoute(
@@ -63,14 +64,11 @@ final routerProvider = Provider<GoRouter>((ref) {
     final isSplashPage = goState.uri.toString() == '/splash';
     final isRegisterPage = goState.uri.toString() == '/register';
 
-    print("현재 주소 : ${goState.uri.toString()}");
-
-    print("user: $user");
-    // return null;
+    print(auth);
 
     // 토큰이 없는 경우 혹은 토큰이 있었는데 만료한 경우
     // 다시 로그인
-    if (user == null) {
+    if (auth == null || auth is AuthModelLoading) {
       // 이미 로그인 페이지면 이동 없음. 아닌 모든 경우는 로그인 페이지로 이동
       // if (isLoginPage) {
       //   ref.read(userProvider.notifier).getUserInfo();
@@ -79,16 +77,34 @@ final routerProvider = Provider<GoRouter>((ref) {
       //   return isRegisterPage ? null : "/login";
       // }
 
-      return isLoginPage
-          ? null
-          : isRegisterPage
-              ? null
-              : "/login";
+      return isLoginPage ? null : "/login";
+
+      // return isLoginPage
+      //     ? null
+      //     : isRegisterPage
+      //         ? null
+      //         : "/login";
     }
+
     // 로그인이 성공적으로 된 상태
-    if (user is UserModel) {
-      //로그인 페이지나 스플레시 페이지이면 홈으로 가도록 설정
-      return (isLoginPage || isSplashPage) ? "/" : null;
+    if (auth is AuthModel) {
+      if (!auth.isRegistered) {
+        // 가입이 안된 상태
+        return "/register";
+      } else {
+        // 가입이 된 상태
+        return (isLoginPage || isSplashPage) ? "/" : null;
+      }
+      // if (auth.isLoggedIn) {
+      //   //로그인 페이지나 스플레시 페이지이면 홈으로 가도록 설정
+      //   return (isLoginPage || isSplashPage) ? "/" : null;
+      // } else {
+      //   return isLoginPage
+      //       ? null
+      //       : isRegisterPage
+      //           ? null
+      //           : "/login";
+      // }
     }
     return null;
 

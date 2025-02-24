@@ -98,10 +98,22 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text(
+        title: Text(
           "추가 정보를 입력해주세요",
           style: TextStyle(color: Colors.black),
         ),
+        actions: [
+          Padding(
+            padding: EdgeInsets.only(right: 10.0), // 좌우 패딩 추가
+            child: IconButton(
+              icon: Icon(Icons.close_rounded),
+              onPressed: () {
+                FocusScope.of(context).unfocus();
+                ref.read(authProvider.notifier).resetBeforeRegister();
+              },
+            ),
+          ),
+        ],
       ),
       body: GestureDetector(
         onTap: () {

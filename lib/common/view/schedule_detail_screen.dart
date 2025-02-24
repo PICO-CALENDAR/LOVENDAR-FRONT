@@ -274,6 +274,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
                           if (schedule.category != ScheduleType.YOURS) {
                             return Row(
                               children: [
+                                // 삭제 버튼
                                 PrimaryButton(
                                   fontSize: 16,
                                   backgroundColor: AppTheme.greyColor,
@@ -290,6 +291,7 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                             '모든 일정을 삭제하시겠습니까, 아니면 현재 일정과 이후 모든 일정을 삭제하겠습니까?',
                                         firstOptionName: "모든 일정 삭제",
                                         firstOptionPressed: () async {
+                                          print("hello");
                                           // 모든 일정 삭제
                                           try {
                                             await ref
@@ -316,7 +318,6 @@ class ScheduleDetailScreen extends ConsumerWidget {
                                         secondOptionName: "현재 일정 및 이후 일정만 삭제",
                                         secondOptionPressed: () async {
                                           // 현재 일정 및 이후 일정 삭제
-                                          print(schedule.scheduleId);
 
                                           try {
                                             await ref
