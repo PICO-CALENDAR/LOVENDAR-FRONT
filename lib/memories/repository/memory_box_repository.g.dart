@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'user_repository.dart';
+part of 'memory_box_repository.dart';
 
 // **************************************************************************
 // RetrofitGenerator
@@ -8,8 +8,8 @@ part of 'user_repository.dart';
 
 // ignore_for_file: unnecessary_brace_in_string_interps,no_leading_underscores_for_local_identifiers,unused_element,unnecessary_string_interpolations
 
-class _UserRepository implements UserRepository {
-  _UserRepository(
+class _MemoryBoxRepository implements MemoryBoxRepository {
+  _MemoryBoxRepository(
     this._dio, {
     this.baseUrl,
     this.errorLogger,
@@ -22,20 +22,20 @@ class _UserRepository implements UserRepository {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<UserModel> getUserInfo() async {
+  Future<SchedulesResponse> getUpcomingAnniversaries() async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
+    final _options = _setStreamType<SchedulesResponse>(Options(
       method: 'GET',
       headers: _headers,
       extra: _extra,
     )
         .compose(
           _dio.options,
-          '/info',
+          '/get/three/month/anniversaries',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -45,9 +45,9 @@ class _UserRepository implements UserRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late SchedulesResponse _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
+      _value = SchedulesResponse.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -56,14 +56,178 @@ class _UserRepository implements UserRepository {
   }
 
   @override
-  Future<UserModel> postProfileImage(List<MultipartFile> file) async {
+  Future<TimecapsulesWithAnniResponse> getTimecapsules() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesWithAnniResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/all',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesWithAnniResponse _value;
+    try {
+      _value = TimecapsulesWithAnniResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsulesWithAnni> getTimecapsulesByAnniversary(
+      String title) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'title': title};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesWithAnni>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/anniversary',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesWithAnni _value;
+    try {
+      _value = TimecapsulesWithAnni.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsulesResponse> getOpenedMyTimecapsules() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/opendate/past',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesResponse _value;
+    try {
+      _value = TimecapsulesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsulesResponse> getUpcomingMyTimecapsules() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<TimecapsulesResponse>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/get/opendate/upcoming',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsulesResponse _value;
+    try {
+      _value = TimecapsulesResponse.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<TimecapsuleModel> postTimeCapsule(
+    int scheduleId,
+    String scheduleStartTime,
+    String scheduleEndTime,
+    String letterTitle,
+    String letter,
+    List<MultipartFile> photo,
+  ) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
     _headers.removeWhere((k, v) => v == null);
     final _data = FormData();
-    _data.files.addAll(file.map((i) => MapEntry('file', i)));
-    final _options = _setStreamType<UserModel>(Options(
+    _data.fields.add(MapEntry(
+      'scheduleId',
+      scheduleId.toString(),
+    ));
+    _data.fields.add(MapEntry(
+      'scheduleStartTime',
+      scheduleStartTime,
+    ));
+    _data.fields.add(MapEntry(
+      'scheduleEndTime',
+      scheduleEndTime,
+    ));
+    _data.fields.add(MapEntry(
+      'letterTitle',
+      letterTitle,
+    ));
+    _data.fields.add(MapEntry(
+      'letter',
+      letter,
+    ));
+    _data.files.addAll(photo.map((i) => MapEntry('photo', i)));
+    final _options = _setStreamType<TimecapsuleModel>(Options(
       method: 'POST',
       headers: _headers,
       extra: _extra,
@@ -71,7 +235,7 @@ class _UserRepository implements UserRepository {
     )
         .compose(
           _dio.options,
-          '/update/profile/image',
+          '/add',
           queryParameters: queryParameters,
           data: _data,
         )
@@ -81,175 +245,9 @@ class _UserRepository implements UserRepository {
           baseUrl,
         )));
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
+    late TimecapsuleModel _value;
     try {
-      _value = UserModel.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<InviteCodeModel> getInviteCode() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'accessToken': 'true'};
-    _headers.removeWhere((k, v) => v == null);
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<InviteCodeModel>(Options(
-      method: 'GET',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/make/invite/code',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late InviteCodeModel _value;
-    try {
-      _value = InviteCodeModel.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<void> postLinkingCouple(InviteCodeModel body) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'accessToken': 'true'};
-    _headers.removeWhere((k, v) => v == null);
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<void>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/make/couple',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    await _dio.fetch<void>(_options);
-  }
-
-  @override
-  Future<AuthResponse> postRegister({
-    required String id,
-    required RegisterBody body,
-  }) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{};
-    final _data = <String, dynamic>{};
-    _data.addAll(body.toJson());
-    final _options = _setStreamType<AuthResponse>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/register/${id}',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late AuthResponse _value;
-    try {
-      _value = AuthResponse.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<UserModel> postDeleteAccount() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'accessToken': 'true'};
-    _headers.removeWhere((k, v) => v == null);
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<UserModel>(Options(
-      method: 'DELETE',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/delete',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late UserModel _value;
-    try {
-      _value = UserModel.fromJson(_result.data!);
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
-  Future<DeleteCoupleResponse> postDeleteCoupleInfo() async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    final _headers = <String, dynamic>{r'accessToken': 'true'};
-    _headers.removeWhere((k, v) => v == null);
-    const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<DeleteCoupleResponse>(Options(
-      method: 'POST',
-      headers: _headers,
-      extra: _extra,
-    )
-        .compose(
-          _dio.options,
-          '/delete/couple',
-          queryParameters: queryParameters,
-          data: _data,
-        )
-        .copyWith(
-            baseUrl: _combineBaseUrls(
-          _dio.options.baseUrl,
-          baseUrl,
-        )));
-    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late DeleteCoupleResponse _value;
-    try {
-      _value = DeleteCoupleResponse.fromJson(_result.data!);
+      _value = TimecapsuleModel.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options);
       rethrow;
@@ -292,22 +290,23 @@ class _UserRepository implements UserRepository {
 // RiverpodGenerator
 // **************************************************************************
 
-String _$userRepositoryHash() => r'263c74dfc8be88a19cbd0f1881691f4db9fb0dac';
+String _$memoryBoxRepositoryHash() =>
+    r'3d642724c0cb177799fad810d9973f20744cb511';
 
-/// See also [userRepository].
-@ProviderFor(userRepository)
-final userRepositoryProvider = Provider<UserRepository>.internal(
-  userRepository,
-  name: r'userRepositoryProvider',
+/// See also [memoryBoxRepository].
+@ProviderFor(memoryBoxRepository)
+final memoryBoxRepositoryProvider = Provider<MemoryBoxRepository>.internal(
+  memoryBoxRepository,
+  name: r'memoryBoxRepositoryProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$userRepositoryHash,
+      : _$memoryBoxRepositoryHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef UserRepositoryRef = ProviderRef<UserRepository>;
+typedef MemoryBoxRepositoryRef = ProviderRef<MemoryBoxRepository>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

@@ -276,16 +276,15 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
                               ref.read(userProvider.notifier).getUserInfo();
 
                               if (context.mounted) {
-                                // context.go('/?status=success');
-                                // Toast.showSuccessToast(
-                                //   message: "커플 연결에 성공했습니다!",
-                                // ).show(context);
-                                // Confetti.launch(
-                                //   context,
-                                //   options: const ConfettiOptions(
-                                //       particleCount: 100, spread: 70, y: 0.6),
-                                // );
-                                // Navigator.of(context).pop("invite_success");
+                                Navigator.of(context).pop();
+                                Toast.showSuccessToast(
+                                  message: "커플 연결에 성공했습니다!",
+                                ).show(context);
+                                Confetti.launch(
+                                  context,
+                                  options: const ConfettiOptions(
+                                      particleCount: 100, spread: 70, y: 0.6),
+                                );
                               }
                             } catch (e) {
                               if (context.mounted) {

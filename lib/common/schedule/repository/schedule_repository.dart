@@ -70,6 +70,26 @@ abstract class ScheduleRepository {
     @Body() required UpdateScheduleBody body,
   });
 
+  // 반복 일정 중 현재 선택된 일정만 수정
+  // @PATCH("/update/{scheduleId}")
+  // @Headers({
+  //   'accessToken': 'true',
+  // })
+  // Future<ScheduleResponse> postUpdateSchedule({
+  //   @Path() required String scheduleId,
+  //   @Body() required UpdateScheduleBody body,
+  // });
+
+  // // 일정 수정
+  // @PATCH("/update/{scheduleId}")
+  // @Headers({
+  //   'accessToken': 'true',
+  // })
+  // Future<ScheduleResponse> postUpdateSchedule({
+  //   @Path() required String scheduleId,
+  //   @Body() required UpdateScheduleBody body,
+  // });
+
   // 일정 삭제
   @POST("/delete/{scheduleId}")
   @Headers({

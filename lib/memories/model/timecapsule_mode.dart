@@ -1,0 +1,4 @@
+enum TimecapsuleMode {
+  EDIT,
+  VIEW,
+}

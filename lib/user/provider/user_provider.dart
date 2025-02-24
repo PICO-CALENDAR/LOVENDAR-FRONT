@@ -1,5 +1,8 @@
 import 'package:dio/dio.dart';
+import 'package:pico/common/auth/model/auth_model.dart';
+import 'package:pico/common/auth/provider/auth_provider.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
+import 'package:pico/common/model/custom_exception.dart';
 import 'package:pico/common/schedule/model/schedule_model.dart';
 import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/user/model/user_model.dart';
@@ -11,13 +14,13 @@ part 'user_provider.g.dart';
 
 @Riverpod(keepAlive: true)
 class User extends _$User {
-  late final UserRepository repository;
-  late final SecureStorage storage;
+  late final UserRepository repository = ref.read(userRepositoryProvider);
+  late final SecureStorage storage = ref.read(secureStorageProvider);
 
   @override
   UserModelBase? build() {
-    repository = ref.read(userRepositoryProvider);
-    storage = ref.read(secureStorageProvider);
+    // repository = ref.read(userRepositoryProvider);
+    // storage = ref.read(secureStorageProvider);
 
     // 초기 상태 설정 및 정보 가져오기
     getUserInfo();
@@ -26,11 +29,13 @@ class User extends _$User {
   }
 
   // 로그아웃
-  void logOut() {
-    storage.storage.deleteAll();
+  Future<void> logout() async {
+    // 유저 정보 지우기
     state = null;
     // 스케줄 캐싱 지우기
     ref.read(schedulesProvider.notifier).resetSchedules();
+    // auth 초기화
+    await ref.read(authProvider.notifier).authReset();
   }
 
   // 회원 탈퇴
@@ -38,7 +43,7 @@ class User extends _$User {
     try {
       // 회원 탈퇴
       await repository.postDeleteAccount();
-      logOut();
+      logout();
     } on DioException catch (e) {
       if (e.response != null) {
         print(e.response.toString());
@@ -49,7 +54,7 @@ class User extends _$User {
   }
 
   // 유저 정보 가져오기
-  void getUserInfo() async {
+  Future<void> getUserInfo() async {
     final refreshToken = await storage.readRefreshToken();
     final accessToken = await storage.readAccessToken();
 
@@ -62,24 +67,31 @@ class User extends _$User {
       final resp = await repository.getUserInfo();
       state = resp;
     } on DioException catch (e) {
+      print("유저 정보 가져올때 에러");
+      print(e.toString());
       if (e.response != null) {
         // Server responded with an error
         final statusCode = e.response?.statusCode;
         final errorMessage = e.response?.data?['message'] ?? 'Unknown error';
 
         // state = UserModelError(message: 'Error $statusCode: $errorMessage');
-        state = null;
-        storage.storage.deleteAll();
+        // state = null;
+        // storage.storage.deleteAll();
+        logout();
       } else {
-        state = null;
-        storage.storage.deleteAll();
+        // state = null;
+        // storage.storage.deleteAll();
+        logout();
         // No response received (network error, timeout, etc.)
         // state = UserModelError(
         //     message: 'Network error: ${e.message ?? 'Unknown error'}');
       }
     } catch (e) {
-      state = null;
-      storage.storage.deleteAll();
+      print("유저 정보 가져올때 에러");
+      print(e.toString());
+      // state = null;
+      // storage.storage.deleteAll();
+      logout();
       // Handle other exceptions
       // state = UserModelError(message: 'Unexpected error: $e');
     }
@@ -90,13 +102,13 @@ class User extends _$User {
     try {
       // 커플 연결 해제
       await repository.postDeleteCoupleInfo();
-      getUserInfo();
     } on DioException catch (e) {
       if (e.response != null) {
-        print(e.response.toString());
+        // print(e.response.toString());
+        throw CustomException(e.response.toString());
       }
     } catch (e) {
-      print(e);
+      throw CustomException("커플 해제에 실패했습니다");
     }
   }
 

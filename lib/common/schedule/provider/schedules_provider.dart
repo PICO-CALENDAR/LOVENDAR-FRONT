@@ -106,10 +106,11 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
 
       if (response.success) {
         // 해당 scheduleId를 제외한 새로운 리스트를 생성
-        state = state
-            .where((schedule) =>
-                schedule.scheduleId != response.schedule.scheduleId)
-            .toList();
+        // state = state
+        //     .where((schedule) =>
+        //         schedule.scheduleId != response.schedule.scheduleId)
+        //     .toList();
+        refreshSchedules();
       } else {
         throw CustomException("삭제에 실패하였습니다.");
       }
@@ -139,6 +140,33 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
 
   //일정 수정
   Future<void> postEditSchedule(
+      {required String scheduleId, required UpdateScheduleBody body}) async {
+    try {
+      final response = await repository.postUpdateSchedule(
+          scheduleId: scheduleId, body: body);
+      if (response.success) {
+        int index = state.indexWhere(
+            (schedule) => schedule.scheduleId == response.schedule.scheduleId);
+
+        state = index != -1
+            ? [
+                ...state.sublist(0, index),
+                response.schedule,
+                ...state.sublist(index + 1),
+              ]
+            : [...state, response.schedule];
+        // refreshSchedules();
+      } else {
+        throw CustomException("일정 수정 실패");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // 반복 일정 중 선택된 날짜만 수정
+  // TODO: 구현 미완료
+  Future<void> postEditCuurentRepeatSchedule(
       {required String scheduleId, required UpdateScheduleBody body}) async {
     try {
       final response = await repository.postUpdateSchedule(

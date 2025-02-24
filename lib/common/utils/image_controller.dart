@@ -17,7 +17,7 @@ class ImageController {
     return true;
   }
 
-  Future<CroppedFile?> takePhoto() async {
+  Future<CroppedFile?> takePhoto({double ratio = 1}) async {
     XFile? image = await _picker.pickImage(source: ImageSource.camera);
 
     if (image != null) {
@@ -25,17 +25,17 @@ class ImageController {
     }
 
     if (image != null) {
-      final croppedImg = await cropImage(image.path);
+      final croppedImg = await cropImage(imagePath: image.path, ratio: ratio);
       return croppedImg;
     }
     return null;
   }
 
-  Future<XFile?> pickImageFromGallery() async {
+  Future<XFile?> pickImageFromGallery({double ratio = 1}) async {
     XFile? image = await _picker.pickImage(source: ImageSource.gallery);
 
     if (image != null) {
-      final croppedImg = await cropImage(image.path);
+      final croppedImg = await cropImage(imagePath: image.path, ratio: ratio);
       if (croppedImg != null) {
         return await compressImage(image.path);
       }
@@ -44,11 +44,12 @@ class ImageController {
     return null;
   }
 
-  Future<CroppedFile?> cropImage(String imagePath) async {
+  Future<CroppedFile?> cropImage(
+      {required String imagePath, required double ratio}) async {
     return await ImageCropper().cropImage(
       sourcePath: imagePath,
       // 사진은 1:1비율로 가공
-      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1),
+      aspectRatio: CropAspectRatio(ratioX: 1, ratioY: ratio),
     );
   }
 

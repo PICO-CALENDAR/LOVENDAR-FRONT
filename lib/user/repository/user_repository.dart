@@ -75,7 +75,7 @@ abstract class UserRepository {
   @Headers({
     'accessToken': 'true',
   })
-  Future<AuthResponse> postDeleteAccount();
+  Future<UserModel> postDeleteAccount();
 
   // 커플 관계 끊기
   @POST("/delete/couple")

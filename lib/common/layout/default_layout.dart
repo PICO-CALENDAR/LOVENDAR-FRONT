@@ -4,6 +4,7 @@ import 'package:material_design_icons_flutter/material_design_icons_flutter.dart
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 
 import 'package:pico/common/components/primary_button.dart';
+import 'package:pico/common/provider/selected_day_provider.dart';
 import 'package:pico/common/utils/modals.dart';
 import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/calendar/view/calendar_screen.dart';
@@ -93,7 +94,9 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
   @override
   Widget build(BuildContext context) {
     final userInfo = ref.watch(userProvider);
+
     return Scaffold(
+      resizeToAvoidBottomInset: false, // 키보드로 인한 화면 조정 비활성화
       floatingActionButton: FloatingActionButton(
         heroTag: 'add-btn',
         shape: CircleBorder(),
@@ -106,6 +109,12 @@ class _DefaultLayoutState extends ConsumerState<DefaultLayout> {
           // context.push(
           //   "/editSchedule",
           // );
+
+          if (currentIndex != 0) {
+            ref.read(selectedDayProvider.notifier).setSelectedDay(
+                  DateTime.now(),
+                );
+          }
 
           showModalBottomSheet<void>(
             context: context,

@@ -27,7 +27,7 @@ class InboxScreen extends StatelessWidget {
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       const Text(
-                        "받은 타임캡슐",
+                        "타임캡슐 💊",
                         style: TextStyle(
                           fontFamily: "Kyobo",
                           color: Colors.white,
