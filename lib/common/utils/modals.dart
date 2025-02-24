@@ -289,13 +289,12 @@ Route createBluredBackgroundPage({required Widget screen}) {
 
 // 사용자 프로필 정보
 void showProfileDetail(BuildContext context) {
+  final PageController pageController = PageController();
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
-      final PageController pageController = PageController();
-
       return DraggableScrollableSheet(
         initialChildSize: 1,
         minChildSize: 1,
@@ -314,6 +313,7 @@ void showProfileDetail(BuildContext context) {
                   height: topContainerHeight,
                   child: GestureDetector(
                     onTap: () {
+                      pageController.dispose();
                       Navigator.of(context).pop();
                     },
                     child: BackdropFilter(

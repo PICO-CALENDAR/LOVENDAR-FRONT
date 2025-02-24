@@ -10,7 +10,6 @@ import 'package:pico/common/auth/repository/auth_repository.dart';
 import 'package:pico/common/auth/repository/social_login_repository.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
-import 'package:pico/user/repository/user_repository.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'auth_provider.g.dart';
@@ -22,7 +21,23 @@ class Auth extends _$Auth {
 
   @override
   AuthModelBase? build() {
+    init();
     return null;
+  }
+
+  /// 초기화 메서드 (await 사용 가능)
+  Future<void> init() async {
+    try {
+      await ref.read(userProvider.notifier).getUserInfo();
+      if (ref.read(userProvider) is UserModel) {
+        state = AuthModel(
+          isRegistered: true,
+          isLoggedIn: true,
+        );
+      }
+    } catch (e) {
+      state = null;
+    }
   }
 
   Future<void> register(AuthResponse response) async {

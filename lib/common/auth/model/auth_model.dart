@@ -16,12 +16,12 @@ class AuthModelLoading extends AuthModelBase {}
 
 @JsonSerializable()
 class AuthModel extends AuthModelBase {
-  final int id;
+  final int? id;
   final bool isRegistered;
   final bool isLoggedIn;
 
   AuthModel({
-    required this.id,
+    this.id,
     required this.isRegistered,
     required this.isLoggedIn,
   });
