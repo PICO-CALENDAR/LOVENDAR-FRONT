@@ -23,6 +23,9 @@ class UserModelError extends UserModelBase {
 @JsonSerializable()
 class UserModel extends UserModelBase {
   final String name;
+  @JsonKey(
+    fromJson: _imageUrlWithTimeStamp,
+  )
   final String? profileImage;
   final String email;
   @JsonKey(
@@ -35,6 +38,9 @@ class UserModel extends UserModelBase {
   final int? partnerId;
   final String? partnerName;
   final String? partnerNickname;
+  @JsonKey(
+    fromJson: _imageUrlWithTimeStamp,
+  )
   final String? partnerProfileImage;
   final bool isTermsAgreed;
   final bool isMarketingAgreed;
@@ -79,6 +85,15 @@ class UserModel extends UserModelBase {
         return 'FEMALE';
       case Gender.OTHER:
         return 'OTHER';
+    }
+  }
+
+  // 캐싱 무효화를 위한 타임 스탬프
+  static String? _imageUrlWithTimeStamp(String? json) {
+    if (json != null) {
+      return "$json?${DateTime.now().millisecondsSinceEpoch}";
+    } else {
+      return json;
     }
   }
 }

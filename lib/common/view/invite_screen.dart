@@ -10,6 +10,7 @@ import 'package:pico/common/components/action_button.dart';
 import 'package:pico/common/components/input_field.dart';
 import 'package:pico/common/components/primary_button.dart';
 import 'package:pico/common/components/toast.dart';
+import 'package:pico/common/schedule/provider/schedules_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/user/model/invite_code_model.dart';
 import 'package:pico/user/model/user_model.dart';
@@ -274,6 +275,11 @@ class _InviteScreenState extends ConsumerState<InviteScreen> {
                             try {
                               await provider.postLinkingCouple(body);
                               ref.read(userProvider.notifier).getUserInfo();
+
+                              // 스케줄 Refresh
+                              ref
+                                  .read(schedulesProvider.notifier)
+                                  .refreshSchedules();
 
                               if (context.mounted) {
                                 Navigator.of(context).pop();

@@ -14,6 +14,7 @@ import 'package:pico/common/components/fullscreen_loading_indicator.dart';
 import 'package:pico/common/components/toast.dart';
 import 'package:pico/common/contants/urls.dart';
 import 'package:pico/common/model/custom_exception.dart';
+import 'package:pico/common/provider/global_loading_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/utils/app_info.dart';
 import 'package:pico/common/utils/modals.dart';

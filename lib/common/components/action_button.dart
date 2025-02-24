@@ -7,6 +7,7 @@ class ActionButton extends StatefulWidget {
   final double? fontSize;
   final Color? fontColor;
   final Color? backgroundColor;
+  final bool? disabled;
 
   const ActionButton({
     super.key,
@@ -16,6 +17,7 @@ class ActionButton extends StatefulWidget {
     this.fontSize = 20,
     this.fontColor,
     this.backgroundColor,
+    this.disabled,
   });
 
   @override
@@ -38,15 +40,17 @@ class _ActionButtonState extends State<ActionButton> {
             borderRadius: BorderRadius.circular(8),
           ),
         ),
-        onPressed: () async {
-          setState(() {
-            isLoading = true;
-          });
-          await widget.onPressed();
-          setState(() {
-            isLoading = false;
-          });
-        },
+        onPressed: widget.disabled != null && widget.disabled!
+            ? null
+            : () async {
+                setState(() {
+                  isLoading = true;
+                });
+                await widget.onPressed();
+                setState(() {
+                  isLoading = false;
+                });
+              },
         child: isLoading
             ? CircularProgressIndicator()
             : Text(

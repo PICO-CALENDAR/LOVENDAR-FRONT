@@ -1,13 +1,13 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pico/common/view/edit_schedule_screen.dart';
+import 'package:pico/common/components/compact_input.dart';
+import 'package:pico/common/components/fullscreen_loading_indicator.dart';
+import 'package:pico/common/theme/theme_light.dart';
 import 'package:pico/common/view/invite_screen.dart';
-import 'package:pico/home/components/day_view.dart';
 import 'package:pico/user/view/mypage/profile_detail.dart';
+import 'package:pico/user/view/mypage/profile_edit.dart';
 
 enum ConfirmType {
   CONFIRM,
@@ -294,6 +294,8 @@ void showProfileDetail(BuildContext context) {
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
+      final PageController pageController = PageController();
+
       return DraggableScrollableSheet(
         initialChildSize: 1,
         minChildSize: 1,
@@ -341,6 +343,15 @@ void showProfileDetail(BuildContext context) {
                   ),
                 ),
 
+                Positioned(
+                  top: topContainerHeight - 45,
+                  left: 20,
+                  child: Image.asset(
+                    height: 50,
+                    "images/sparrow_couple.png",
+                  ),
+                ),
+
                 // 불투명한 하단 영역
                 Positioned(
                   top: topContainerHeight,
@@ -348,40 +359,48 @@ void showProfileDetail(BuildContext context) {
                   right: 0,
                   height:
                       MediaQuery.of(context).size.height - topContainerHeight,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.vertical(
-                        top: Radius.circular(16),
+                  child: Stack(
+                    children: [
+                      Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.vertical(
+                            top: Radius.circular(16),
+                          ),
+                        ),
+                        child: Column(
+                          children: [
+                            Container(
+                              margin: EdgeInsets.symmetric(
+                                vertical: 20,
+                              ),
+                              height: 4,
+                              width: 60,
+                              decoration: BoxDecoration(
+                                color: Colors.grey[300],
+                                borderRadius: BorderRadius.circular(10),
+                              ),
+                            ),
+                            Expanded(
+                              // child: ProfileDetail(),
+                              child: PageView(
+                                physics:
+                                    NeverScrollableScrollPhysics(), // 스크롤 막기
+                                controller: pageController,
+                                children: [
+                                  ProfileDetail(
+                                    pageController: pageController,
+                                  ),
+                                  ProfileEdit(
+                                    pageController: pageController,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    child: Column(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.symmetric(
-                            vertical: 20,
-                          ),
-                          height: 4,
-                          width: 60,
-                          decoration: BoxDecoration(
-                            color: Colors.grey[300],
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                        ),
-                        Expanded(
-                          child: ProfileDetail(),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-
-                Positioned(
-                  top: topContainerHeight - 45,
-                  left: 20,
-                  child: Image.asset(
-                    height: 50,
-                    "images/sparrow_couple.png",
+                    ],
                   ),
                 ),
               ],
@@ -392,6 +411,36 @@ void showProfileDetail(BuildContext context) {
     },
   );
 }
+
+// 로딩이 뜨는 모달
+// Future<void> showLoadingModal(BuildContext context) {
+//   return showModalBottomSheet(
+//     context: context,
+//     isScrollControlled: true,
+//     backgroundColor: Colors.transparent,
+//     builder: (BuildContext context) {
+//       return DraggableScrollableSheet(
+//         initialChildSize: 1,
+//         minChildSize: 1,
+//         maxChildSize: 1,
+//         builder: (context, scrollController) {
+//           return SizedBox(
+//             height: MediaQuery.of(context).size.height,
+//             child: Stack(
+//               children: [
+//                 FullscreenLoadingIndicator(
+//                   screenWidth: MediaQuery.of(context).size.width,
+//                   screenHeight: MediaQuery.of(context).size.height,
+//                   isLoading: true,
+//                 ),
+//               ],
+//             ),
+//           );
+//         },
+//       );
+//     },
+//   );
+// }
 
 // 버튼 옵션 모달
 void showButtonsModal(BuildContext context, List<Widget> children) {
