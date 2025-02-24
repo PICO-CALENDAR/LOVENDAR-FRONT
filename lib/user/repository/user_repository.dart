@@ -29,13 +29,13 @@ abstract class UserRepository {
   Future<UserModel> getUserInfo();
 
   // 유저 정보 수정
-  // @PATCH("/info")
-  // @Headers({
-  //   'accessToken': 'true',
-  // })
-  // Future<UserModel> patchUserInfo(
-  //   @Body() RegisterBody body,
-  // );
+  @PATCH("/info")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<UserModel> patchUserInfo(
+    @Body() RegisterBody body,
+  );
 
   // 유저 프로필 이미지 업데이트
   @POST("/update/profile/image")

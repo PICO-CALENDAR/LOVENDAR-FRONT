@@ -8,7 +8,8 @@ part of 'user_model.dart';
 
 UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       name: json['name'] as String,
-      profileImage: json['profileImage'] as String?,
+      profileImage:
+          UserModel._imageUrlWithTimeStamp(json['profileImage'] as String?),
       email: json['email'] as String,
       gender: UserModel._genderFromJson(json['gender'] as String),
       nickName: json['nickName'] as String,
@@ -16,7 +17,8 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       partnerId: (json['partnerId'] as num?)?.toInt(),
       partnerName: json['partnerName'] as String?,
       partnerNickname: json['partnerNickname'] as String?,
-      partnerProfileImage: json['partnerProfileImage'] as String?,
+      partnerProfileImage: UserModel._imageUrlWithTimeStamp(
+          json['partnerProfileImage'] as String?),
       isTermsAgreed: json['isTermsAgreed'] as bool,
       isMarketingAgreed: json['isMarketingAgreed'] as bool,
     );

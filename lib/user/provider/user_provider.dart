@@ -116,13 +116,32 @@ class User extends _$User {
     try {
       // 유저 프로필 변경
       final userInfo = await repository.postProfileImage(imgFile);
+
       state = userInfo;
     } on DioException catch (e) {
       if (e.response != null) {
-        print(e.response.toString());
+        if (e.response?.statusCode == 413) {
+          throw CustomException("사진 용량을 줄여주세요");
+        }
+        throw CustomException(e.response.toString());
       }
     } catch (e) {
-      print(e);
+      throw CustomException("프로필 사진 변경에 실패했습니다");
+    }
+  }
+
+  // 유저 정보 수정
+  Future<void> updateUserInfo(body) async {
+    try {
+      // 유저 프로필 변경
+      final userInfo = await repository.patchUserInfo(body);
+      state = userInfo;
+    } on DioException catch (e) {
+      if (e.response != null) {
+        throw CustomException(e.response.toString());
+      }
+    } catch (e) {
+      throw CustomException("프로필 사진 변경에 실패했습니다");
     }
   }
 }
