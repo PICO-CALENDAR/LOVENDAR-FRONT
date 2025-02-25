@@ -35,6 +35,7 @@ class UserModel extends UserModelBase {
   final Gender gender;
   final String nickName;
   final String birth;
+  final String? dday;
   final int? partnerId;
   final String? partnerName;
   final String? partnerNickname;
@@ -52,6 +53,7 @@ class UserModel extends UserModelBase {
     required this.gender,
     required this.nickName,
     required this.birth,
+    this.dday,
     this.partnerId,
     this.partnerName,
     this.partnerNickname,

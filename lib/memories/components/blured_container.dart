@@ -32,8 +32,8 @@ class BluredContainer extends StatelessWidget {
             builder: (context, constraints) {
               return type == BluredContainerType.CIRCLE
                   ? SizedBox(
-                      width: width?.toDouble() ?? 50, // 기본 크기 제공
-                      height: width?.toDouble() ?? 50, // 1:1 비율 유지
+                      width: width?.toDouble() ?? 60, // 기본 크기 제공
+                      height: width?.toDouble() ?? 60, // 1:1 비율 유지
                       child: AspectRatio(
                         aspectRatio: 1,
                         child: Container(

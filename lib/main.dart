@@ -41,11 +41,6 @@ class _MyAppState extends ConsumerState<MyApp> {
       theme: AppTheme.lightTheme,
       routerConfig: router,
       debugShowCheckedModeBanner: false,
-      // routes: {
-      //   '/': (context) => const BottomNav(),
-      //   '/login': (context) => const LoginScreen(),
-      //   '/register': (context) => const RegisterScreen(),
-      // },
       localizationsDelegates: const [
         GlobalMaterialLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,

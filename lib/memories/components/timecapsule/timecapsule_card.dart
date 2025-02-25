@@ -10,9 +10,10 @@ import 'package:pico/memories/components/timecapsule/timecapsule_front.dart';
 import 'package:pico/user/model/user_model.dart';
 import 'package:pico/user/provider/user_provider.dart';
 
-class TimeCapsuleDetailScreen extends ConsumerWidget {
+class TimecapsuleCard extends ConsumerWidget {
   final int index;
-  const TimeCapsuleDetailScreen({super.key, required this.index});
+  const TimecapsuleCard({super.key, required this.index});
+  static const ALPHA_VALUE = 76;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -28,7 +29,7 @@ class TimeCapsuleDetailScreen extends ConsumerWidget {
                 Navigator.of(context).pop();
               },
               child: Container(
-                color: Colors.black.withOpacity(0.3),
+                color: Colors.black.withAlpha(ALPHA_VALUE),
               ),
             ),
           ),

@@ -5,10 +5,11 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pico/common/theme/theme_light.dart';
+import 'package:pico/common/utils/date_operations.dart';
 import 'package:pico/common/utils/modals.dart';
 import 'package:pico/memories/components/blured_container.dart';
 import 'package:pico/memories/components/transparent_touchable_image.dart';
+import 'package:pico/memories/view/dday_eidt_modal.dart';
 import 'package:pico/memories/view/inbox_screen.dart';
 import 'package:pico/memories/view/sentbox_screen.dart';
 import 'package:pico/memories/view/writing_time_capsule_screen.dart';
@@ -27,6 +28,7 @@ class _MemoriesScreenState extends ConsumerState<MemoriesScreen>
     with SingleTickerProviderStateMixin {
   bool isBirdTapped = false;
   late AnimationController _controller;
+  final today = DateTime.now();
 
   @override
   void initState() {
@@ -128,32 +130,41 @@ class _MemoriesScreenState extends ConsumerState<MemoriesScreen>
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                BluredContainer(
-                  width: 130,
-                  height: 45,
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 15,
+                GestureDetector(
+                  onTap: () => Navigator.of(context).push(
+                    createBluredBackgroundPage(
+                      screen: DdayEidtModal(),
                     ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          MdiIcons.heartMultiple,
-                          color: Colors.red.shade600,
-                        ),
-                        SizedBox(
-                          width: 10,
-                        ),
-                        Text(
-                          "325일",
-                          style: TextStyle(
-                            fontFamily: "Kyobo",
-                            color: Colors.black,
-                            fontWeight: ui.FontWeight.bold,
-                            fontSize: 16,
+                  ),
+                  child: BluredContainer(
+                    height: 45,
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 15,
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            MdiIcons.heartMultiple,
+                            color: Colors.red.shade600,
                           ),
-                        ),
-                      ],
+                          SizedBox(
+                            width: 10,
+                          ),
+                          Text(
+                            userInfo.dday != null && userInfo.dday!.isNotEmpty
+                                ? parseStringDdayToInDaysString(
+                                    dday: userInfo.dday!)
+                                : "???일",
+                            style: TextStyle(
+                              fontFamily: "Kyobo",
+                              color: Colors.black,
+                              fontWeight: ui.FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ),
