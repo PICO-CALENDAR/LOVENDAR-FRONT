@@ -4,7 +4,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/components/network_aware_widget.dart';
 import 'package:pico/common/provider/go_provider.dart';
 import 'package:pico/common/theme/theme_light.dart';
 

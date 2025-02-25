@@ -193,14 +193,14 @@ class _MemoryBoxRepository implements MemoryBoxRepository {
   }
 
   @override
-  Future<TimecapsuleModel> postTimeCapsule(
-    int scheduleId,
-    String scheduleStartTime,
-    String scheduleEndTime,
-    String letterTitle,
-    String letter,
-    List<MultipartFile> photo,
-  ) async {
+  Future<TimecapsuleModel> postTimeCapsule({
+    required int scheduleId,
+    required String scheduleStartTime,
+    required String scheduleEndTime,
+    required String letterTitle,
+    required String letter,
+    required List<MultipartFile> photo,
+  }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _headers = <String, dynamic>{r'accessToken': 'true'};
@@ -253,6 +253,109 @@ class _MemoryBoxRepository implements MemoryBoxRepository {
       rethrow;
     }
     return _value;
+  }
+
+  @override
+  Future<TimecapsuleModel> editTimeCapsule({
+    required String memoryboxId,
+    int? scheduleId,
+    String? scheduleStartTime,
+    String? scheduleEndTime,
+    String? letterTitle,
+    String? letter,
+    List<MultipartFile>? photo,
+  }) async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    final _data = FormData();
+    if (scheduleId != null) {
+      _data.fields.add(MapEntry(
+        'scheduleId',
+        scheduleId.toString(),
+      ));
+    }
+    if (scheduleStartTime != null) {
+      _data.fields.add(MapEntry(
+        'scheduleStartTime',
+        scheduleStartTime,
+      ));
+    }
+    if (scheduleEndTime != null) {
+      _data.fields.add(MapEntry(
+        'scheduleEndTime',
+        scheduleEndTime,
+      ));
+    }
+    if (letterTitle != null) {
+      _data.fields.add(MapEntry(
+        'letterTitle',
+        letterTitle,
+      ));
+    }
+    if (letter != null) {
+      _data.fields.add(MapEntry(
+        'letter',
+        letter,
+      ));
+    }
+    if (photo != null) {
+      _data.files.addAll(photo.map((i) => MapEntry('photo', i)));
+    }
+    final _options = _setStreamType<TimecapsuleModel>(Options(
+      method: 'PATCH',
+      headers: _headers,
+      extra: _extra,
+      contentType: 'multipart/form-data',
+    )
+        .compose(
+          _dio.options,
+          '/update/${memoryboxId}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    final _result = await _dio.fetch<Map<String, dynamic>>(_options);
+    late TimecapsuleModel _value;
+    try {
+      _value = TimecapsuleModel.fromJson(_result.data!);
+    } on Object catch (e, s) {
+      errorLogger?.logError(e, s, _options);
+      rethrow;
+    }
+    return _value;
+  }
+
+  @override
+  Future<void> deleteTimeCapsule() async {
+    final _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{};
+    final _headers = <String, dynamic>{r'accessToken': 'true'};
+    _headers.removeWhere((k, v) => v == null);
+    const Map<String, dynamic>? _data = null;
+    final _options = _setStreamType<void>(Options(
+      method: 'DELETE',
+      headers: _headers,
+      extra: _extra,
+    )
+        .compose(
+          _dio.options,
+          '/delete/{memoryboxId}',
+          queryParameters: queryParameters,
+          data: _data,
+        )
+        .copyWith(
+            baseUrl: _combineBaseUrls(
+          _dio.options.baseUrl,
+          baseUrl,
+        )));
+    await _dio.fetch<void>(_options);
   }
 
   RequestOptions _setStreamType<T>(RequestOptions requestOptions) {

@@ -50,25 +50,16 @@ class MemoryBoxProvider extends StateNotifier<List<ScheduleModel>> {
           filename: 'file');
 
       final response = await repository.postTimeCapsule(
-        timecapsuleForm.schedule!.scheduleId,
-        timecapsuleForm.schedule!.startTime.toIso8601String(),
-        timecapsuleForm.schedule!.endTime.toIso8601String(),
-        timecapsuleForm.letterTitle!,
-        timecapsuleForm.letter!,
-        [multipartFile],
+        scheduleId: timecapsuleForm.schedule!.scheduleId,
+        scheduleStartTime:
+            timecapsuleForm.schedule!.startTime.toIso8601String(),
+        scheduleEndTime: timecapsuleForm.schedule!.endTime.toIso8601String(),
+        letterTitle: timecapsuleForm.letterTitle!,
+        letter: timecapsuleForm.letter!,
+        photo: [multipartFile],
       );
 
       print(response.toJson());
-
-      // if (response.success) {
-      //   // 해당 scheduleId를 제외한 새로운 리스트를 생성
-      //   state = state
-      //       .where((schedule) =>
-      //           schedule.scheduleId != response.schedule.scheduleId)
-      //       .toList();
-      // } else {
-      //   throw CustomException("삭제에 실패하였습니다.");
-      // }
     } on DioException catch (e) {
       // API 응답에서 에러 메시지 추출
       final errorMessage = e.response?.data['message'] ?? "알 수 없는 오류가 발생했습니다.";
@@ -77,10 +68,5 @@ class MemoryBoxProvider extends StateNotifier<List<ScheduleModel>> {
       print(e);
       throw CustomException("타임캡슐 생성에 실패하였습니다.");
     }
-  }
-
-  // 일정 캐싱 초기화
-  void resetSchedules() {
-    state = [];
   }
 }
