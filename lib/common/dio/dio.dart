@@ -2,8 +2,12 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:pico/common/auth/provider/secure_storage.dart';
+import 'package:pico/common/model/custom_exception.dart';
+import 'package:pico/common/utils/modals.dart';
 import 'package:pico/user/model/register_body.dart';
+import 'package:pico/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dio.g.dart';
@@ -137,7 +141,8 @@ class CustomInterceptor extends Interceptor {
 
         return handler.resolve(response);
       } on DioException catch (e) {
-        // ref.read(authProvider.notifier).logout();
+        // TODO: 에러 날 때, 자동 로그아웃 되게 구현 (주석 풀 것)
+        // ref.read(userProvider.notifier).logout();
 
         return handler.reject(e);
       }

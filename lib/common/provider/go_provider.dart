@@ -1,15 +1,17 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+
 import 'package:pico/common/auth/model/auth_model.dart';
 import 'package:pico/common/auth/provider/auth_provider.dart';
-import 'package:pico/common/auth/provider/secure_storage.dart';
+
+import 'package:pico/common/components/network_aware_widget.dart';
 import 'package:pico/common/layout/default_layout.dart';
+
 import 'package:pico/common/view/edit_schedule_screen.dart';
 import 'package:pico/common/view/invite_screen.dart';
 import 'package:pico/common/view/splash_screen.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+
 import 'package:pico/user/view/login_screen.dart';
 import 'package:pico/user/view/mypage/mypage_screen.dart';
 import 'package:pico/user/view/register_screen.dart';
@@ -62,21 +64,16 @@ final routerProvider = Provider<GoRouter>((ref) {
   String? redirectLogic(BuildContext context, GoRouterState goState) {
     final isLoginPage = goState.uri.toString() == '/login';
     final isSplashPage = goState.uri.toString() == '/splash';
-    final isRegisterPage = goState.uri.toString() == '/register';
+    // final isRegisterPage = goState.uri.toString() == '/register';
 
-    print(auth);
+    // print("router interenet : $result");
+    if (auth is AuthModelInitial) {
+      return isLoginPage ? null : "/splash";
+    }
 
     // 토큰이 없는 경우 혹은 토큰이 있었는데 만료한 경우
     // 다시 로그인
     if (auth == null || auth is AuthModelLoading) {
-      // 이미 로그인 페이지면 이동 없음. 아닌 모든 경우는 로그인 페이지로 이동
-      // if (isLoginPage) {
-      //   ref.read(userProvider.notifier).getUserInfo();
-      //   return null;
-      // } else {
-      //   return isRegisterPage ? null : "/login";
-      // }
-
       return isLoginPage ? null : "/login";
 
       // return isLoginPage
@@ -95,16 +92,6 @@ final routerProvider = Provider<GoRouter>((ref) {
         // 가입이 된 상태
         return (isLoginPage || isSplashPage) ? "/" : null;
       }
-      // if (auth.isLoggedIn) {
-      //   //로그인 페이지나 스플레시 페이지이면 홈으로 가도록 설정
-      //   return (isLoginPage || isSplashPage) ? "/" : null;
-      // } else {
-      //   return isLoginPage
-      //       ? null
-      //       : isRegisterPage
-      //           ? null
-      //           : "/login";
-      // }
     }
     return null;
 
@@ -145,7 +132,14 @@ final routerProvider = Provider<GoRouter>((ref) {
   }
 
   return GoRouter(
-    routes: routes,
+    routes: [
+      ShellRoute(
+        builder: (context, state, child) {
+          return NetworkAwareWidget(child: child); // 공통 부모 레이아웃
+        },
+        routes: routes,
+      ),
+    ],
     initialLocation: '/splash',
     redirect: redirectLogic,
   );

@@ -78,106 +78,106 @@ class _InboxScreenState extends ConsumerState<InboxScreen> {
                   ),
                 ),
 
-                Expanded(
-                  child: RefreshIndicator(
-                    onRefresh: _refreshData,
-                    child: FutureBuilder<TimecapsulesWithAnniResponse>(
-                      future: _timecapsules,
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return const Center(
-                            child: CircularProgressIndicator(),
-                          ); // 로딩 표시
-                        } else if (snapshot.hasError) {
-                          return Center(
-                              child:
-                                  Text("오류 발생: ${snapshot.error}")); // 오류 메시지
-                        } else if (!snapshot.hasData ||
-                            snapshot.data!.items.isEmpty) {
-                          return const Center(
-                            child: Text("다가올 기념일이 없습니다."),
-                          ); // 데이터 없음 처리
-                        }
+                // Expanded(
+                //   child: RefreshIndicator(
+                //     onRefresh: _refreshData,
+                //     child: FutureBuilder<TimecapsulesWithAnniResponse>(
+                //       future: _timecapsules,
+                //       builder: (context, snapshot) {
+                //         if (snapshot.connectionState ==
+                //             ConnectionState.waiting) {
+                //           return const Center(
+                //             child: CircularProgressIndicator(),
+                //           ); // 로딩 표시
+                //         } else if (snapshot.hasError) {
+                //           return Center(
+                //               child:
+                //                   Text("오류 발생: ${snapshot.error}")); // 오류 메시지
+                //         } else if (!snapshot.hasData ||
+                //             snapshot.data!.items.isEmpty) {
+                //           return const Center(
+                //             child: Text("다가올 기념일이 없습니다."),
+                //           ); // 데이터 없음 처리
+                //         }
 
-                        final timecapsules = snapshot.data!.items;
+                //         final timecapsules = snapshot.data!.items;
 
-                        return ListView.separated(
-                          padding: EdgeInsets.symmetric(
-                            vertical: 20,
-                          ),
-                          itemCount: timecapsules.length,
-                          itemBuilder: (context, index) {
-                            final currentTimecapsule = timecapsules[index];
+                //         return ListView.separated(
+                //           padding: EdgeInsets.symmetric(
+                //             vertical: 20,
+                //           ),
+                //           itemCount: timecapsules.length,
+                //           itemBuilder: (context, index) {
+                //             final currentTimecapsule = timecapsules[index];
 
-                            return GestureDetector(
-                              onTap: () {},
-                              child: Container(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                  vertical: 10,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: Theme.of(context)
-                                      .scaffoldBackgroundColor
-                                      .withOpacity(0.95),
-                                  border: Border.all(
-                                    color: Theme.of(context)
-                                        .scaffoldBackgroundColor
-                                        .withOpacity(0.95),
-                                    width: 3,
-                                  ),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceBetween,
-                                      children: [
-                                        // // 타임캡슐이 무조건 하나는 있을것이므로, 0번째 타임캡슐 기준으로 날짜 계산
-                                        // Text(
-                                        //   DateFormat.yMd().format(
-                                        //     currentTimecapsule.timeCapsules[0]
-                                        //         .scheduleStartTime,
-                                        //   ),
-                                        //   style: TextStyle(
-                                        //     fontFamily: "Kyobo",
-                                        //     fontSize: 14,
-                                        //     fontWeight: FontWeight.bold,
-                                        //   ),
-                                        // ),
-                                        // Text(
-                                        //   "D-${currentTimecapsule.timeCapsules[0].scheduleStartTime.difference(today).inDays}",
-                                        //   style: TextStyle(
-                                        //     fontFamily: "Kyobo",
-                                        //     fontSize: 14,
-                                        //     fontWeight: FontWeight.bold,
-                                        //   ),
-                                        // ),
-                                      ],
-                                    ),
-                                    Text(
-                                      currentTimecapsule.anniversary,
-                                      style: TextStyle(
-                                        fontFamily: "Kyobo",
-                                        fontSize: 22,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
-                          separatorBuilder: (context, index) =>
-                              SizedBox(height: 10), // ✅ 간격 추가
-                        );
-                      },
-                    ),
-                  ),
-                ),
+                //             return GestureDetector(
+                //               onTap: () {},
+                //               child: Container(
+                //                 padding: EdgeInsets.symmetric(
+                //                   horizontal: 20,
+                //                   vertical: 10,
+                //                 ),
+                //                 decoration: BoxDecoration(
+                //                   color: Theme.of(context)
+                //                       .scaffoldBackgroundColor
+                //                       .withOpacity(0.95),
+                //                   border: Border.all(
+                //                     color: Theme.of(context)
+                //                         .scaffoldBackgroundColor
+                //                         .withOpacity(0.95),
+                //                     width: 3,
+                //                   ),
+                //                   borderRadius: BorderRadius.circular(8),
+                //                 ),
+                //                 child: Column(
+                //                   crossAxisAlignment: CrossAxisAlignment.start,
+                //                   children: [
+                //                     Row(
+                //                       mainAxisAlignment:
+                //                           MainAxisAlignment.spaceBetween,
+                //                       children: [
+                //                         // // 타임캡슐이 무조건 하나는 있을것이므로, 0번째 타임캡슐 기준으로 날짜 계산
+                //                         // Text(
+                //                         //   DateFormat.yMd().format(
+                //                         //     currentTimecapsule.timeCapsules[0]
+                //                         //         .scheduleStartTime,
+                //                         //   ),
+                //                         //   style: TextStyle(
+                //                         //     fontFamily: "Kyobo",
+                //                         //     fontSize: 14,
+                //                         //     fontWeight: FontWeight.bold,
+                //                         //   ),
+                //                         // ),
+                //                         // Text(
+                //                         //   "D-${currentTimecapsule.timeCapsules[0].scheduleStartTime.difference(today).inDays}",
+                //                         //   style: TextStyle(
+                //                         //     fontFamily: "Kyobo",
+                //                         //     fontSize: 14,
+                //                         //     fontWeight: FontWeight.bold,
+                //                         //   ),
+                //                         // ),
+                //                       ],
+                //                     ),
+                //                     Text(
+                //                       currentTimecapsule.anniversary,
+                //                       style: TextStyle(
+                //                         fontFamily: "Kyobo",
+                //                         fontSize: 22,
+                //                         fontWeight: FontWeight.bold,
+                //                       ),
+                //                     ),
+                //                   ],
+                //                 ),
+                //               ),
+                //             );
+                //           },
+                //           separatorBuilder: (context, index) =>
+                //               SizedBox(height: 10), // ✅ 간격 추가
+                //         );
+                //       },
+                //     ),
+                //   ),
+                // ),
 
                 // Expanded(
                 //   child: ListView.builder(
