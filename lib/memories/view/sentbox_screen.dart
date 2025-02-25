@@ -1,6 +1,7 @@
 // 타임캡슐 페이지
 import 'dart:ui';
 
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:pico/common/utils/modals.dart';
@@ -50,30 +51,95 @@ class SentboxScreen extends StatelessWidget {
                   ),
                 ),
                 Expanded(
-                  child: ListView.builder(
-                    itemCount: 4,
-                    itemBuilder: (context, index) {
-                      return GestureDetector(
-                        onTap: () {
-                          Navigator.of(context).push(
-                            createBluredBackgroundPage(
-                              screen: TimeCapsuleDetailScreen(index: index),
-                            ),
-                          );
-                        },
-                        child: Hero(
-                          tag: index,
-                          child: TimecapsuleListItem(),
-                        ),
-                      );
-                    },
-                  ),
-                )
+                  child: SegmentedControlExample(),
+                ),
+
+                // Expanded(
+                //   child: ListView.builder(
+                //     itemCount: 4,
+                //     itemBuilder: (context, index) {
+                //       return GestureDetector(
+                //         onTap: () {
+                //           Navigator.of(context).push(
+                //             createBluredBackgroundPage(
+                //               screen: TimeCapsuleDetailScreen(index: index),
+                //             ),
+                //           );
+                //         },
+                //         child: Hero(
+                //           tag: index,
+                //           child: TimecapsuleListItem(),
+                //         ),
+                //       );
+                //     },
+                //   ),
+                // )
               ],
             ),
           ),
         ),
       ),
+    );
+  }
+}
+
+enum TimecapsuleType { opened, upcoming }
+
+Map<TimecapsuleType, String> timecapsuleDesc = <TimecapsuleType, String>{
+  TimecapsuleType.opened: "열려 있는 타임캡슐",
+  TimecapsuleType.upcoming: "잠겨 있는 타임캡슐",
+};
+
+class SegmentedControlExample extends StatefulWidget {
+  const SegmentedControlExample({super.key});
+
+  @override
+  State<SegmentedControlExample> createState() =>
+      _SegmentedControlExampleState();
+}
+
+class _SegmentedControlExampleState extends State<SegmentedControlExample> {
+  TimecapsuleType _selectedSegment = TimecapsuleType.opened;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        CupertinoSlidingSegmentedControl<TimecapsuleType>(
+          backgroundColor: CupertinoColors.systemGrey2,
+          // This represents the currently selected segmented control.
+          groupValue: _selectedSegment,
+          // Callback that sets the selected segmented control.
+          onValueChanged: (TimecapsuleType? value) {
+            if (value != null) {
+              setState(() {
+                _selectedSegment = value;
+              });
+            }
+          },
+          children: const <TimecapsuleType, Widget>{
+            TimecapsuleType.opened: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'opened',
+              ),
+            ),
+            TimecapsuleType.upcoming: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
+              child: Text(
+                'upcoming',
+              ),
+            ),
+          },
+        ),
+        Expanded(
+          child: Center(
+            child: Text(
+              'Selected Segment: ${_selectedSegment.name} ${timecapsuleDesc[_selectedSegment]}',
+            ),
+          ),
+        )
+      ],
     );
   }
 }

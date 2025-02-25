@@ -32,7 +32,7 @@ class TakePictureBtn extends ConsumerWidget {
       onTap: () async {
         final croppedImg = await imageController.takePhoto(ratio: ratio);
         if (croppedImg != null) {
-          uploadFn(croppedImg.path);
+          await uploadFn(croppedImg.path);
         }
 
         // if (croppedImg != null) {

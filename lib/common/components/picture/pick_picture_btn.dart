@@ -1,8 +1,6 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/utils/image_controller.dart';
-import 'package:pico/user/provider/user_provider.dart';
 
 class PickPictureBtn extends ConsumerWidget {
   const PickPictureBtn({
@@ -34,7 +32,7 @@ class PickPictureBtn extends ConsumerWidget {
             await imageController.pickImageFromGallery(ratio: ratio);
 
         if (croppedImg != null) {
-          uploadFn(croppedImg.path);
+          await uploadFn(croppedImg.path);
         }
 
         // if (croppedImg != null) {

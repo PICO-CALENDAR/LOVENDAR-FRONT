@@ -34,6 +34,8 @@ class ProfileDetail extends ConsumerWidget {
     final imageController = ImageController();
     final globalLoading = ref.watch(globalLoadingProvider);
 
+    print(userInfo.profileImage);
+
     return Stack(
       children: [
         Padding(
@@ -87,11 +89,16 @@ class ProfileDetail extends ConsumerWidget {
                             ref
                                 .read(globalLoadingProvider.notifier)
                                 .startLoading();
+                            // 파일 경로를 멀티 파일로 변경 후
+                            final multipartFile = await MultipartFile.fromFile(
+                              imgFilePath,
+                              filename: 'file',
+                            );
                             try {
-                              // 이미지를 null로 초기화
+                              // 이미지를 전송
                               await ref
                                   .read(userProvider.notifier)
-                                  .updateUserInfo(RegisterBody());
+                                  .updateUserProfile([multipartFile]);
                             } catch (e) {
                               if (context.mounted) {
                                 if (e is CustomException) {

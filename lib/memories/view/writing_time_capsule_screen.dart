@@ -50,6 +50,7 @@ class _WritingTimeCapsuleScreenState
         ).show(context);
         return;
       }
+
       _pageController.animateToPage(
         _currentPage + 1,
         duration: const Duration(milliseconds: 300),
@@ -58,6 +59,14 @@ class _WritingTimeCapsuleScreenState
     } else if (_currentPage == 2) {
       // 맨 마지막, 타임캡슐 생성하기
       // 유효성 검사
+
+      if (!validations[_currentPage]) {
+        Toast.showErrorToast(
+          message: messages[_currentPage],
+        ).show(context);
+        return;
+      }
+
       if (timecapsuleForm.letterTitle!.length > 16) {
         Toast.showErrorToast(
           message: "16자 이하로 제목을 작성해주세요",

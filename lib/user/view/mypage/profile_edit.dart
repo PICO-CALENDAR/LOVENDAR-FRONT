@@ -212,6 +212,7 @@ class _ProfileEditState extends ConsumerState<ProfileEdit> {
                 disabled: validator(btnType),
                 buttonName: "저장 하기",
                 onPressed: () async {
+                  FocusScope.of(context).unfocus();
                   await submitChange(btnType);
                 },
               ),

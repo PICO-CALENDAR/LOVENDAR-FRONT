@@ -1,4 +1,5 @@
 import 'dart:ui';
+import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
@@ -289,13 +290,12 @@ Route createBluredBackgroundPage({required Widget screen}) {
 
 // 사용자 프로필 정보
 void showProfileDetail(BuildContext context) {
+  final PageController pageController = PageController();
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
     backgroundColor: Colors.transparent,
     builder: (BuildContext context) {
-      final PageController pageController = PageController();
-
       return DraggableScrollableSheet(
         initialChildSize: 1,
         minChildSize: 1,
@@ -314,6 +314,7 @@ void showProfileDetail(BuildContext context) {
                   height: topContainerHeight,
                   child: GestureDetector(
                     onTap: () {
+                      pageController.dispose();
                       Navigator.of(context).pop();
                     },
                     child: BackdropFilter(
@@ -462,3 +463,23 @@ void showButtonsModal(BuildContext context, List<Widget> children) {
     ),
   );
 }
+
+// 네트워크 없을 때, 설정 모달
+// void showNetworkAlertDialog() {
+//   showCupertinoDialog(
+//     context: Navigator.of(context, rootNavigator: true).context,
+//     builder: (BuildContext context) {
+//       return CupertinoAlertDialog(
+//         title: const Text("인터넷 연결 필요"),
+//         content: const Text("인터넷에 연결되지 않았습니다.\nWi-Fi 또는 모바일 데이터를 켜주세요."),
+//         actions: <Widget>[
+//           CupertinoDialogAction(
+//             onPressed: () =>
+//                 AppSettings.openAppSettings(type: AppSettingsType.wifi),
+//             child: const Text("확인"),
+//           ),
+//         ],
+//       );
+//     },
+//   );
+// }
