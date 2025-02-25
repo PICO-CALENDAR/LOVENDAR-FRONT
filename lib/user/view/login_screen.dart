@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:pico/common/auth/model/auth_model.dart';
@@ -68,21 +70,25 @@ class LoginScreen extends ConsumerWidget {
                   SizedBox(
                     height: 20,
                   ),
-                  SizedBox(
-                    width: 300,
-                    child: SignInWithAppleButton(
-                      onPressed: () {
-                        ref.read(authProvider.notifier).appleLogin(context);
-                      },
-                      style: SignInWithAppleButtonStyle.black,
-                      // 색상 지정 가능
-                      height: 44,
-                      // 버튼 높이 지정 가능
-                      borderRadius: BorderRadius.circular(8),
-                      // 아이콘 위치 지정 가능
-                      text: 'Apple로 시작하기',
-                    ),
-                  ),
+                  Platform.isIOS
+                      ? SizedBox(
+                          width: 300,
+                          child: SignInWithAppleButton(
+                            onPressed: () {
+                              ref
+                                  .read(authProvider.notifier)
+                                  .appleLogin(context);
+                            },
+                            style: SignInWithAppleButtonStyle.black,
+                            // 색상 지정 가능
+                            height: 44,
+                            // 버튼 높이 지정 가능
+                            borderRadius: BorderRadius.circular(8),
+                            // 아이콘 위치 지정 가능
+                            text: 'Apple로 시작하기',
+                          ),
+                        )
+                      : SizedBox.shrink(),
                   SizedBox(
                     height: 50,
                   ),

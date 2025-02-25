@@ -1,0 +1,2 @@
+/Users/gyurikim/Downloads/드림학기제 기획/pico/android/app/.cxx/Debug/461g1q6z/x86_64/CMakeFiles/edit_cache.dir
+/Users/gyurikim/Downloads/드림학기제 기획/pico/android/app/.cxx/Debug/461g1q6z/x86_64/CMakeFiles/rebuild_cache.dir
