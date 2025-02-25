@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
 
 part 'schedule_response.g.dart';
 

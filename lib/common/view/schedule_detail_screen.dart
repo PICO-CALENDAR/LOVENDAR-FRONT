@@ -2,16 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pico/common/components/primary_button.dart';
-import 'package:pico/common/components/toast.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/extenstions.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/common/view/edit_schedule_screen.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/common/components/primary_button.dart';
+import 'package:lovendar/common/components/toast.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/common/view/edit_schedule_screen.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 
 class ScheduleDetailScreen extends ConsumerWidget {
   final DateTime date;

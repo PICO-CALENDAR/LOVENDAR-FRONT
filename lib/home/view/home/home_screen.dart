@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart' as intl;
-import 'package:pico/common/provider/selected_day_provider.dart';
-import 'package:pico/home/components/day_view.dart';
-import 'package:pico/home/components/dayview_date_picker.dart';
-import 'package:pico/common/utils/date_operations.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/provider/selected_day_provider.dart';
+import 'package:lovendar/home/components/day_view.dart';
+import 'package:lovendar/home/components/dayview_date_picker.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
   static String get routeName => 'home';

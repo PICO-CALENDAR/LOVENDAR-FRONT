@@ -5,10 +5,10 @@ import 'package:flip_card/flip_card.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_back.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_front.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_back.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_front.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 
 class TimecapsuleCard extends ConsumerWidget {
   final int index;

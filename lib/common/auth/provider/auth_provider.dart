@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/auth/model/apple_auth_request.dart';
+import 'package:lovendar/common/auth/model/apple_auth_request.dart';
 
-import 'package:pico/common/auth/model/auth_model.dart';
-import 'package:pico/common/auth/model/google_auth_request.dart';
-import 'package:pico/common/auth/model/google_auth_response.dart';
-import 'package:pico/common/auth/provider/secure_storage.dart';
-import 'package:pico/common/auth/repository/auth_repository.dart';
-import 'package:pico/common/auth/repository/social_login_repository.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/common/auth/model/auth_model.dart';
+import 'package:lovendar/common/auth/model/google_auth_request.dart';
+import 'package:lovendar/common/auth/model/google_auth_response.dart';
+import 'package:lovendar/common/auth/provider/secure_storage.dart';
+import 'package:lovendar/common/auth/repository/auth_repository.dart';
+import 'package:lovendar/common/auth/repository/social_login_repository.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 // part 'auth_provider.g.dart';
 
 final authProvider = StateNotifierProvider<AuthProvider, AuthModelBase?>((ref) {

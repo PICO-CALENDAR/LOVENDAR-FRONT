@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:pico/common/auth/model/auth_model.dart';
-import 'package:pico/common/auth/provider/auth_provider.dart';
-import 'package:pico/common/auth/provider/secure_storage.dart';
-import 'package:pico/common/model/custom_exception.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/repository/user_repository.dart';
+import 'package:lovendar/common/auth/model/auth_model.dart';
+import 'package:lovendar/common/auth/provider/auth_provider.dart';
+import 'package:lovendar/common/auth/provider/secure_storage.dart';
+import 'package:lovendar/common/model/custom_exception.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/repository/user_repository.dart';
 import 'package:riverpod/src/framework.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/utils/image_controller.dart';
+import 'package:lovendar/common/utils/image_controller.dart';
 
 class PickPictureBtn extends ConsumerWidget {
   const PickPictureBtn({

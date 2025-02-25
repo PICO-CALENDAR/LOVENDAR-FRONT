@@ -1,11 +1,11 @@
 import 'package:dio/dio.dart' hide Headers;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/dio/dio.dart';
-import 'package:pico/common/schedule/model/schedules_response.dart';
-import 'package:pico/memories/model/timecapsule_model.dart';
-import 'package:pico/memories/model/timecapsules_response.dart';
-import 'package:pico/memories/model/timecapsules_with_anni.dart';
-import 'package:pico/memories/model/timecapsules_with_anni_response.dart';
+import 'package:lovendar/common/dio/dio.dart';
+import 'package:lovendar/common/schedule/model/schedules_response.dart';
+import 'package:lovendar/memories/model/timecapsule_model.dart';
+import 'package:lovendar/memories/model/timecapsules_response.dart';
+import 'package:lovendar/memories/model/timecapsules_with_anni.dart';
+import 'package:lovendar/memories/model/timecapsules_with_anni_response.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

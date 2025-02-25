@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/calendar/provider/checked_category_provider.dart';
-import 'package:pico/common/model/custom_exception.dart';
-import 'package:pico/common/model/event_controller.dart';
-import 'package:pico/common/schedule/model/delete_repeat_schedule_body.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/model/update_schedule_body.dart';
-import 'package:pico/common/schedule/repository/schedule_repository.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/calendar/provider/checked_category_provider.dart';
+import 'package:lovendar/common/model/custom_exception.dart';
+import 'package:lovendar/common/model/event_controller.dart';
+import 'package:lovendar/common/schedule/model/delete_repeat_schedule_body.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/update_schedule_body.dart';
+import 'package:lovendar/common/schedule/repository/schedule_repository.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 final schedulesProvider =
     StateNotifierProvider<SchedulesProvider, List<ScheduleModel>>((ref) {

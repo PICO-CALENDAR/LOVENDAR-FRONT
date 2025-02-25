@@ -4,10 +4,10 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/memories/model/timecapsules_with_anni_response.dart';
-import 'package:pico/memories/repository/memory_box_repository.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/memories/model/timecapsules_with_anni_response.dart';
+import 'package:lovendar/memories/repository/memory_box_repository.dart';
 
 class InboxScreen extends ConsumerStatefulWidget {
   const InboxScreen({super.key});

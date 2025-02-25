@@ -1,5 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
 
 final checkedCategoryProvider =
     StateNotifierProvider<CheckedCategoryNotifier, Map<ScheduleType, bool>>(

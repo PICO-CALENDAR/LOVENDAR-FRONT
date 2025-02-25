@@ -2,9 +2,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/extenstions.dart';
-import 'package:pico/common/view/edit_schedule_screen.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
+import 'package:lovendar/common/view/edit_schedule_screen.dart';
 
 class DateNumberCell extends ConsumerWidget {
   const DateNumberCell({

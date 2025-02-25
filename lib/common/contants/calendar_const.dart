@@ -1,4 +1,4 @@
-import 'package:pico/common/model/custom_calendar.dart';
+import 'package:lovendar/common/model/custom_calendar.dart';
 
 class CalendarConst {
   // 생성자 안되는 클래스인듯?

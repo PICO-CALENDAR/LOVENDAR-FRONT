@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 
 class TimecapsuleFront extends ConsumerWidget {
   const TimecapsuleFront({

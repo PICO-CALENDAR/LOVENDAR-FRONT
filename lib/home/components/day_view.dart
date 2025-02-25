@@ -5,17 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/contants/layout_const.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/model/schedules_response.dart';
+import 'package:lovendar/common/contants/layout_const.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/schedules_response.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/view/schedule_detail_screen.dart';
-import 'package:pico/home/components/day_view_painter.dart';
-import 'package:pico/home/components/indicator.dart';
-import 'package:pico/common/utils/schedule_operations.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/view/schedule_detail_screen.dart';
+import 'package:lovendar/home/components/day_view_painter.dart';
+import 'package:lovendar/home/components/indicator.dart';
+import 'package:lovendar/common/utils/schedule_operations.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class DayView extends ConsumerStatefulWidget {
   final DateTime date;

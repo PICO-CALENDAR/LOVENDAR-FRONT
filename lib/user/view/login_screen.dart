@@ -2,9 +2,9 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/auth/model/auth_model.dart';
-import 'package:pico/common/auth/provider/auth_provider.dart';
-import 'package:pico/common/components/fullscreen_loading_indicator.dart';
+import 'package:lovendar/common/auth/model/auth_model.dart';
+import 'package:lovendar/common/auth/provider/auth_provider.dart';
+import 'package:lovendar/common/components/fullscreen_loading_indicator.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginScreen extends ConsumerWidget {

@@ -5,13 +5,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_list_item.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_card.dart';
-import 'package:pico/memories/model/timecapsule_model.dart';
-import 'package:pico/memories/model/timecapsules_response.dart';
-import 'package:pico/memories/repository/memory_box_repository.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_list_item.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_card.dart';
+import 'package:lovendar/memories/model/timecapsule_model.dart';
+import 'package:lovendar/memories/model/timecapsules_response.dart';
+import 'package:lovendar/memories/repository/memory_box_repository.dart';
 
 class SentboxScreen extends StatelessWidget {
   const SentboxScreen({super.key});

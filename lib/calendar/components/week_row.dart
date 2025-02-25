@@ -1,9 +1,9 @@
 // 일주일 Row
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/calendar/components/date_number_cell.dart';
-import 'package:pico/calendar/components/date_schedule_row.dart';
-import 'package:pico/common/model/event_controller.dart';
+import 'package:lovendar/calendar/components/date_number_cell.dart';
+import 'package:lovendar/calendar/components/date_schedule_row.dart';
+import 'package:lovendar/common/model/event_controller.dart';
 
 class WeekRow extends ConsumerWidget {
   const WeekRow({

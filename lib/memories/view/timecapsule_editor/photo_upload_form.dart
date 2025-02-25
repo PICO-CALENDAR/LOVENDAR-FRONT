@@ -4,14 +4,14 @@ import 'dart:io';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/components/picture/pick_picture_btn.dart';
-import 'package:pico/common/components/picture/remove_picture_btn.dart';
-import 'package:pico/common/components/picture/take_picture_btn.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/image_controller.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/memories/components/form_step_description.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/common/components/picture/pick_picture_btn.dart';
+import 'package:lovendar/common/components/picture/remove_picture_btn.dart';
+import 'package:lovendar/common/components/picture/take_picture_btn.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/image_controller.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/memories/components/form_step_description.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
 
 class PhotoUploadForm extends ConsumerWidget {
   final imageController = ImageController();

@@ -5,14 +5,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pico/calendar/provider/checked_category_provider.dart';
-import 'package:pico/common/provider/selected_day_provider.dart';
+import 'package:lovendar/calendar/provider/checked_category_provider.dart';
+import 'package:lovendar/common/provider/selected_day_provider.dart';
 
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/extenstions.dart';
-import 'package:pico/common/view/edit_schedule_screen.dart';
-import 'package:pico/home/components/day_view.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
+import 'package:lovendar/common/view/edit_schedule_screen.dart';
+import 'package:lovendar/home/components/day_view.dart';
 
 class DateScheduleRow extends ConsumerWidget {
   const DateScheduleRow({

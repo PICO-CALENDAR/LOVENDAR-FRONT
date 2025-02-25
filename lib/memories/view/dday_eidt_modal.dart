@@ -3,14 +3,14 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pico/common/components/action_button.dart';
-import 'package:pico/common/components/date_input.dart';
-import 'package:pico/common/components/toast.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/date_operations.dart';
-import 'package:pico/common/utils/extenstions.dart';
-import 'package:pico/user/model/user_model.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/common/components/action_button.dart';
+import 'package:lovendar/common/components/date_input.dart';
+import 'package:lovendar/common/components/toast.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
+import 'package:lovendar/user/model/user_model.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 
 class DdayEidtModal extends ConsumerStatefulWidget {
   const DdayEidtModal({super.key});

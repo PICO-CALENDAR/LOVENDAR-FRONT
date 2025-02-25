@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/memories/model/timecapsule_model.dart';
+import 'package:lovendar/memories/model/timecapsule_model.dart';
 
 part 'timecapsules_with_anni.g.dart';
 

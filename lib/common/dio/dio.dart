@@ -3,11 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
-import 'package:pico/common/auth/provider/secure_storage.dart';
-import 'package:pico/common/model/custom_exception.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/user/model/register_body.dart';
-import 'package:pico/user/provider/user_provider.dart';
+import 'package:lovendar/common/auth/provider/secure_storage.dart';
+import 'package:lovendar/common/model/custom_exception.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/user/model/register_body.dart';
+import 'package:lovendar/user/provider/user_provider.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 part 'dio.g.dart';

@@ -3,12 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_confetti/flutter_confetti.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pico/common/components/toast.dart';
-import 'package:pico/memories/provider/memory_box_provider.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
-import 'package:pico/memories/view/timecapsule_editor/anniversary_selection_form.dart';
-import 'package:pico/memories/view/timecapsule_editor/letter_form.dart';
-import 'package:pico/memories/view/timecapsule_editor/photo_upload_form.dart';
+import 'package:lovendar/common/components/toast.dart';
+import 'package:lovendar/memories/provider/memory_box_provider.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/memories/view/timecapsule_editor/anniversary_selection_form.dart';
+import 'package:lovendar/memories/view/timecapsule_editor/letter_form.dart';
+import 'package:lovendar/memories/view/timecapsule_editor/photo_upload_form.dart';
 
 class WritingTimeCapsuleScreen extends ConsumerStatefulWidget {
   const WritingTimeCapsuleScreen({super.key});
