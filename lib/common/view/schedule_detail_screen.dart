@@ -53,6 +53,15 @@ class _ScheduleDetailScreenState extends ConsumerState<ScheduleDetailScreen> {
   Widget build(BuildContext context) {
     final parentContext = context;
     final userInfo = ref.watch(userProvider) as UserModel;
+    final scheduleStartDateOnSelectedDate = DateTime(
+      widget.date.year,
+      widget.date.month,
+      widget.date.day,
+      schedule.startTime.hour,
+      schedule.startTime.minute,
+    );
+    final scheduleEndDateOnSelectedDate =
+        scheduleStartDateOnSelectedDate.add(schedule.duration);
 
     return Material(
       child: Navigator(
@@ -280,11 +289,16 @@ class _ScheduleDetailScreenState extends ConsumerState<ScheduleDetailScreen> {
                                           if (schedule.repeatEndDate != null)
                                             Text(
                                               "${DateFormat.yMEd().format(schedule.repeatEndDate!)}에 종료",
+                                              style: TextStyle(
+                                                color: AppTheme.textColor,
+                                              ),
                                             ),
                                         ],
                                       ),
                                     Text(
-                                      "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.startTime.hour}시 ${schedule.startTime.minute}분"}",
+                                      // 실제 선택한 날짜를 startTimed으로 보여줌. 끝난 날짜도 마찬가지로 계산
+                                      "${DateFormat.yMMMMd().format(scheduleStartDateOnSelectedDate)} ${schedule.isAllDay ? "(하루종일)" : "${scheduleStartDateOnSelectedDate.hour}시 ${scheduleStartDateOnSelectedDate.minute}분"}",
+                                      // "${DateFormat.yMMMMd().format(schedule.startTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.startTime.hour}시 ${schedule.startTime.minute}분"}",
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
@@ -292,7 +306,9 @@ class _ScheduleDetailScreenState extends ConsumerState<ScheduleDetailScreen> {
                                       ),
                                     ),
                                     Text(
-                                      "${DateFormat.yMMMMd().format(schedule.endTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.endTime.hour}시 ${schedule.endTime.minute}분"}",
+                                      // 실제 선택한 날짜를 startTimed으로 보여줌. 끝난 날짜도 마찬가지로 계산
+                                      "${DateFormat.yMMMMd().format(scheduleEndDateOnSelectedDate)} ${schedule.isAllDay ? "(하루종일)" : "${scheduleEndDateOnSelectedDate.hour}시 ${scheduleEndDateOnSelectedDate.minute}분"}",
+                                      // "${DateFormat.yMMMMd().format(schedule.endTime)} ${schedule.isAllDay ? "(하루종일)" : "${schedule.endTime.hour}시 ${schedule.endTime.minute}분"}",
                                       style: TextStyle(
                                         fontSize: 15,
                                         fontWeight: FontWeight.w500,
