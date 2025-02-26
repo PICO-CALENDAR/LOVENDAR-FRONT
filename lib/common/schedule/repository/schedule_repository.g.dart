@@ -177,7 +177,7 @@ class _ScheduleRepository implements ScheduleRepository {
       Options(method: 'POST', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
-            '/update/${scheduleId}',
+            '/update/only/${scheduleId}',
             queryParameters: queryParameters,
             data: _data,
           )

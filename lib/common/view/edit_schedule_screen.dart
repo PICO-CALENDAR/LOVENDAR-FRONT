@@ -27,12 +27,14 @@ enum EditMode {
 class EditScheduleScreen extends ConsumerStatefulWidget {
   final EditMode mode;
   final ScheduleModel? initialScheduleValue;
+  final DateTime? selectedDate;
 
   static String get routeName => 'editSchedule';
   const EditScheduleScreen({
     super.key,
     this.mode = EditMode.ADD,
     this.initialScheduleValue,
+    this.selectedDate,
   });
 
   @override
@@ -219,8 +221,9 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                 Toast.showSuccessToast(
                   message: "현재 일정을 성공적으로 수정했습니다",
                 ).show(Navigator.of(context, rootNavigator: true).context);
-                Navigator.of(context).pop();
-                Navigator.of(context).pop(scheduleResponse);
+
+                Navigator.of(Navigator.of(context, rootNavigator: true).context)
+                    .pop(scheduleResponse);
               }
             } catch (e) {
               if (mounted) {
@@ -228,23 +231,6 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                     .show(Navigator.of(context, rootNavigator: true).context);
               }
             }
-            // 현재 일정만 수정
-            // try {
-            //   await ref
-            //       .read(schedulesProvider.notifier)
-            //       .deleteSchedule(schedule.scheduleId);
-            //   if (parentContext.mounted) {
-            //     Toast.showSuccessToast(message: "모든 반복 일정이 삭제되었습니다")
-            //         .show(parentContext);
-            //     Navigator.of(parentContext).pop();
-            //     Navigator.of(parentContext).pop();
-            //   }
-            // } catch (e) {
-            //   if (parentContext.mounted) {
-            //     Toast.showErrorToast(message: e.toString())
-            //         .show(parentContext);
-            //   }
-            // }
           },
           secondOptionName: "현재 일정 및 이후 일정",
           secondOptionPressed: () async {

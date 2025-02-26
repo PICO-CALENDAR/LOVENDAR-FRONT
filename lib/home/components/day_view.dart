@@ -157,7 +157,8 @@ class _DayViewState extends ConsumerState<DayView> {
                               for (var scheduleGroup
                                   in groupOverlappingSchedules(
                                 schedules: scheduleObjs.adjustMultiDaySchedules(
-                                    targetDate: widget.date),
+                                  targetDate: widget.date,
+                                ),
                               ))
                                 for (var organizedSchedule
                                     in getOrganizedSchedules(

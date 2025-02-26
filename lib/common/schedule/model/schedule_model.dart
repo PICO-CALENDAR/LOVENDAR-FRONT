@@ -134,7 +134,8 @@ class ScheduleModel extends ScheduleModelBase {
               (targetDate.isAfter(scheduleStartTime) &&
                   (targetDate.isBefore(scheduleEndTime) ||
                       scheduleEndTime.isSameDate(targetDate)))) &&
-          (repeatEndDate == null || targetDate.isBefore(repeatEndDate!))) {
+          (repeatEndDate == null ||
+              targetDate.withoutTime.isBefore(repeatEndDate!.withoutTime))) {
         return true;
       }
 
@@ -178,6 +179,12 @@ class ScheduleModel extends ScheduleModelBase {
 
     Duration duration = scheduleEndTime.difference(scheduleStartTime);
 
+    // 보여주는 타겟날짜가 스케줄의 종료일자보다 이전이 아닐때
+    if (repeatEndDate != null) {
+      if (!targetDate.withoutTime.isBefore(repeatEndDate!.withoutTime)) {
+        return null;
+      }
+    }
     while (scheduleStartTime.isBefore(targetDate) ||
         scheduleStartTime.isSameDate(targetDate)) {
       // 현재 타겟날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
@@ -255,6 +262,29 @@ class ScheduleModel extends ScheduleModelBase {
       repeatType: null,
       repeatStartDate: null,
       repeatEndDate: null,
+    );
+  }
+
+  /// targetDate를 기준으로 시작 시간을 변경하고, 기존 duration을 유지하여 새 스케줄 생성
+  ScheduleModel copyWithNewDate({required DateTime targetDate}) {
+    Duration duration = super.endTime.difference(super.startTime);
+
+    return ScheduleModel.copyWith(
+      original: this,
+      startTime: DateTime(
+        targetDate.year,
+        targetDate.month,
+        targetDate.day,
+        super.startTime.hour,
+        super.startTime.minute,
+      ),
+      endTime: DateTime(
+        targetDate.year,
+        targetDate.month,
+        targetDate.day,
+        super.startTime.hour,
+        super.startTime.minute,
+      ).add(duration),
     );
   }
 
