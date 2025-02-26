@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/auth/model/apple_auth_request.dart';
-import 'package:pico/common/auth/model/google_auth_request.dart';
-import 'package:pico/common/auth/model/google_auth_response.dart';
-import 'package:pico/common/dio/dio.dart';
+import 'package:lovendar/common/auth/model/apple_auth_request.dart';
+import 'package:lovendar/common/auth/model/google_auth_request.dart';
+import 'package:lovendar/common/auth/model/google_auth_response.dart';
+import 'package:lovendar/common/dio/dio.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 

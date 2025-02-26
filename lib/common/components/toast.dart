@@ -2,7 +2,7 @@ import 'package:delightful_toast/delight_toast.dart';
 import 'package:delightful_toast/toast/components/toast_card.dart';
 import 'package:delightful_toast/toast/utils/enums.dart';
 import 'package:flutter/material.dart';
-import 'package:pico/common/theme/theme_light.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
 // import 'package:flutter/material.dart';
 
 class Toast {

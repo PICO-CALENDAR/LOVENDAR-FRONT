@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:pico/common/model/custom_calendar.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/model/custom_calendar.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
 
 class AppTheme {
   static const Color primaryColor = Color(0xFF9F7965);

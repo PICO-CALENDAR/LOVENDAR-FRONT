@@ -1,13 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/calendar/provider/checked_category_provider.dart';
-import 'package:pico/common/model/custom_exception.dart';
-import 'package:pico/common/model/event_controller.dart';
-import 'package:pico/common/schedule/model/delete_repeat_schedule_body.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/model/update_schedule_body.dart';
-import 'package:pico/common/schedule/repository/schedule_repository.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/calendar/provider/checked_category_provider.dart';
+import 'package:lovendar/common/model/custom_exception.dart';
+import 'package:lovendar/common/model/event_controller.dart';
+import 'package:lovendar/common/schedule/model/delete_repeat_schedule_body.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/update_schedule_body.dart';
+import 'package:lovendar/common/schedule/repository/schedule_repository.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 final schedulesProvider =
     StateNotifierProvider<SchedulesProvider, List<ScheduleModel>>((ref) {
@@ -139,11 +139,12 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   }
 
   //일정 수정
-  Future<void> postEditSchedule(
+  Future<ScheduleModel> postEditSchedule(
       {required String scheduleId, required UpdateScheduleBody body}) async {
     try {
       final response = await repository.postUpdateSchedule(
           scheduleId: scheduleId, body: body);
+
       if (response.success) {
         int index = state.indexWhere(
             (schedule) => schedule.scheduleId == response.schedule.scheduleId);
@@ -155,6 +156,8 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
                 ...state.sublist(index + 1),
               ]
             : [...state, response.schedule];
+
+        return response.schedule;
         // refreshSchedules();
       } else {
         throw CustomException("일정 수정 실패");
@@ -165,26 +168,48 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   }
 
   // 반복 일정 중 선택된 날짜만 수정
-  // TODO: 구현 미완료
-  Future<void> postEditCuurentRepeatSchedule(
+  Future<ScheduleModel> postEditCuurentRepeatSchedule(
       {required String scheduleId, required UpdateScheduleBody body}) async {
     try {
-      final response = await repository.postUpdateSchedule(
-          scheduleId: scheduleId, body: body);
+      final response = await repository.postUpdateSelectedRepeatScheduleOnly(
+        scheduleId: scheduleId,
+        body: body,
+      );
       if (response.success) {
-        int index = state.indexWhere(
-            (schedule) => schedule.scheduleId == response.schedule.scheduleId);
+        // int index = state.indexWhere(
+        //     (schedule) => schedule.scheduleId == response.schedule.scheduleId);
 
-        state = index != -1
-            ? [
-                ...state.sublist(0, index),
-                response.schedule,
-                ...state.sublist(index + 1),
-              ]
-            : [...state, response.schedule];
-        // refreshSchedules();
+        // state = index != -1
+        //     ? [
+        //         ...state.sublist(0, index),
+        //         response.schedule,
+        //         ...state.sublist(index + 1),
+        //       ]
+        //     : [...state, response.schedule];
+        refreshSchedules();
+        return response.schedule;
       } else {
-        throw CustomException("일정 수정 실패");
+        throw CustomException("선택된 반복 일정만 수정 실패");
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // 기존의 반복 일정은 그대로두고 요청날짜를 포함한 이후의 일정을 변경
+  Future<ScheduleModel> postEditCurrentAndAfterRepeatSchedule(
+      {required String scheduleId, required UpdateScheduleBody body}) async {
+    try {
+      final response =
+          await repository.postUpdateSelectedAndAfterRepeatSchedule(
+        scheduleId: scheduleId,
+        body: body,
+      );
+      if (response.success) {
+        refreshSchedules();
+        return response.schedule;
+      } else {
+        throw CustomException("선택된 반복 일정만 수정 실패");
       }
     } catch (e) {
       rethrow;
@@ -199,10 +224,12 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
   // 특정 날짜에 해당하는 하루종일 일정 가져오기
   List<ScheduleModel> getAllDaySchedulesByDate(DateTime date) {
     bool isScheduleInGivenDate(ScheduleModel schedule) {
-      return date.isSameDate(schedule.startTime) ||
-          date.isAfter(schedule.startTime) &&
-              (date.isBefore(schedule.endTime) ||
-                  date.isSameDate(schedule.endTime));
+      return (date.isSameDate(schedule.startTime) ||
+              (date.isAfter(schedule.startTime) &&
+                  (date.isBefore(schedule.endTime) ||
+                      date.isSameDate(schedule.endTime)))) &&
+          (schedule.repeatEndDate == null ||
+              date.isBefore(schedule.repeatEndDate!));
     }
 
     return state
@@ -270,8 +297,7 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
           // 현재 발생일이 월간 범위에 포함될 때만 추가
           if ((currentOccurrence.isSameDate(monthStart) ||
                   currentOccurrence.isAfter(monthStart)) &&
-              currentOccurrence
-                  .isBefore(repeatEnd.add(const Duration(days: 1)))) {
+              currentOccurrence.isBefore(repeatEnd)) {
             final updatedEndTime = currentOccurrence.add(schedule.duration);
             expandedSchedules.add(ScheduleModel.copyWith(
               original: schedule,

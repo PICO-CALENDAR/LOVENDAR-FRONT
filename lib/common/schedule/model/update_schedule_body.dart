@@ -1,6 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/utils/date_operations.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
 
 part 'update_schedule_body.g.dart';
 

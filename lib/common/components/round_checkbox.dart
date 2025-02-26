@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pico/common/theme/theme_light.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
 
 class RoundCheckboxTile extends StatelessWidget {
   final bool value;

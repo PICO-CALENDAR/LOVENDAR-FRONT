@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
 
 class TimecapsuleForm {
   final ScheduleModel? schedule;

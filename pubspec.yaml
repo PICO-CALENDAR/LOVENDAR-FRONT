@@ -1,4 +1,4 @@
-name: pico
+name: lovendar
 description: "A new Flutter project."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -48,7 +48,7 @@ dependencies:
   flutter_secure_storage: ^9.2.2
   json_annotation: ^4.9.0
   retrofit: ^4.4.0
-  logger: ^2.4.0  # for logging purpose
+  logger: ^2.4.0 # for logging purpose
   dio: ^5.7.0
   go_router: ^14.6.2
   material_design_icons_flutter: ^7.0.7296
@@ -87,8 +87,7 @@ dev_dependencies:
   custom_lint: ^0.7.0
   riverpod_lint: ^2.6.3
   json_serializable: ^6.8.0
-  retrofit_generator: '>=8.0.0 <10.0.0' # for Dart 3.3 use ^9.0.0
-
+  retrofit_generator: ">=8.0.0 <10.0.0" # for Dart 3.3 use ^9.0.0
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -145,7 +144,7 @@ flutter:
           weight: 900
     - family: Kyobo
       fonts:
-        - asset : assets/fonts/KyoboHandwriting2019.ttf
+        - asset: assets/fonts/KyoboHandwriting2019.ttf
   #   - family: Trajan Pro
   #     fonts:
   #       - asset: fonts/TrajanPro.ttf

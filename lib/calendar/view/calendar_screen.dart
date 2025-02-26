@@ -2,16 +2,16 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/calendar/components/month_view.dart';
-import 'package:pico/calendar/provider/checked_category_provider.dart';
-import 'package:pico/common/components/check_box_chip.dart';
-import 'package:pico/common/model/event_controller.dart';
-import 'package:pico/common/contants/calendar_const.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/common/schedule/repository/schedule_repository.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/calendar/components/month_view.dart';
+import 'package:lovendar/calendar/provider/checked_category_provider.dart';
+import 'package:lovendar/common/components/check_box_chip.dart';
+import 'package:lovendar/common/model/event_controller.dart';
+import 'package:lovendar/common/contants/calendar_const.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/common/schedule/repository/schedule_repository.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class CalendarScreen extends ConsumerStatefulWidget {
   static String get routeName => 'calendar';

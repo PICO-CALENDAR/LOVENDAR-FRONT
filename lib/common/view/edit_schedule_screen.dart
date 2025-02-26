@@ -4,19 +4,19 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:pico/common/components/action_button.dart';
-import 'package:pico/common/components/date_input.dart';
-import 'package:pico/common/components/input_field.dart';
-import 'package:pico/common/components/toast.dart';
-import 'package:pico/common/provider/selected_day_provider.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/schedule/model/update_schedule_body.dart';
-import 'package:pico/common/schedule/provider/schedules_provider.dart';
-import 'package:pico/common/schedule/repository/schedule_repository.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/extenstions.dart';
-import 'package:pico/common/utils/modals.dart';
-import 'package:pico/user/view/register_screen.dart';
+import 'package:lovendar/common/components/action_button.dart';
+import 'package:lovendar/common/components/date_input.dart';
+import 'package:lovendar/common/components/input_field.dart';
+import 'package:lovendar/common/components/toast.dart';
+import 'package:lovendar/common/provider/selected_day_provider.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/schedule/model/update_schedule_body.dart';
+import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/common/schedule/repository/schedule_repository.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
+import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/user/view/register_screen.dart';
 import 'package:go_router/go_router.dart';
 
 enum EditMode {
@@ -138,6 +138,185 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
     super.dispose();
   }
 
+  // 스케줄 저장
+  void addSchedule(start, end) async {
+    final body = ScheduleModelBase(
+      title: _scheduleTitle.text,
+      startTime: start,
+      endTime: end,
+      category: _category,
+      isAllDay: _isAllDay,
+      isRepeat: _repeatType != null,
+      repeatType: _repeatType,
+      meetingPeople:
+          _meetingPeople.text.isNotEmpty ? _meetingPeople.text : null,
+    );
+
+    try {
+      await ref.read(schedulesProvider.notifier).postAddSchedule(body);
+      if (mounted) {
+        Toast.showSuccessToast(
+          message: "일정을 성공적으로 추가했습니다",
+        ).show(context);
+        Navigator.of(context).pop();
+      }
+    } catch (e) {
+      print(e);
+      if (mounted) {
+        Toast.showErrorToast(
+          message: "일정 추가에 문제가 생겼습니다",
+        ).show(context);
+      }
+    }
+  }
+
+  // 스케줄 수정
+  void editSchedule(start, end) async {
+    // 일정 수정
+    if (widget.initialScheduleValue != null) {
+      final initial = widget.initialScheduleValue!;
+      final bool isTitleChanged = initial.title != _scheduleTitle.text;
+      final bool isStartTimeChanged =
+          !initial.startTime.isAtSameMomentAs(start);
+      final bool isEndTimeChanged = !initial.endTime.isAtSameMomentAs(end);
+      final bool isCategoryChanged = initial.category != _category;
+      final bool isAllDayChanged = initial.isAllDay != _isAllDay;
+      final bool isRepeatTypeChanged = initial.repeatType != _repeatType;
+      final bool isMeetingPeopleChanged =
+          initial.meetingPeople != _meetingPeople.text;
+
+      final UpdateScheduleBody updatedBody = UpdateScheduleBody(
+        title: isTitleChanged ? _scheduleTitle.text : initial.title,
+        startTime: isStartTimeChanged ? start : initial.startTime,
+        endTime: isEndTimeChanged ? end : initial.endTime,
+        category: isCategoryChanged ? _category : initial.category,
+        isAllDay: isAllDayChanged ? _isAllDay : initial.isAllDay,
+        isRepeat: isRepeatTypeChanged ? _repeatType != null : initial.isRepeat,
+        repeatType: isRepeatTypeChanged ? _repeatType : initial.repeatType,
+        meetingPeople: isMeetingPeopleChanged
+            ? _meetingPeople.text.isNotEmpty
+                ? _meetingPeople.text
+                : null
+            : initial.meetingPeople,
+      );
+
+      // 원래 반복 일정이었을 경우
+      if (initial.isRepeat) {
+        showOptionsDialog(
+          context: context,
+          title: "반복 일정 수정",
+          content: '현재 일정만 수정하시겠습니까, 아니면 현재 일정과 이후 모든 일정을 수정하겠습니까?',
+          firstOptionName: "현재 일정만",
+          firstOptionPressed: () async {
+            try {
+              final scheduleResponse = await ref
+                  .read(schedulesProvider.notifier)
+                  .postEditCuurentRepeatSchedule(
+                    scheduleId: initial.scheduleId.toString(),
+                    body: updatedBody,
+                  );
+              if (mounted) {
+                Toast.showSuccessToast(
+                  message: "현재 일정을 성공적으로 수정했습니다",
+                ).show(Navigator.of(context, rootNavigator: true).context);
+                Navigator.of(context).pop();
+                Navigator.of(context).pop(scheduleResponse);
+              }
+            } catch (e) {
+              if (mounted) {
+                Toast.showErrorToast(message: e.toString())
+                    .show(Navigator.of(context, rootNavigator: true).context);
+              }
+            }
+            // 현재 일정만 수정
+            // try {
+            //   await ref
+            //       .read(schedulesProvider.notifier)
+            //       .deleteSchedule(schedule.scheduleId);
+            //   if (parentContext.mounted) {
+            //     Toast.showSuccessToast(message: "모든 반복 일정이 삭제되었습니다")
+            //         .show(parentContext);
+            //     Navigator.of(parentContext).pop();
+            //     Navigator.of(parentContext).pop();
+            //   }
+            // } catch (e) {
+            //   if (parentContext.mounted) {
+            //     Toast.showErrorToast(message: e.toString())
+            //         .show(parentContext);
+            //   }
+            // }
+          },
+          secondOptionName: "현재 일정 및 이후 일정",
+          secondOptionPressed: () async {
+            try {
+              final scheduleResponse = await ref
+                  .read(schedulesProvider.notifier)
+                  .postEditCurrentAndAfterRepeatSchedule(
+                    scheduleId: initial.scheduleId.toString(),
+                    body: updatedBody,
+                  );
+              if (mounted) {
+                Toast.showSuccessToast(
+                  message: "현재 일정 및 이후 일정을 성공적으로 수정했습니다",
+                ).show(Navigator.of(context, rootNavigator: true).context);
+                Navigator.of(context).pop();
+                // Navigator.of(context).pop(scheduleResponse);
+              }
+            } catch (e) {
+              if (mounted) {
+                Toast.showErrorToast(message: e.toString())
+                    .show(Navigator.of(context, rootNavigator: true).context);
+              }
+            }
+
+            // 현재 일정 및 이후 일정 삭제
+
+            // try {
+            //   await ref
+            //       .read(schedulesProvider.notifier)
+            //       .deleteRepeatSchedule(
+            //         scheduleId: schedule.scheduleId,
+            //         repeatEndDate: schedule.startTime,
+            //       );
+            //   if (parentContext.mounted) {
+            //     Toast.showSuccessToast(message: "현재 일정 및 이후 일정이 삭제되었습니다")
+            //         .show(parentContext);
+            //     Navigator.of(parentContext).pop();
+            //     Navigator.of(parentContext).pop();
+            //   }
+            // } catch (e) {
+            //   if (parentContext.mounted) {
+            //     Toast.showErrorToast(message: e.toString())
+            //         .show(parentContext);
+            //   }
+            // }
+          },
+        );
+      } else {
+        try {
+          // print(body.toJson().toString());
+          final scheduleResponse =
+              await ref.read(schedulesProvider.notifier).postEditSchedule(
+                    scheduleId: initial.scheduleId.toString(),
+                    body: updatedBody,
+                  );
+          if (mounted) {
+            Toast.showSuccessToast(
+              message: "일정을 성공적으로 수정했습니다",
+            ).show(Navigator.of(context, rootNavigator: true).context);
+            Navigator.of(context).pop(scheduleResponse);
+          }
+        } catch (e) {
+          if (mounted) {
+            Toast.showErrorToast(
+              message: "일정 수정에 문제가 생겼습니다",
+            ).show(Navigator.of(context, rootNavigator: true).context);
+          }
+        }
+      }
+    }
+  }
+
   Future<void> onSubmit() async {
     setState(() {
       _isSubmitted = true;
@@ -145,7 +324,6 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
 
     if (_formKey.currentState!.validate() && isDateRangeValid()) {
       // 일정 추가
-
       final start = _isAllDay
           ? DateTime(
               startDay.year,
@@ -178,154 +356,16 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
             );
 
       if (widget.mode == EditMode.ADD) {
-        final body = ScheduleModelBase(
-          title: _scheduleTitle.text,
-          startTime: start,
-          endTime: end,
-          category: _category,
-          isAllDay: _isAllDay,
-          isRepeat: _repeatType != null,
-          repeatType: _repeatType,
-          meetingPeople:
-              _meetingPeople.text.isNotEmpty ? _meetingPeople.text : null,
-        );
-
-        try {
-          // print(body.toJson().toString());
-
-          await ref.read(schedulesProvider.notifier).postAddSchedule(body);
-          Toast.showSuccessToast(
-            message: "일정을 성공적으로 추가했습니다",
-          ).show(context);
-          Navigator.of(context).pop();
-        } catch (e) {
-          print(e);
-          if (mounted) {
-            Toast.showErrorToast(
-              message: "일정 추가에 문제가 생겼습니다",
-            ).show(context);
-          }
-        }
+        addSchedule(start, end);
       } else {
-        // 일정 수정
-        if (widget.initialScheduleValue != null) {
-          final initial = widget.initialScheduleValue!;
-          final bool isTitleChanged = initial.title != _scheduleTitle.text;
-          final bool isStartTimeChanged =
-              !initial.startTime.isAtSameMomentAs(start);
-          final bool isEndTimeChanged = !initial.endTime.isAtSameMomentAs(end);
-          final bool isCategoryChanged = initial.category != _category;
-          final bool isAllDayChanged = initial.isAllDay != _isAllDay;
-          final bool isRepeatTypeChanged = initial.repeatType != _repeatType;
-          final bool isMeetingPeopleChanged =
-              initial.meetingPeople != _meetingPeople.text;
-
-          final UpdateScheduleBody updatedBody = UpdateScheduleBody(
-            title: isTitleChanged ? _scheduleTitle.text : initial.title,
-            startTime: isStartTimeChanged ? start : initial.startTime,
-            endTime: isEndTimeChanged ? end : initial.endTime,
-            category: isCategoryChanged ? _category : initial.category,
-            isAllDay: isAllDayChanged ? _isAllDay : initial.isAllDay,
-            isRepeat:
-                isRepeatTypeChanged ? _repeatType != null : initial.isRepeat,
-            repeatType: isRepeatTypeChanged ? _repeatType : initial.repeatType,
-            meetingPeople: isMeetingPeopleChanged
-                ? _meetingPeople.text
-                : initial.meetingPeople,
-          );
-
-          // 원래 반복 일정이었을 경우
-          if (initial.isRepeat) {
-            showOptionsDialog(
-              context: context,
-              title: "반복 일정 수정",
-              content: '현재 일정만 수정하시겠습니까, 아니면 현재 일정과 이후 모든 일정을 수정하겠습니까?',
-              firstOptionName: "현재 일정만",
-              firstOptionPressed: () async {
-                // 현재 일정만 수정
-                // try {
-                //   await ref
-                //       .read(schedulesProvider.notifier)
-                //       .deleteSchedule(schedule.scheduleId);
-                //   if (parentContext.mounted) {
-                //     Toast.showSuccessToast(message: "모든 반복 일정이 삭제되었습니다")
-                //         .show(parentContext);
-                //     Navigator.of(parentContext).pop();
-                //     Navigator.of(parentContext).pop();
-                //   }
-                // } catch (e) {
-                //   if (parentContext.mounted) {
-                //     Toast.showErrorToast(message: e.toString())
-                //         .show(parentContext);
-                //   }
-                // }
-              },
-              secondOptionName: "현재 일정 및 이후 일정",
-              secondOptionPressed: () async {
-                // 현재 일정 및 이후 일정 삭제
-
-                // try {
-                //   await ref
-                //       .read(schedulesProvider.notifier)
-                //       .deleteRepeatSchedule(
-                //         scheduleId: schedule.scheduleId,
-                //         repeatEndDate: schedule.startTime,
-                //       );
-                //   if (parentContext.mounted) {
-                //     Toast.showSuccessToast(message: "현재 일정 및 이후 일정이 삭제되었습니다")
-                //         .show(parentContext);
-                //     Navigator.of(parentContext).pop();
-                //     Navigator.of(parentContext).pop();
-                //   }
-                // } catch (e) {
-                //   if (parentContext.mounted) {
-                //     Toast.showErrorToast(message: e.toString())
-                //         .show(parentContext);
-                //   }
-                // }
-              },
-            );
-          } else {
-            try {
-              // print(body.toJson().toString());
-              await ref.read(schedulesProvider.notifier).postEditSchedule(
-                    scheduleId: initial.scheduleId.toString(),
-                    body: updatedBody,
-                  );
-              if (context.mounted) {
-                Toast.showSuccessToast(
-                  message: "일정을 성공적으로 수정했습니다",
-                ).show(context);
-                Navigator.of(context).pop();
-              }
-            } catch (e) {
-              if (context.mounted) {
-                Toast.showErrorToast(
-                  message: "일정 수정에 문제가 생겼습니다",
-                ).show(context);
-              }
-            }
-          }
-        }
+        editSchedule(start, end);
       }
     } else {
-      // final body = UpdateScheduleBody(
-      //   title: _scheduleTitle.text,
-      //   startTime: start,
-      //   endTime: end,
-      //   category: _category,
-      //   isAllDay: _isAllDay,
-      //   isRepeat: _repeatType != null,
-      //   repeatType: _repeatType,
-      // );
+      print("폼 검증 실패");
+      Toast.showErrorToast(
+        message: "잘못된 입력 값이 있습니다",
+      ).show(Navigator.of(context, rootNavigator: true).context);
     }
-
-    // else {
-    //   // if (!isDateRangeValid()) {
-    //   //   print("날짜 범위가 잘못되었습니다.");
-    //   // }
-    //   // print("폼 검증 실패");
-    // }
   }
 
   Widget _buildTabButton(ScheduleType label) {
@@ -539,7 +579,8 @@ class _EditScheduleScreenState extends ConsumerState<EditScheduleScreen> {
                                   scale: 0.9, // 스위치 크기를 확대 (1.0이 기본 크기)
                                   child: CupertinoSwitch(
                                     value: _isAllDay,
-                                    activeColor: Theme.of(context).primaryColor,
+                                    activeTrackColor:
+                                        Theme.of(context).primaryColor,
                                     onChanged: (bool? value) {
                                       setState(() {
                                         _isAllDay = value ?? false;

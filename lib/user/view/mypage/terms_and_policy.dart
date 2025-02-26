@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pico/common/contants/urls.dart';
+import 'package:lovendar/common/contants/urls.dart';
 
 class TermsAndPolicy extends StatelessWidget {
   const TermsAndPolicy({super.key});

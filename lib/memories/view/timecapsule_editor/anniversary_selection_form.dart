@@ -2,10 +2,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/schedule/model/schedules_response.dart';
-import 'package:pico/memories/components/form_step_description.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
-import 'package:pico/memories/repository/memory_box_repository.dart';
+import 'package:lovendar/common/schedule/model/schedules_response.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
+import 'package:lovendar/memories/components/form_step_description.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/memories/repository/memory_box_repository.dart';
 
 class AnniversarySelectionForm extends ConsumerStatefulWidget {
   const AnniversarySelectionForm({super.key});
@@ -62,15 +64,32 @@ class _AnniversarySelectionFormState
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(
-                      child: CircularProgressIndicator(),
+                      child: CircularProgressIndicator(
+                        color: AppTheme.scaffoldBackgroundColor,
+                      ),
                     ); // 로딩 표시
                   } else if (snapshot.hasError) {
                     return Center(
-                        child: Text("오류 발생: ${snapshot.error}")); // 오류 메시지
+                      child: Text(
+                        "오류 발생: ${snapshot.error}",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ); // 오류 메시지
                   } else if (!snapshot.hasData ||
                       snapshot.data!.items.isEmpty) {
                     return const Center(
-                      child: Text("다가올 기념일이 없습니다."),
+                      child: Text(
+                        "3개월 안에 다가올\n기념일이 없습니다.",
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
                     ); // 데이터 없음 처리
                   }
 
@@ -129,7 +148,9 @@ class _AnniversarySelectionFormState
                                     ),
                                   ),
                                   Text(
-                                    "D-${currentAnniversary.startTime.difference(today).inDays}",
+                                    "D-${parseDateTimeToInDays(
+                                      datetime: currentAnniversary.startTime,
+                                    )}",
                                     style: TextStyle(
                                       fontFamily: "Kyobo",
                                       fontSize: 14,

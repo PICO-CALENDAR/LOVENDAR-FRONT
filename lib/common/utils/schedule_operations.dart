@@ -1,6 +1,6 @@
-import 'package:pico/common/model/custom_calendar.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/model/custom_calendar.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 // 시간대가 겹치는 이벤트 그룹화
 // List<List<ScheduleModel>> groupOverlappingSchedules({

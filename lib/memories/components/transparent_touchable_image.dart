@@ -4,7 +4,7 @@ import 'package:flutter/material.dart' hide Image;
 import 'dart:ui';
 
 import 'package:flutter/services.dart';
-import 'package:pico/memories/components/image_painter.dart';
+import 'package:lovendar/memories/components/image_painter.dart';
 
 class TransparentTouchableImage extends StatefulWidget {
   final String imagePath;

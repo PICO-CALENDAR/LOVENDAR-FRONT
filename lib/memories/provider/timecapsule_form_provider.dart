@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/memories/model/timecapsule_form.dart';
-import 'package:pico/memories/repository/memory_box_repository.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/memories/model/timecapsule_form.dart';
+import 'package:lovendar/memories/repository/memory_box_repository.dart';
 import 'package:retrofit/retrofit.dart';
 
 final timecapsuleFormProvider =

@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/user/model/user_model.dart';
+import 'package:lovendar/user/model/user_model.dart';
 
 part 'register_body.g.dart';
 

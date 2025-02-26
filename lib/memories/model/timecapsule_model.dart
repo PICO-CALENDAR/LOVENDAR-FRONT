@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/common/utils/date_operations.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
 
 //  {
 //       "memoryboxId": 0,

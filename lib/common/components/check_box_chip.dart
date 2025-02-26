@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/common/theme/theme_light.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
 
 class CheckBoxChip extends ConsumerWidget {
   const CheckBoxChip({

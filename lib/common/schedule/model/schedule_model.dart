@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/date_operations.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 part 'schedule_model.g.dart';
 
@@ -121,11 +121,20 @@ class ScheduleModel extends ScheduleModelBase {
 
     while (scheduleStartTime.isBefore(targetDate) ||
         scheduleStartTime.isSameDate(targetDate)) {
-      // 현재 타겟날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
+      // // 현재 타겟날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
+      // if ((scheduleStartTime.isSameDate(targetDate) ||
+      //     targetDate.isAfter(scheduleStartTime) &&
+      //         targetDate.isBefore(scheduleEndTime) ||
+      //     scheduleEndTime.isSameDate(targetDate))) {
+      //   return true;
+      // }
+
+      // 현재 타겟 날짜가 시작 날짜와 끝 날짜 사이에 있는지 확인
       if ((scheduleStartTime.isSameDate(targetDate) ||
-          targetDate.isAfter(scheduleStartTime) &&
-              targetDate.isBefore(scheduleEndTime) ||
-          scheduleEndTime.isSameDate(targetDate))) {
+              (targetDate.isAfter(scheduleStartTime) &&
+                  (targetDate.isBefore(scheduleEndTime) ||
+                      scheduleEndTime.isSameDate(targetDate)))) &&
+          (repeatEndDate == null || targetDate.isBefore(repeatEndDate!))) {
         return true;
       }
 
@@ -232,6 +241,22 @@ class ScheduleModel extends ScheduleModelBase {
     this.repeatStartDate,
     this.repeatEndDate,
   });
+
+  // ✅ 빈 ScheduleModel 객체 반환 (기본값 설정)
+  static ScheduleModel empty() {
+    return ScheduleModel(
+      scheduleId: -999, // -1은 빈 객체를 나타내는 특별한 ID
+      title: '일정 없음', // 기본 제목
+      isAllDay: false,
+      startTime: DateTime.now(),
+      endTime: DateTime.now().add(Duration(hours: 1)), // 기본값: 1시간 후 종료
+      category: ScheduleType.OURS, // 기본 카테고리 설정
+      isRepeat: false,
+      repeatType: null,
+      repeatStartDate: null,
+      repeatEndDate: null,
+    );
+  }
 
   // 복사 생성자
   ScheduleModel.copyWith({

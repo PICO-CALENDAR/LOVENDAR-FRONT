@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/memories/model/timecapsule_mode.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/memories/model/timecapsule_mode.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
 
 class TimecapsuleBack extends ConsumerWidget {
   const TimecapsuleBack({

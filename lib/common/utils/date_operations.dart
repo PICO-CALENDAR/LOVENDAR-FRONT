@@ -17,3 +17,16 @@ DateTime? dateTimeFromIsoStringNullable(String? isoString) {
 String? dateTimeToIsoStringNullable(DateTime? dateTime) {
   return dateTime?.toIso8601String();
 }
+
+String parseStringDdayToInDaysString({required String dday}) {
+  DateTime now = DateTime.now();
+  DateTime todayMidnight = DateTime(now.year, now.month, now.day);
+
+  return "${todayMidnight.difference(DateTime.parse(dday)).inDays + 1}일";
+}
+
+int parseDateTimeToInDays({required DateTime datetime}) {
+  DateTime now = DateTime.now();
+  DateTime todayMidnight = DateTime(now.year, now.month, now.day);
+  return todayMidnight.difference(datetime).inDays;
+}

@@ -2,9 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/calendar/components/week_row.dart';
-import 'package:pico/common/model/event_controller.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/calendar/components/week_row.dart';
+import 'package:lovendar/common/model/event_controller.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class MonthView extends ConsumerWidget {
   const MonthView({

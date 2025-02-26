@@ -1,6 +1,6 @@
-import 'package:pico/common/model/custom_calendar.dart';
-import 'package:pico/common/schedule/model/schedule_model.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/model/custom_calendar.dart';
+import 'package:lovendar/common/schedule/model/schedule_model.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class ScheduleController {
   final List<ScheduleModel> schedules;

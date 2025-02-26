@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/utils/date_operations.dart';
-import 'package:pico/common/utils/extenstions.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/utils/date_operations.dart';
+import 'package:lovendar/common/utils/extenstions.dart';
 
 class DayviewDatePicker extends StatelessWidget {
   final DateTime now = DateTime.now();

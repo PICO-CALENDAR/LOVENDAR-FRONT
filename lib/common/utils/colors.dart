@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:pico/common/theme/theme_light.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
 
 Color getDayColor(DateTime date, bool isToday) {
   String dayOfWeek = DateFormat.E("en-us").format(date); // 요일을 구합니다.

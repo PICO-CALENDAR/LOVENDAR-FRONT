@@ -1,11 +1,11 @@
 // 편지 작성 페이지
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:pico/memories/components/form_step_description.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_back.dart';
-import 'package:pico/memories/components/timecapsule/timecapsule_list_item.dart';
-import 'package:pico/memories/model/timecapsule_mode.dart';
-import 'package:pico/memories/provider/timecapsule_form_provider.dart';
+import 'package:lovendar/memories/components/form_step_description.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_back.dart';
+import 'package:lovendar/memories/components/timecapsule/timecapsule_list_item.dart';
+import 'package:lovendar/memories/model/timecapsule_mode.dart';
+import 'package:lovendar/memories/provider/timecapsule_form_provider.dart';
 
 class LetterForm extends ConsumerWidget {
   const LetterForm({super.key});

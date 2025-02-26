@@ -2,19 +2,19 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import 'package:pico/common/auth/model/auth_model.dart';
-import 'package:pico/common/auth/provider/auth_provider.dart';
+import 'package:lovendar/common/auth/model/auth_model.dart';
+import 'package:lovendar/common/auth/provider/auth_provider.dart';
 
-import 'package:pico/common/components/network_aware_widget.dart';
-import 'package:pico/common/layout/default_layout.dart';
+import 'package:lovendar/common/components/network_aware_widget.dart';
+import 'package:lovendar/common/layout/default_layout.dart';
 
-import 'package:pico/common/view/edit_schedule_screen.dart';
-import 'package:pico/common/view/invite_screen.dart';
-import 'package:pico/common/view/splash_screen.dart';
+import 'package:lovendar/common/view/edit_schedule_screen.dart';
+import 'package:lovendar/common/view/invite_screen.dart';
+import 'package:lovendar/common/view/splash_screen.dart';
 
-import 'package:pico/user/view/login_screen.dart';
-import 'package:pico/user/view/mypage/mypage_screen.dart';
-import 'package:pico/user/view/register_screen.dart';
+import 'package:lovendar/user/view/login_screen.dart';
+import 'package:lovendar/user/view/mypage/mypage_screen.dart';
+import 'package:lovendar/user/view/register_screen.dart';
 
 final routerProvider = Provider<GoRouter>((ref) {
   // watch - 값이 변경될때마다 다시 빌드

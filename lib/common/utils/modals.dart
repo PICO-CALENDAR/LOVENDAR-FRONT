@@ -3,12 +3,12 @@ import 'package:app_settings/app_settings.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
-import 'package:pico/common/components/compact_input.dart';
-import 'package:pico/common/components/fullscreen_loading_indicator.dart';
-import 'package:pico/common/theme/theme_light.dart';
-import 'package:pico/common/view/invite_screen.dart';
-import 'package:pico/user/view/mypage/profile_detail.dart';
-import 'package:pico/user/view/mypage/profile_edit.dart';
+import 'package:lovendar/common/components/compact_input.dart';
+import 'package:lovendar/common/components/fullscreen_loading_indicator.dart';
+import 'package:lovendar/common/theme/theme_light.dart';
+import 'package:lovendar/common/view/invite_screen.dart';
+import 'package:lovendar/user/view/mypage/profile_detail.dart';
+import 'package:lovendar/user/view/mypage/profile_edit.dart';
 
 enum ConfirmType {
   CONFIRM,
@@ -26,7 +26,7 @@ void showConfirmDialog({
 }) {
   showCupertinoDialog(
     context: context,
-    builder: (context) => CupertinoAlertDialog(
+    builder: (ctx) => CupertinoAlertDialog(
       title: Text(title),
       content: content != null ? Text(content) : SizedBox.shrink(),
       actions: <Widget>[
@@ -39,18 +39,23 @@ void showConfirmDialog({
             ),
           ),
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.of(ctx).pop();
           },
         ),
         CupertinoButton(
-          onPressed: onPressed,
+          onPressed: () {
+            if (onPressed != null) {
+              onPressed();
+            }
+            Navigator.of(ctx).pop();
+          },
           child: Text(
             confirmName,
             style: TextStyle(
               fontWeight: FontWeight.w500,
               color: dialogType == ConfirmType.DANGER
-                  ? Theme.of(context).colorScheme.error
-                  : Theme.of(context).primaryColor,
+                  ? Theme.of(ctx).colorScheme.error
+                  : Theme.of(ctx).primaryColor,
             ),
           ),
         ),
@@ -76,7 +81,12 @@ void showOptionsDialog({
       content: content != null ? Text(content) : SizedBox.shrink(),
       actions: <Widget>[
         CupertinoButton(
-          onPressed: firstOptionPressed,
+          onPressed: () {
+            if (firstOptionPressed != null) {
+              firstOptionPressed();
+              Navigator.of(context).pop();
+            }
+          },
           child: Text(
             firstOptionName,
             style: TextStyle(
@@ -86,7 +96,12 @@ void showOptionsDialog({
           ),
         ),
         CupertinoButton(
-          onPressed: secondOptionPressed,
+          onPressed: () {
+            if (secondOptionPressed != null) {
+              secondOptionPressed();
+              Navigator.of(context).pop();
+            }
+          },
           child: Text(
             secondOptionName,
             style: TextStyle(
