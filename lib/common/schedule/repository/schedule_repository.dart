@@ -71,14 +71,24 @@ abstract class ScheduleRepository {
   });
 
   // 반복 일정 중 현재 선택된 일정만 수정
-  // @PATCH("/update/{scheduleId}")
-  // @Headers({
-  //   'accessToken': 'true',
-  // })
-  // Future<ScheduleResponse> postUpdateSchedule({
-  //   @Path() required String scheduleId,
-  //   @Body() required UpdateScheduleBody body,
-  // });
+  @POST("/update/{scheduleId}")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<ScheduleResponse> postUpdateSelectedRepeatScheduleOnly({
+    @Path() required String scheduleId,
+    @Body() required UpdateScheduleBody body,
+  });
+
+  // 반복 일정 중 현재 선택된 일정 및 이후 반복 일정 일괄 수정
+  @POST("/update/after/{scheduleId}")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<ScheduleResponse> postUpdateSelectedAndAfterRepeatSchedule({
+    @Path() required String scheduleId,
+    @Body() required UpdateScheduleBody body,
+  });
 
   // // 일정 수정
   // @PATCH("/update/{scheduleId}")

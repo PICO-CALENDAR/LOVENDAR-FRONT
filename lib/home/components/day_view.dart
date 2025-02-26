@@ -357,7 +357,7 @@ class AllDayScheduleBox extends ConsumerWidget {
                     isDismissible: false,
                     builder: (BuildContext context) {
                       return SizedBox(
-                        height: MediaQuery.of(context).size.height * 0.9,
+                        height: MediaQuery.of(context).size.height * 0.85,
                         child: ClipRRect(
                           borderRadius: const BorderRadius.only(
                             topLeft: Radius.circular(20),
@@ -365,7 +365,7 @@ class AllDayScheduleBox extends ConsumerWidget {
                           ),
                           child: ScheduleDetailScreen(
                             date: date,
-                            schedule: allDaySchedulesInDateByCat[idx],
+                            intialSchedule: allDaySchedulesInDateByCat[idx],
                           ),
                         ),
                       );
@@ -470,7 +470,7 @@ class ScheduleBox extends ConsumerWidget {
                 context: context,
                 isScrollControlled: true,
                 builder: (context) => SizedBox(
-                  height: MediaQuery.of(context).size.height * 0.7,
+                  height: MediaQuery.of(context).size.height * 0.85,
                   child: ClipRRect(
                     borderRadius: const BorderRadius.only(
                       topLeft: Radius.circular(20),
@@ -478,7 +478,7 @@ class ScheduleBox extends ConsumerWidget {
                     ),
                     child: ScheduleDetailScreen(
                       date: targetDate,
-                      schedule:
+                      intialSchedule:
                           targetSchedule ?? organizedSchedule.scheduleData,
                     ),
                   ),

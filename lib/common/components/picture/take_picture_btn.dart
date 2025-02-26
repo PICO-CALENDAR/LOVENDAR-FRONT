@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:lovendar/common/provider/global_loading_provider.dart';
 import 'package:lovendar/common/utils/image_controller.dart';
 import 'package:lovendar/user/provider/user_provider.dart';
 
@@ -30,17 +31,16 @@ class TakePictureBtn extends ConsumerWidget {
       ),
       leading: Icon(Icons.camera_alt_outlined),
       onTap: () async {
+        // 로딩 시작
+        ref.read(globalLoadingProvider.notifier).startLoading();
+
         final croppedImg = await imageController.takePhoto(ratio: ratio);
         if (croppedImg != null) {
           await uploadFn(croppedImg.path);
         }
 
-        // if (croppedImg != null) {
-        //   final multipartFile =
-        //       await MultipartFile.fromFile(croppedImg.path, filename: 'file');
-        //   // TODO: 동작 잘하는지 확인
-        //   uploadFn([multipartFile]);
-        // }
+        // 로딩 끝
+        ref.read(globalLoadingProvider.notifier).stopLoading();
 
         if (context.mounted) {
           Navigator.of(context).pop();

@@ -14,11 +14,13 @@ import 'package:lovendar/common/provider/global_loading_provider.dart';
 import 'package:lovendar/common/theme/theme_light.dart';
 import 'package:lovendar/common/utils/image_controller.dart';
 import 'package:lovendar/common/utils/modals.dart';
+import 'package:lovendar/common/utils/permission_controller.dart';
 import 'package:lovendar/user/components/edit_button.dart';
 import 'package:lovendar/user/model/register_body.dart';
 import 'package:lovendar/user/model/user_model.dart';
 import 'package:lovendar/user/provider/profile_form_provider.dart';
 import 'package:lovendar/user/provider/user_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class ProfileDetail extends ConsumerWidget {
   const ProfileDetail({
@@ -52,9 +54,6 @@ class ProfileDetail extends ConsumerWidget {
                         PickPictureBtn(
                           imageController: imageController,
                           uploadFn: (imgFilePath) async {
-                            ref
-                                .read(globalLoadingProvider.notifier)
-                                .startLoading();
                             // 파일 경로를 멀티 파일로 변경 후
                             final multipartFile = await MultipartFile.fromFile(
                               imgFilePath,
@@ -76,19 +75,12 @@ class ProfileDetail extends ConsumerWidget {
                                       .show(context);
                                 }
                               }
-                            } finally {
-                              ref
-                                  .read(globalLoadingProvider.notifier)
-                                  .stopLoading();
                             }
                           },
                         ),
                         TakePictureBtn(
                           imageController: imageController,
                           uploadFn: (imgFilePath) async {
-                            ref
-                                .read(globalLoadingProvider.notifier)
-                                .startLoading();
                             // 파일 경로를 멀티 파일로 변경 후
                             final multipartFile = await MultipartFile.fromFile(
                               imgFilePath,
@@ -110,10 +102,6 @@ class ProfileDetail extends ConsumerWidget {
                                       .show(context);
                                 }
                               }
-                            } finally {
-                              ref
-                                  .read(globalLoadingProvider.notifier)
-                                  .stopLoading();
                             }
                           },
                         ),

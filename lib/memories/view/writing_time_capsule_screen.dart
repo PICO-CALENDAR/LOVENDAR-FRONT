@@ -81,7 +81,7 @@ class _WritingTimeCapsuleScreenState
         ).show(context);
         return;
       }
-      // 모든 일정 삭제
+
       try {
         await ref.read(memoryBoxProvider.notifier).createTimecapsule();
         if (mounted) {
