@@ -472,7 +472,16 @@ class _ScheduleDetailScreenState extends ConsumerState<ScheduleDetailScreen> {
                                               builder: (context) =>
                                                   EditScheduleScreen(
                                                 mode: EditMode.EDIT,
-                                                initialScheduleValue: schedule,
+                                                initialScheduleValue:
+                                                    schedule.copyWithNewDate(
+                                                  targetDate: DateTime(
+                                                    widget.date.year,
+                                                    widget.date.month,
+                                                    widget.date.day,
+                                                    schedule.startTime.hour,
+                                                    schedule.startTime.minute,
+                                                  ),
+                                                ),
                                               ),
                                             ),
                                           );

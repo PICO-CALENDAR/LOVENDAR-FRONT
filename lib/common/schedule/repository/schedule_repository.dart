@@ -71,7 +71,7 @@ abstract class ScheduleRepository {
   });
 
   // 반복 일정 중 현재 선택된 일정만 수정
-  @POST("/update/{scheduleId}")
+  @POST("/update/only/{scheduleId}")
   @Headers({
     'accessToken': 'true',
   })

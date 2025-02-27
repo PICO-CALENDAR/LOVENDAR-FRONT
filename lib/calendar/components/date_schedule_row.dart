@@ -204,6 +204,7 @@ class DateScheduleRow extends ConsumerWidget {
                                       ),
                                     ),
 
+                                    // 추가 버튼 누렀을 때
                                     Positioned(
                                       bottom: 40,
                                       right: 20,
@@ -212,6 +213,7 @@ class DateScheduleRow extends ConsumerWidget {
                                         elevation: 1,
                                         shape: CircleBorder(),
                                         onPressed: () {
+                                          // 클릭한 날짜를 선택한 날짜로 바구기
                                           ref
                                               .read(
                                                   selectedDayProvider.notifier)

@@ -196,7 +196,7 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
     }
   }
 
-  // 기존의 반복 일정은 그대로두고 요청날짜를 포함한 이후의 일정을 변경
+  // 기존의 반복 일정은 그대로두고 요청 날짜를 포함한 이후의 일정을 변경
   Future<ScheduleModel> postEditCurrentAndAfterRepeatSchedule(
       {required String scheduleId, required UpdateScheduleBody body}) async {
     try {
@@ -205,6 +205,8 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
         scheduleId: scheduleId,
         body: body,
       );
+      print("결과");
+      print(response.toJson());
       if (response.success) {
         refreshSchedules();
         return response.schedule;
@@ -229,7 +231,7 @@ class SchedulesProvider extends StateNotifier<List<ScheduleModel>> {
                   (date.isBefore(schedule.endTime) ||
                       date.isSameDate(schedule.endTime)))) &&
           (schedule.repeatEndDate == null ||
-              date.isBefore(schedule.repeatEndDate!));
+              date.withoutTime.isBefore(schedule.repeatEndDate!.withoutTime));
     }
 
     return state
