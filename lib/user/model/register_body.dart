@@ -13,7 +13,6 @@ class RegisterBody {
   final Gender? gender;
   final String? nickName;
   final String? birth;
-  final String? dday;
   final bool? isTermsAgreed;
   final bool? isMarketingAgreed;
 
@@ -22,7 +21,6 @@ class RegisterBody {
     this.gender,
     this.nickName,
     this.birth,
-    this.dday,
     this.isTermsAgreed,
     this.isMarketingAgreed,
   });

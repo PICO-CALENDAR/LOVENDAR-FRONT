@@ -19,6 +19,7 @@ class DateInput extends StatelessWidget {
   final DateInputSize size;
   final CupertinoDatePickerMode mode;
   final String? Function(DateTime? value)? validator;
+  final bool disable;
 
   String? _defaultValidator(DateTime? value) {
     if (value == null) {
@@ -38,6 +39,7 @@ class DateInput extends StatelessWidget {
     this.size = DateInputSize.medium,
     this.mode = CupertinoDatePickerMode.date,
     this.validator,
+    this.disable = false,
   });
 
   void _showDatePicker({
@@ -156,10 +158,15 @@ class DateInput extends StatelessWidget {
                   )
                 : SizedBox.shrink(),
             GestureDetector(
-              onTap: () => _showDatePicker(
-                context: context,
-                state: state,
-              ),
+              onTap: () {
+                // 비활성화가 아닌 경우에만 날짜 설정 가능
+                if (!disable) {
+                  _showDatePicker(
+                    context: context,
+                    state: state,
+                  );
+                }
+              },
               child: Container(
                 width: size == DateInputSize.medium ? double.infinity : null,
                 padding: size == DateInputSize.small

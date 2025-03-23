@@ -178,18 +178,18 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                           ),
                           const SizedBox(height: 16.0),
 
-                          DateInput(
-                            title: "처음 만나게 날",
-                            placeholder: "처음 만나게 된 날을 입력하세요",
-                            invalidateMessage: "처음 만나게 날을 입력해주세요",
-                            initialDate: _dDay ?? DateTime.now(),
-                            getDate: () => _dDay,
-                            setDate: (DateTime? newDate) {
-                              setState(() {
-                                _dDay = newDate;
-                              });
-                            },
-                          ),
+                          // DateInput(
+                          //   title: "처음 만나게 날",
+                          //   placeholder: "처음 만나게 된 날을 입력하세요",
+                          //   invalidateMessage: "처음 만나게 날을 입력해주세요",
+                          //   initialDate: _dDay ?? DateTime.now(),
+                          //   getDate: () => _dDay,
+                          //   setDate: (DateTime? newDate) {
+                          //     setState(() {
+                          //       _dDay = newDate;
+                          //     });
+                          //   },
+                          // ),
 
                           const SizedBox(height: 16.0),
 
@@ -312,7 +312,7 @@ class _RegisterScreenState extends ConsumerState<RegisterScreen> {
                                   birth: _birthDate!
                                       .toIso8601String()
                                       .split("T")[0],
-                                  dday: _dDay!.toIso8601String().split("T")[0],
+                                  // dday: _dDay!.toIso8601String().split("T")[0],
                                   isMarketingAgreed: _isMarketingAgreed,
                                   isTermsAgreed: _isTermsAgreed,
                                 );

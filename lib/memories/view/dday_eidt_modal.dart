@@ -1,7 +1,10 @@
 // 디데이 수정 모달 창
 import 'dart:ui';
 import 'package:flutter/material.dart';
+import 'package:flutter_confetti/flutter_confetti.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:lovendar/common/utils/modals.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:lovendar/common/components/action_button.dart';
 import 'package:lovendar/common/components/date_input.dart';
@@ -163,12 +166,16 @@ class _DdayEidtModalState extends ConsumerState<DdayEidtModal> {
                             child: Column(
                               children: [
                                 DateInput(
+                                  disable: userInfo.dday != null,
                                   initialDate: ddayDateTime,
                                   getDate: () => ddayDateTime,
                                   setDate: (DateTime? newDate) {
                                     final today = DateTime.now();
                                     final todayMid = DateTime(
-                                        today.year, today.month, today.day);
+                                      today.year,
+                                      today.month,
+                                      today.day,
+                                    );
 
                                     if (newDate != null) {
                                       if (newDate.isAfter(todayMid)) {
@@ -189,13 +196,48 @@ class _DdayEidtModalState extends ConsumerState<DdayEidtModal> {
                                 ),
                                 ActionButton(
                                   fontSize: 14,
-                                  disabled: userInfo.dday != null
-                                      ? ddayDateTime.isSameDate(
-                                          DateTime.parse(userInfo.dday!))
-                                      : false,
-                                  buttonName: "디데이 수정하기",
+                                  disabled: userInfo.dday != null,
+                                  buttonName: "디데이 설정하기",
                                   onPressed: () async {
                                     // TODO: Dday 수정하는 API 요청 보내기 (커플 맺기 에러 해결 뒤)
+                                    showConfirmDialog(
+                                      dialogType: ConfirmType.DANGER,
+                                      title: "날짜를 확인해주세요",
+                                      content:
+                                          "${DateFormat.yMMMMd().format(ddayDateTime)}\n 디데이는 수정이 어려우니,\n한번 더 확인해주세요",
+                                      onPressed: () async {
+                                        try {
+                                          await ref
+                                              .read(userProvider.notifier)
+                                              .setDday(dday: ddayDateTime);
+                                          if (context.mounted && mounted) {
+                                            final rootContext = Navigator.of(
+                                                    context,
+                                                    rootNavigator: true)
+                                                .context;
+                                            Toast.showSuccessToast(
+                                              message: "디데이가 설정되었어요 🎉",
+                                            ).show(rootContext);
+                                            Confetti.launch(
+                                              context,
+                                              options: const ConfettiOptions(
+                                                particleCount: 100,
+                                                spread: 70,
+                                                y: 0.6,
+                                              ),
+                                            );
+                                            Navigator.of(context).pop();
+                                          }
+                                        } catch (e) {
+                                          if (context.mounted) {
+                                            Toast.showErrorToast(
+                                              message: e.toString(),
+                                            ).show(context);
+                                          }
+                                        }
+                                      },
+                                      context: context,
+                                    );
                                     FocusScope.of(context).unfocus();
                                   },
                                 ),

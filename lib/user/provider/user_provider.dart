@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:intl/intl.dart';
 import 'package:lovendar/common/auth/model/auth_model.dart';
 import 'package:lovendar/common/auth/provider/auth_provider.dart';
 import 'package:lovendar/common/auth/provider/secure_storage.dart';
 import 'package:lovendar/common/model/custom_exception.dart';
 import 'package:lovendar/common/schedule/model/schedule_model.dart';
 import 'package:lovendar/common/schedule/provider/schedules_provider.dart';
+import 'package:lovendar/user/model/register_dday_body.dart';
 import 'package:lovendar/user/model/user_model.dart';
 import 'package:lovendar/user/repository/user_repository.dart';
 import 'package:riverpod/src/framework.dart';
@@ -50,6 +52,26 @@ class User extends _$User {
       }
     } catch (e) {
       print(e);
+    }
+  }
+
+  // 커플 디데이 설정
+  Future<void> setDday({required DateTime dday}) async {
+    try {
+      // 커플 연결 해제
+      final dateString = DateFormat("yyyy-MM-dd").format(dday);
+      final ddayBody = RegisterDdayBody(dday: dateString);
+      await repository.postRegisterDday(ddayBody);
+      await getUserInfo(); // 유저 정보 새로고침
+    } on DioException catch (e) {
+      if (e.response != null) {
+        // print(e.response.toString());
+        throw CustomException(
+          e.response.toString(),
+        );
+      }
+    } catch (e) {
+      throw CustomException("디데이 설정에 실패했습니다");
     }
   }
 
@@ -105,7 +127,9 @@ class User extends _$User {
     } on DioException catch (e) {
       if (e.response != null) {
         // print(e.response.toString());
-        throw CustomException(e.response.toString());
+        throw CustomException(
+          e.response.toString(),
+        );
       }
     } catch (e) {
       throw CustomException("커플 해제에 실패했습니다");

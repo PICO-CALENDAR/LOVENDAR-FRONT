@@ -451,7 +451,6 @@ class _MypageScreenState extends ConsumerState<MypageScreen> {
                         context: context,
                         dialogType: ConfirmType.DANGER,
                         onPressed: () async {
-                          if (context.mounted) Navigator.pop(context);
                           try {
                             setState(() {
                               isLoading = true;
