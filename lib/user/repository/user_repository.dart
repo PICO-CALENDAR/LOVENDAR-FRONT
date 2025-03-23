@@ -5,6 +5,7 @@ import 'package:lovendar/common/dio/dio.dart';
 import 'package:lovendar/user/model/delete_couple_response.dart';
 import 'package:lovendar/user/model/invite_code_model.dart';
 import 'package:lovendar/user/model/register_body.dart';
+import 'package:lovendar/user/model/register_dday_body.dart';
 import 'package:lovendar/user/model/user_model.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
@@ -61,6 +62,15 @@ abstract class UserRepository {
   })
   Future<void> postLinkingCouple(
     @Body() InviteCodeModel body,
+  );
+
+  // 커플 디데이 설정
+  @POST("/register/dday")
+  @Headers({
+    'accessToken': 'true',
+  })
+  Future<void> postRegisterDday(
+    @Body() RegisterDdayBody body,
   );
 
   // 회원가입

@@ -20,6 +20,7 @@ class LoginScreen extends ConsumerWidget {
     final auth = ref.watch(authProvider);
 
     return Scaffold(
+      resizeToAvoidBottomInset: false, // 키보드로 인한 화면 조정 비활성화
       body: Stack(
         children: [
           Column(

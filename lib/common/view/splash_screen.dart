@@ -14,6 +14,7 @@ class _SplashScreenState extends ConsumerState<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false, // 키보드로 인한 화면 조정 비활성화
       body: SizedBox(
         width: MediaQuery.of(context).size.width,
         child: Column(

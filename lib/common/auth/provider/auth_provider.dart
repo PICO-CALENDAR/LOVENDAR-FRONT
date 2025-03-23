@@ -88,7 +88,7 @@ class AuthProvider extends StateNotifier<AuthModelBase?> {
 
       final response = await authRepository.postAppleSignin(authReq);
 
-      print(response.toString());
+      print(response.isRegistered);
 
       // 가입되어 있지 않은 상태
       if (!response.isRegistered) {
@@ -109,8 +109,10 @@ class AuthProvider extends StateNotifier<AuthModelBase?> {
         await secureStorage.saveAccessToken(response.accessToken);
         await secureStorage.saveRefreshToken(response.refreshToken);
 
-        ref.read(userProvider.notifier).getUserInfo();
+        await ref.read(userProvider.notifier).getUserInfo();
         final user = ref.read(userProvider);
+        print("user");
+        print(user);
         if (user is UserModel) {
           state = AuthModel(
             id: response.id,
